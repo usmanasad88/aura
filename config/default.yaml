@@ -1,0 +1,87 @@
+# AURA Default Configuration
+
+project_name: "AURA"
+version: "0.1.0"
+debug_mode: false
+
+# Monitors Configuration
+monitors:
+  perception:
+    enabled: true
+    update_rate_hz: 10.0
+    timeout_seconds: 2.0
+    use_sam3: true
+    use_gemini_detection: true
+    max_objects: 10
+    confidence_threshold: 0.5
+    gemini_model: "gemini-2.0-flash-exp"
+    default_prompts:
+      - "person"
+      - "hand"
+    detection_interval_frames: 30
+  
+  motion:
+    enabled: true
+    update_rate_hz: 15.0
+    timeout_seconds: 1.0
+    model_type: "mediapipe"
+    prediction_horizon_seconds: 2.0
+    smooth_trajectory: true
+  
+  sound:
+    enabled: true
+    update_rate_hz: 20.0
+    timeout_seconds: 1.0
+    use_gemini_live: true
+    gemini_model: "gemini-2.0-flash-exp"
+    sample_rate: 16000
+    chunk_size: 1024
+    wake_word_enabled: false
+    wake_word: "robot"
+  
+  affordance:
+    enabled: true
+    update_rate_hz: 5.0
+    timeout_seconds: 3.0
+    use_llm: true
+    model: "gemini-2.0-flash-exp"
+    check_physical_constraints: true
+
+# Brain Configuration
+brain:
+  decision_model: "gemini-2.0-flash-exp"
+  reasoning_depth: "standard"
+  enable_explainability: true
+  state_update_rate_hz: 10.0
+  sop_directory: "sops"
+  max_reasoning_time_seconds: 5.0
+
+# Actions Configuration
+actions:
+  executor_type: "simulation"
+  action_timeout_seconds: 30.0
+  verify_completion: true
+  safety_checks_enabled: true
+
+# Communication Configuration
+communication:
+  speech_enabled: true
+  text_display_enabled: true
+  digital_twin_enabled: false
+  tts_engine: "google"
+  language: "en-US"
+
+# Interface Configuration
+interface:
+  interface_type: "game"
+  game_window_size: [800, 600]
+  robot_ip: null
+  robot_port: 30002
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  log_to_file: true
+  log_directory: "logs"
+  max_log_size_mb: 100
+  backup_count: 5

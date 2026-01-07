@@ -1,0 +1,72 @@
+{
+  "id": "sorting_task",
+  "name": "Collaborative Sorting Task",
+  "description": "Sort objects into designated goal zones. Human and AI work together.",
+  "role_instructions": {
+    "robot": "Sort the objects in the boxes as instructed by the human operator. In general, move the larger boxes before the smaller ones. Ensure that the boxes are entirely inside the designated zones. The human and AI will work together in roughly the same space. Avoid colliding with the human. If unsure, ask for clarification.",
+    "human": "Move objects to your goal zone. The robot will assist with remaining objects."
+  },
+  "nodes": {
+    "start": {
+      "id": "start",
+      "name": "Initialize",
+      "description": "Observe scene and identify all objects",
+      "preconditions": [],
+      "postconditions": ["objects_identified"],
+      "assignee": "robot"
+    },
+    "clarify_sorting": {
+      "id": "clarify_sorting",
+      "name": "Clarify Sorting Rules",
+      "description": "If sorting rules unclear, ask human for clarification",
+      "preconditions": ["start"],
+      "postconditions": ["sorting_rules_known"],
+      "assignee": "robot"
+    },
+    "sort_object_1": {
+      "id": "sort_object_1",
+      "name": "Sort First Object",
+      "description": "Move first available object to goal",
+      "preconditions": ["clarify_sorting"],
+      "postconditions": ["object_1_sorted"],
+      "assignee": "any"
+    },
+    "sort_object_2": {
+      "id": "sort_object_2",
+      "name": "Sort Second Object",
+      "description": "Move second available object to goal",
+      "preconditions": ["clarify_sorting"],
+      "postconditions": ["object_2_sorted"],
+      "assignee": "any"
+    },
+    "sort_object_3": {
+      "id": "sort_object_3",
+      "name": "Sort Third Object",
+      "description": "Move third available object to goal",
+      "preconditions": ["clarify_sorting"],
+      "postconditions": ["object_3_sorted"],
+      "assignee": "any"
+    },
+    "sort_object_4": {
+      "id": "sort_object_4",
+      "name": "Sort Fourth Object",
+      "description": "Move fourth available object to goal",
+      "preconditions": ["clarify_sorting"],
+      "postconditions": ["object_4_sorted"],
+      "assignee": "any"
+    },
+    "verify_complete": {
+      "id": "verify_complete",
+      "name": "Verify Completion",
+      "description": "Check all objects are in correct zones",
+      "preconditions": ["sort_object_1", "sort_object_2", "sort_object_3", "sort_object_4"],
+      "postconditions": ["task_complete"],
+      "assignee": "robot"
+    }
+  },
+  "constraints": {
+    "collision_avoidance": true,
+    "human_priority": true,
+    "ask_before_uncertain_actions": true
+  }
+}

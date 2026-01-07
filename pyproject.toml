@@ -1,0 +1,69 @@
+[project]
+name = "aura"
+version = "0.1.0"
+description = "AURA - Autonomous Understanding for Robotic Assistance. A modular, explainable framework for proactive robotic assistance."
+readme = "README.md"
+authors = [
+    { name = "usmanasad88", email = "usman.asad@ceme.nust.edu.pk" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "decord>=0.6.0",
+    "google-genai",
+    "einops>=0.8.1",
+    "jupyter>=1.1.1",
+    "langchain-openai>=1.1.6",
+    "langgraph>=1.0.5",
+    "librosa>=0.11.0",
+    "matplotlib>=3.10.8",
+    "notebook>=7.5.1",
+    "openai-whisper>=20250625",
+    "opencv-python>=4.11.0.86",
+    "paho-mqtt>=2.1.0",
+    "pyaudio>=0.2.14",
+    "pycocotools>=2.0.11",
+    "pydantic>=2.12.5",
+    "pyyaml>=6.0",
+    "sam3",
+    "scikit-image>=0.26.0",
+    "scikit-learn>=1.8.0",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+    "tqdm>=4.67.1",
+    "ultralytics>=8.3.241",
+    "mss>=10.1.0",
+    "mediapipe>=0.10.31",
+    "jax>=0.4.35",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.8.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+aura = "aura:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = ["ignore::DeprecationWarning"]
+# Disable ROS plugins
+addopts = "-p no:ament_copyright -p no:ament_flake8 -p no:ament_pep257 -p no:ament_xmllint -p no:ament_lint -p no:launch_testing -p no:launch_testing_ros"
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+sam3 = { path = "third_party/sam3", editable = true }

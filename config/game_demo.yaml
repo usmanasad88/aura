@@ -1,0 +1,62 @@
+# AURA Configuration for Collaborative Game Demo
+
+project_name: "AURA Game Demo"
+version: "0.1.0"
+debug_mode: true
+
+# Monitors - optimized for game
+monitors:
+  perception:
+    enabled: true
+    update_rate_hz: 15.0  # Higher rate for smooth game updates
+    use_sam3: false  # Don't need segmentation for simple circles
+    use_gemini_detection: false  # Game objects are known
+    max_objects: 20
+  
+  motion:
+    enabled: true
+    update_rate_hz: 20.0  # Track human movement in game
+    prediction_horizon_seconds: 1.5
+  
+  sound:
+    enabled: true
+    use_gemini_live: true
+    wake_word_enabled: true
+    wake_word: "robot"
+  
+  affordance:
+    enabled: true
+    update_rate_hz: 5.0
+    use_llm: true
+
+# Brain - game-specific reasoning
+brain:
+  decision_model: "gemini-2.0-flash-exp"
+  reasoning_depth: "quick"  # Fast decisions for real-time game
+  enable_explainability: true
+  state_update_rate_hz: 15.0
+  sop_directory: "sops"
+  max_reasoning_time_seconds: 2.0
+
+# Actions - simulation only
+actions:
+  executor_type: "simulation"
+  action_timeout_seconds: 10.0
+  verify_completion: true
+
+# Communication - visual + text for game
+communication:
+  speech_enabled: false  # Disable TTS for game
+  text_display_enabled: true
+  digital_twin_enabled: true  # Show predicted trajectories
+
+# Interface - game settings
+interface:
+  interface_type: "game"
+  game_window_size: [1024, 768]
+
+# Logging
+logging:
+  level: "DEBUG"
+  log_to_file: true
+  log_directory: "logs/game_demo"

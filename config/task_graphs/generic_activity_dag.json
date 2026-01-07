@@ -1,0 +1,69 @@
+{
+  "name": "Generic Activity Recognition",
+  "description": "A general-purpose DAG for monitoring common human activities",
+  "version": "1.0",
+  "nodes": {
+    "idle": {
+      "description": "Person is idle, not performing any specific action",
+      "visual_cues": ["standing still", "sitting", "waiting", "no hand movement"],
+      "next_possible": ["reach", "gesture", "point", "walk"]
+    },
+    "reach": {
+      "description": "Person is reaching for or toward something",
+      "visual_cues": ["arm extended", "hand moving toward object", "leaning"],
+      "next_possible": ["grasp", "point", "retract", "idle"]
+    },
+    "grasp": {
+      "description": "Person is grasping or holding an object",
+      "visual_cues": ["closed hand", "fingers around object", "gripping"],
+      "next_possible": ["manipulate", "place", "hold", "release"]
+    },
+    "manipulate": {
+      "description": "Person is manipulating or operating something",
+      "visual_cues": ["rotating", "pressing", "twisting", "adjusting"],
+      "next_possible": ["place", "hold", "reach", "release"]
+    },
+    "place": {
+      "description": "Person is placing an object somewhere",
+      "visual_cues": ["lowering hand", "releasing object", "setting down"],
+      "next_possible": ["release", "retract", "idle"]
+    },
+    "hold": {
+      "description": "Person is holding something stationary",
+      "visual_cues": ["object in hand", "stable grip", "not moving"],
+      "next_possible": ["manipulate", "place", "reach", "gesture"]
+    },
+    "release": {
+      "description": "Person is releasing or letting go of something",
+      "visual_cues": ["fingers opening", "hand withdrawing", "object stationary"],
+      "next_possible": ["retract", "reach", "idle"]
+    },
+    "retract": {
+      "description": "Person is pulling back or withdrawing hand",
+      "visual_cues": ["arm pulling back", "hand returning to body"],
+      "next_possible": ["idle", "reach", "gesture"]
+    },
+    "point": {
+      "description": "Person is pointing at something",
+      "visual_cues": ["index finger extended", "arm extended", "directional gesture"],
+      "next_possible": ["retract", "reach", "gesture", "idle"]
+    },
+    "gesture": {
+      "description": "Person is making a communicative gesture",
+      "visual_cues": ["waving", "beckoning", "stop signal", "hand signals"],
+      "next_possible": ["idle", "reach", "point", "retract"]
+    },
+    "walk": {
+      "description": "Person is walking or moving position",
+      "visual_cues": ["stepping", "changing position", "locomotion"],
+      "next_possible": ["idle", "reach", "gesture"]
+    }
+  },
+  "start_node": "idle",
+  "end_nodes": ["idle"],
+  "transition_rules": {
+    "reach_requires_target": "Reaching should have a target object or location",
+    "grasp_follows_reach": "Grasping typically follows a reach action",
+    "release_follows_hold": "Release happens after holding or manipulating"
+  }
+}

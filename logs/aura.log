@@ -1,0 +1,1532 @@
+2026-01-07 07:00:55,515 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:00:55,516 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/default.yaml
+2026-01-07 07:00:55,520 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:00:55,523 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/game_demo.yaml
+2026-01-07 07:16:56,283 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:16:56,283 - __main__ - INFO - Initializing perception module...
+2026-01-07 07:18:22,755 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:18:22,755 - __main__ - INFO - Initializing perception module...
+2026-01-07 07:18:49,503 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:18:49,504 - __main__ - INFO - Initializing perception module...
+2026-01-07 07:18:49,504 - __main__ - INFO - Opening webcam...
+2026-01-07 07:18:50,624 - __main__ - INFO - Saving to perception_test_output.mp4 (max 30 frames)
+2026-01-07 07:18:52,584 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-01-07 07:19:01,595 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:19:01,855 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:19:05,959 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-01-07 07:19:05,960 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:06,467 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:06,477 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:06,477 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:09,103 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:09,105 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'door', 'wardrobe', 'bed', 'hand', 'shirt', 'handle', 'pillow']
+2026-01-07 07:19:09,787 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:09,787 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:09,788 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:09,789 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:09,800 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:09,800 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:11,928 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:11,929 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'hand', 'door', 'handle', 'wardrobe', 'bed', 'pillow', 'switch']
+2026-01-07 07:19:12,232 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:12,233 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:12,233 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:12,234 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:12,245 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:12,245 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:14,216 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:14,218 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'door', 'cabinet', 'bed', 'hand', 'handle', 'wardrobe', 'light']
+2026-01-07 07:19:14,518 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:14,518 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:14,519 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:14,520 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:14,530 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:14,530 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:16,546 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:16,547 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'door', 'wardrobe', 'bed', 'hand', 'shirt', 'handle', 'frame']
+2026-01-07 07:19:16,849 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:16,849 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:16,849 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:16,851 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:16,861 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:16,861 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:18,867 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:18,869 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'finger', 'hand', 'door', 'wardrobe', 'bed', 'pillow', 'shirt']
+2026-01-07 07:19:19,173 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:19,173 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:19,173 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:19,175 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:19,184 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:19,185 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:21,529 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:21,531 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'door', 'handle', 'wardrobe', 'bed', 'shirt', 'hand', 'couch']
+2026-01-07 07:19:21,834 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:21,834 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:21,834 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:21,836 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:21,845 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:21,845 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:24,324 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:24,326 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'door', 'handle', 'wardrobe', 'bed', 'blanket', 'shirt', 'couch']
+2026-01-07 07:19:24,628 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:24,628 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:24,628 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:24,629 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:24,639 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:24,639 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:26,475 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:26,476 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'wardrobe', 'door', 'bed', 'hand', 'shirt', 'handle', 'couch']
+2026-01-07 07:19:26,777 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:26,778 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:26,778 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:26,779 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:26,789 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:26,789 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:28,733 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:28,734 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'hand', 'door', 'wardrobe', 'bed', 'pillow', 't-shirt', 'handle']
+2026-01-07 07:19:29,036 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:29,036 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:29,036 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:29,038 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:29,048 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:29,048 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:31,164 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:31,165 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'hand', 'door', 'wardrobe', 'couch', 'shirt', 'bed', 'pillow']
+2026-01-07 07:19:31,465 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:31,465 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:31,465 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:31,467 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:31,476 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:31,476 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:33,615 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:19:33,616 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'wardrobe', 'door', 'handle', 'bed', 'blanket', 'shirt', 'hand']
+2026-01-07 07:19:33,912 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:33,912 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:33,913 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:33,914 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:33,923 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:33,923 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:34,969 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:34,970 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '25s'}]}}, using defaults
+2026-01-07 07:19:35,262 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:35,262 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:35,263 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:35,265 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:35,275 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:35,275 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:36,300 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:36,301 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '23s'}]}}, using defaults
+2026-01-07 07:19:36,588 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:36,588 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:36,588 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:36,590 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:36,600 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:36,600 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:37,153 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:37,153 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'model': 'gemini-2.0-flash-exp', 'location': 'global'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '22s'}]}}, using defaults
+2026-01-07 07:19:37,443 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:37,443 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:37,443 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:37,445 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:37,455 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:37,455 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:38,485 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:38,486 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '21s'}]}}, using defaults
+2026-01-07 07:19:38,773 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:38,773 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:38,773 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:38,774 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:38,784 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:38,784 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:39,254 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:39,256 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '20s'}]}}, using defaults
+2026-01-07 07:19:39,545 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:39,545 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:39,545 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:39,547 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:39,557 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:39,557 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:40,585 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:40,587 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'model': 'gemini-2.0-flash-exp', 'location': 'global'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '19s'}]}}, using defaults
+2026-01-07 07:19:40,880 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:40,881 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:40,881 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:40,882 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:40,892 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:40,892 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:41,926 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:41,928 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'model': 'gemini-2.0-flash-exp', 'location': 'global'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '18s'}]}}, using defaults
+2026-01-07 07:19:42,220 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:42,220 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:42,221 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:42,222 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:42,240 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:42,240 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:43,280 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:43,280 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '16s'}]}}, using defaults
+2026-01-07 07:19:43,574 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:43,574 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:43,574 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:43,575 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:43,587 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:43,587 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:44,633 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:44,635 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '15s'}]}}, using defaults
+2026-01-07 07:19:44,926 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:44,927 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:44,927 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:44,929 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:44,940 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:44,940 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:45,960 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:45,960 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '14s'}]}}, using defaults
+2026-01-07 07:19:46,251 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:46,251 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:46,251 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:46,253 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:46,263 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:46,263 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:47,286 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:47,287 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '12s'}]}}, using defaults
+2026-01-07 07:19:47,578 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:47,578 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:47,579 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:47,580 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:47,590 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:47,591 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:48,620 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:48,621 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '11s'}]}}, using defaults
+2026-01-07 07:19:48,919 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:48,919 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:48,920 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:48,921 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:48,932 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:48,932 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:49,981 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:49,982 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '10s'}]}}, using defaults
+2026-01-07 07:19:50,271 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:50,271 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:50,271 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:50,273 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:50,285 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:50,285 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:51,326 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:51,328 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'model': 'gemini-2.0-flash-exp', 'location': 'global'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '8s'}]}}, using defaults
+2026-01-07 07:19:51,621 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:51,622 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:51,622 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:51,623 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:51,633 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:51,633 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:52,657 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:52,658 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '7s'}]}}, using defaults
+2026-01-07 07:19:52,949 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:52,950 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:52,950 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:52,951 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:52,961 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:52,961 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:53,979 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:53,980 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '6s'}]}}, using defaults
+2026-01-07 07:19:54,271 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:54,271 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:54,271 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:54,273 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:54,282 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:54,283 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:55,329 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:55,331 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '4s'}]}}, using defaults
+2026-01-07 07:19:55,619 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:55,620 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:55,620 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:55,621 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:55,631 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:55,631 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:56,652 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:56,652 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '3s'}]}}, using defaults
+2026-01-07 07:19:56,943 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:56,943 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:56,943 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:56,944 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:56,954 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:56,955 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:57,974 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:57,975 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '2s'}]}}, using defaults
+2026-01-07 07:19:58,265 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:58,265 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:58,266 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:58,267 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:58,277 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:58,277 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:19:59,303 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:19:59,304 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'model': 'gemini-2.0-flash-exp', 'location': 'global'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '0s'}]}}, using defaults
+2026-01-07 07:19:59,596 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:19:59,596 - __main__ - WARNING - Processing returned None
+2026-01-07 07:19:59,596 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:19:59,598 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:19:59,608 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:19:59,608 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:00,641 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:20:00,642 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'model': 'gemini-2.0-flash-exp', 'location': 'global'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '59s'}]}}, using defaults
+2026-01-07 07:20:00,932 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:00,932 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:00,932 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:00,934 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:00,943 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:00,943 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:01,992 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:20:01,994 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '58s'}]}}, using defaults
+2026-01-07 07:20:02,288 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:02,288 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:02,288 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:02,290 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:02,299 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:02,300 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:03,349 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:20:03,350 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '56s'}]}}, using defaults
+2026-01-07 07:20:03,640 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:03,641 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:03,641 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:03,642 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:03,652 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:03,652 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:04,682 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:20:04,683 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '55s'}]}}, using defaults
+2026-01-07 07:20:04,976 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:04,976 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:04,976 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:04,977 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:04,987 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:04,987 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:05,546 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:20:05,547 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '54s'}]}}, using defaults
+2026-01-07 07:20:05,837 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:05,837 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:05,837 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:05,838 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:05,848 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:05,848 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:06,878 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-01-07 07:20:06,879 - aura.monitors.perception_module - ERROR - Gemini query failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota. Please migrate to Gemini 2.5 Flash Image (models/gemini-2.5-flash-image) for higher quota limits. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_requests_per_model', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.0-flash-exp'}, 'quotaValue': '10'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '53s'}]}}, using defaults
+2026-01-07 07:20:07,172 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:07,173 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:07,173 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:07,174 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:07,184 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:07,184 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:09,539 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:20:09,540 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'finger', 'door', 'bed', 'hand', 'wardrobe', 'handle', 'chair']
+2026-01-07 07:20:09,841 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:09,842 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:09,842 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:09,843 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:09,853 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:09,853 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:12,413 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:20:12,414 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'finger', 'hand', 'door', 'wardrobe', 'bed', 'blanket', 'chair']
+2026-01-07 07:20:12,710 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:12,710 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:12,711 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:12,712 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:12,722 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:12,722 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:15,189 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:20:15,190 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'door', 'hand', 'finger', 'chair', 'shirt', 'bed', 'wardrobe']
+2026-01-07 07:20:15,484 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:15,484 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:15,485 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:15,486 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:15,496 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:15,496 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:20:17,804 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 200 OK"
+2026-01-07 07:20:17,805 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'hoodie', 'glasses', 'finger', 'hand', 'door', 'cabinet', 'bed', 'shirt', 'handle']
+2026-01-07 07:20:18,103 - aura.monitors.perception_module - ERROR - Perception processing failed: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 284, in process_frame
+    obj = TrackedObject(
+          ^^^^^^^^^^^^^^
+TypeError: TrackedObject.__init__() got an unexpected keyword argument 'object_id'
+2026-01-07 07:20:18,103 - __main__ - WARNING - Processing returned None
+2026-01-07 07:20:18,103 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-07 07:20:18,104 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-07 07:20:18,114 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-07 07:20:18,114 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-07 07:24:03,245 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:24:03,245 - __main__ - INFO - Initializing perception module...
+2026-01-07 07:24:03,245 - __main__ - INFO - Opening webcam...
+2026-01-07 07:24:03,710 - __main__ - INFO - Saving to perception_test_output.mp4 (max 10 frames)
+2026-01-07 07:24:05,650 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-01-07 07:24:13,691 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:24:14,148 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:24:16,854 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-01-07 07:24:17,385 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:17,385 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:17,738 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:17,738 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:18,096 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:18,096 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:18,449 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:18,449 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:18,802 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:18,802 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:19,155 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:19,155 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:19,508 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:19,509 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:19,862 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:19,862 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:20,218 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:20,218 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:20,573 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:20,573 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:20,928 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:20,928 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:21,286 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:21,286 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:21,641 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:21,641 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:21,997 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:21,997 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:22,353 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:22,353 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:22,708 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:22,708 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:23,064 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:23,065 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:23,421 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:23,421 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:23,775 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:23,775 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:24,132 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:24,132 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:24,487 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:24,488 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:24,842 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:24,843 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:25,199 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:25,199 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:25,555 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:25,555 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:25,911 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:25,911 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:26,266 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:26,267 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:26,624 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:26,624 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:26,981 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:26,982 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:27,338 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:27,338 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:27,694 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:27,694 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:28,051 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:28,051 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:28,408 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:28,408 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:28,766 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:28,766 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:29,124 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:29,125 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:29,484 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:29,484 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:29,842 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:29,843 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:30,201 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:30,201 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:30,560 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:30,560 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:30,918 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:30,918 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:31,279 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:31,279 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:31,636 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:31,636 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:31,995 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:31,995 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:32,351 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:32,351 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:32,709 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:32,709 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:33,065 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:33,065 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:33,420 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:33,420 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:33,777 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:33,777 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:34,132 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:34,132 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:34,484 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:34,485 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:34,838 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:34,838 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:35,194 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:35,194 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:35,551 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:35,551 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:35,905 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:35,905 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:36,258 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:36,258 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:36,612 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:36,612 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:36,967 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:36,967 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:37,320 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:37,321 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:37,676 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:37,676 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:38,036 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:38,037 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:38,402 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:38,402 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:38,760 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:38,761 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:39,119 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:39,119 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:39,476 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:39,476 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:39,835 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:39,835 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:40,191 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:40,191 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:40,550 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:40,550 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:40,912 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:40,912 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:41,270 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:41,271 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:41,625 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:41,625 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:41,980 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:41,981 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:42,337 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:42,337 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:42,694 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:42,694 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:43,053 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:43,053 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:43,411 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:43,411 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:43,773 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:43,773 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:44,129 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:44,129 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:44,490 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:44,491 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:44,850 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:44,850 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:45,208 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:45,208 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:45,567 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:45,568 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:45,925 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:45,925 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:46,283 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:46,283 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:46,643 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:46,643 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:47,001 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:47,002 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:47,360 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:47,360 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:47,723 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:47,723 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:48,083 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:48,083 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:48,441 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:48,441 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:48,797 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:48,797 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:49,158 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:49,159 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:49,516 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:49,517 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:49,879 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:49,879 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:50,239 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:50,239 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:50,598 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:50,598 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:50,959 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:50,960 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:51,316 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:51,316 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:51,675 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:51,676 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:52,031 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:52,031 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:52,386 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:52,387 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:52,745 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:52,746 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:53,100 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:53,101 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:53,462 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:53,463 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:53,818 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:53,818 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:54,178 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:54,178 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:54,535 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:54,535 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:54,892 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:54,892 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:55,250 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:55,250 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:55,605 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:55,605 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:55,965 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:55,965 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:56,326 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:56,326 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:56,684 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:56,685 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:57,042 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:57,042 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:57,401 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:57,401 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:57,759 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:57,760 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:58,118 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:58,118 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:58,472 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:58,472 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:58,831 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:58,831 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:59,186 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:59,187 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:59,544 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:59,544 - __main__ - WARNING - Processing returned None
+2026-01-07 07:24:59,904 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:24:59,904 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:00,261 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:00,261 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:00,621 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:00,621 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:00,979 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:00,979 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:01,338 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:01,338 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:01,697 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:01,697 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:02,056 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:02,056 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:02,414 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:02,414 - __main__ - WARNING - Processing returned None
+2026-01-07 07:25:02,773 - aura.monitors.perception_module - ERROR - Perception processing failed: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 306, in process_frame
+    output = PerceptionOutput(
+             ^^^^^^^^^^^^^^^^^
+TypeError: PerceptionOutput.__init__() got an unexpected keyword argument 'frame_count'
+2026-01-07 07:25:02,773 - __main__ - WARNING - Processing returned None
+2026-01-07 07:27:49,287 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:27:49,287 - __main__ - INFO - Initializing perception module...
+2026-01-07 07:27:49,287 - __main__ - INFO - Opening webcam...
+2026-01-07 07:27:49,753 - __main__ - INFO - Saving to perception_test_output.mp4 (max 3 frames)
+2026-01-07 07:27:51,695 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-01-07 07:27:59,801 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:28:00,058 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:28:02,744 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-01-07 07:28:03,280 - __main__ - ERROR - Error during processing: 'PerceptionOutput' object has no attribute 'frame_count'
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/scripts/test_perception.py", line 86, in test_webcam
+    vis_frame = perception.visualize(frame, output)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 358, in visualize
+    info_text = f"Frame: {output.frame_count} | Objects: {len(output.objects)}"
+                          ^^^^^^^^^^^^^^^^^^
+AttributeError: 'PerceptionOutput' object has no attribute 'frame_count'
+2026-01-07 07:28:03,287 - __main__ - INFO - Output saved to perception_test_output.mp4
+2026-01-07 07:28:03,287 - __main__ - INFO - 
+============================================================
+2026-01-07 07:28:03,287 - __main__ - INFO - Summary:
+2026-01-07 07:28:03,287 - __main__ - INFO -   Total frames: 0
+2026-01-07 07:28:03,287 - __main__ - INFO -   Total time: 13.5s
+2026-01-07 07:28:03,287 - __main__ - INFO -   Average FPS: 0.0
+2026-01-07 07:28:03,287 - __main__ - INFO -   Avg process time: 11.582s
+2026-01-07 07:28:03,287 - __main__ - INFO -   Min process time: 11.582s
+2026-01-07 07:28:03,287 - __main__ - INFO -   Max process time: 11.582s
+2026-01-07 07:28:03,287 - __main__ - INFO - ============================================================
+2026-01-07 07:28:50,569 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:28:50,569 - __main__ - INFO - Initializing perception module...
+2026-01-07 07:28:50,569 - __main__ - INFO - Opening webcam...
+2026-01-07 07:28:51,038 - __main__ - INFO - Saving to perception_test_output.mp4 (max 5 frames)
+2026-01-07 07:28:53,015 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-01-07 07:29:01,294 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:29:01,551 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:29:04,242 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-01-07 07:29:04,786 - __main__ - INFO - Reached limit (duration=13.7s, frames=1)
+2026-01-07 07:29:04,791 - __main__ - INFO - Output saved to perception_test_output.mp4
+2026-01-07 07:29:04,791 - __main__ - INFO - 
+============================================================
+2026-01-07 07:29:04,791 - __main__ - INFO - Summary:
+2026-01-07 07:29:04,791 - __main__ - INFO -   Total frames: 1
+2026-01-07 07:29:04,792 - __main__ - INFO -   Total time: 13.8s
+2026-01-07 07:29:04,792 - __main__ - INFO -   Average FPS: 0.1
+2026-01-07 07:29:04,792 - __main__ - INFO -   Avg process time: 11.765s
+2026-01-07 07:29:04,792 - __main__ - INFO -   Min process time: 11.765s
+2026-01-07 07:29:04,792 - __main__ - INFO -   Max process time: 11.765s
+2026-01-07 07:29:04,792 - __main__ - INFO - ============================================================
+2026-01-07 07:31:30,892 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:31:30,892 - __main__ - INFO - Initializing perception module...
+2026-01-07 07:31:30,892 - __main__ - INFO - Opening webcam...
+2026-01-07 07:31:31,358 - __main__ - INFO - Saving to perception_test_output.mp4 (max 10 frames)
+2026-01-07 07:31:34,286 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-01-07 07:31:41,408 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:31:41,664 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:31:44,355 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-01-07 07:31:44,355 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-01-07 07:31:44,896 - __main__ - INFO - Reached limit (duration=13.5s, frames=1)
+2026-01-07 07:31:44,902 - __main__ - INFO - Output saved to perception_test_output.mp4
+2026-01-07 07:31:44,902 - __main__ - INFO - 
+============================================================
+2026-01-07 07:31:44,902 - __main__ - INFO - Summary:
+2026-01-07 07:31:44,902 - __main__ - INFO -   Total frames: 1
+2026-01-07 07:31:44,902 - __main__ - INFO -   Total time: 13.5s
+2026-01-07 07:31:44,902 - __main__ - INFO -   Average FPS: 0.1
+2026-01-07 07:31:44,902 - __main__ - INFO -   Avg process time: 11.557s
+2026-01-07 07:31:44,902 - __main__ - INFO -   Min process time: 11.557s
+2026-01-07 07:31:44,903 - __main__ - INFO -   Max process time: 11.557s
+2026-01-07 07:31:44,903 - __main__ - INFO - ============================================================
+2026-01-07 07:32:19,976 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-01-07 07:32:23,209 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-01-07 07:32:30,239 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:32:30,498 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-01-07 07:32:33,193 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-01-07 07:32:33,193 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!

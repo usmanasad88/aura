@@ -1,0 +1,268 @@
+{
+  "id": "composite_layup",
+  "name": "Composite Hand Layup Assistance",
+  "description": "Assist human operator with fiberglass hand layup on a mold. Robot helps with resin/hardener preparation and tool handling while human performs the layup.",
+  "version": "1.0.0",
+  
+  "role_instructions": {
+    "robot": "You are assisting a human operator with composite hand layup. Your primary responsibilities are: (1) Measure and prepare resin/hardener mixture in correct proportions, (2) Hand tools and materials to the operator, (3) Monitor the layup quality for defects, (4) Keep the workspace organized. Always prioritize human safety. Do not interfere with the operator's hand movements. Announce actions before executing. If you detect bubbles, wrinkles, or dry spots in the layup, alert the operator.",
+    "human": "You are performing the hand layup. The robot will assist with resin preparation and tool handling. Focus on placing fiberglass plies correctly, ensuring proper wet-out, and removing air bubbles. Verbally request tools or materials from the robot as needed."
+  },
+  
+  "materials": {
+    "resin": {
+      "name": "Epoxy Resin",
+      "container": "resin_container",
+      "density_g_per_ml": 1.15
+    },
+    "hardener": {
+      "name": "Epoxy Hardener", 
+      "container": "hardener_container",
+      "density_g_per_ml": 0.95
+    },
+    "mix_ratio": {
+      "resin_parts": 100,
+      "hardener_parts": 30,
+      "by": "weight",
+      "tolerance_percent": 5
+    },
+    "fiberglass_plies": [
+      {"id": "ply_1", "type": "E-glass", "weight_gsm": 300, "orientation": "0"},
+      {"id": "ply_2", "type": "E-glass", "weight_gsm": 300, "orientation": "90"},
+      {"id": "ply_3", "type": "E-glass", "weight_gsm": 300, "orientation": "0"},
+      {"id": "ply_4", "type": "E-glass", "weight_gsm": 300, "orientation": "90"}
+    ],
+    "pot_life_minutes": 45,
+    "working_time_minutes": 30
+  },
+  
+  "tools": [
+    {"id": "mixing_cup", "name": "Mixing Cup", "location": "tool_station"},
+    {"id": "mixing_stick", "name": "Mixing Stick", "location": "tool_station"},
+    {"id": "weigh_scale", "name": "Digital Weigh Scale", "location": "prep_station", "tare_capable": true},
+    {"id": "roller", "name": "Consolidation Roller", "location": "tool_station"},
+    {"id": "brush", "name": "Resin Brush", "location": "tool_station"},
+    {"id": "squeegee", "name": "Plastic Squeegee", "location": "tool_station"},
+    {"id": "scissors", "name": "Fabric Scissors", "location": "tool_station"},
+    {"id": "gloves", "name": "Nitrile Gloves", "location": "ppe_station"}
+  ],
+  
+  "workstations": {
+    "prep_station": {
+      "description": "Resin preparation area with scale",
+      "pose": {"x": 0.4, "y": 0.3, "z": 0.0}
+    },
+    "tool_station": {
+      "description": "Tool storage rack",
+      "pose": {"x": 0.5, "y": -0.3, "z": 0.0}
+    },
+    "mold_station": {
+      "description": "Mold on work table",
+      "pose": {"x": 0.3, "y": 0.0, "z": 0.1}
+    },
+    "ppe_station": {
+      "description": "PPE and safety equipment",
+      "pose": {"x": -0.2, "y": 0.4, "z": 0.0}
+    }
+  },
+  
+  "nodes": {
+    "setup_workspace": {
+      "id": "setup_workspace",
+      "name": "Prepare Workspace",
+      "description": "Ensure all materials and tools are in place. Verify mold is clean and release agent applied.",
+      "preconditions": [],
+      "postconditions": ["workspace_ready"],
+      "assignee": "robot",
+      "robot_actions": ["observe", "verify_tools_present", "announce_ready"]
+    },
+    
+    "don_ppe": {
+      "id": "don_ppe",
+      "name": "Don PPE",
+      "description": "Operator puts on gloves and safety glasses",
+      "preconditions": ["setup_workspace"],
+      "postconditions": ["ppe_worn"],
+      "assignee": "human",
+      "robot_actions": ["hand_gloves_if_requested"]
+    },
+    
+    "prepare_scale": {
+      "id": "prepare_scale",
+      "name": "Prepare Scale",
+      "description": "Place mixing cup on scale and tare",
+      "preconditions": ["don_ppe"],
+      "postconditions": ["scale_tared"],
+      "assignee": "robot",
+      "robot_actions": ["pick_mixing_cup", "place_on_scale", "wait_for_tare", "announce_ready"]
+    },
+    
+    "measure_resin": {
+      "id": "measure_resin",
+      "name": "Measure Resin",
+      "description": "Pour resin into mixing cup until target weight reached. For 100g batch: pour 77g resin.",
+      "preconditions": ["prepare_scale"],
+      "postconditions": ["resin_measured"],
+      "assignee": "robot",
+      "robot_actions": ["pick_resin_container", "pour_controlled", "monitor_weight", "announce_weight"],
+      "parameters": {
+        "target_weight_g": 77,
+        "tolerance_g": 2
+      }
+    },
+    
+    "measure_hardener": {
+      "id": "measure_hardener",
+      "name": "Measure Hardener",
+      "description": "Add hardener to mixing cup. For 100g batch: add 23g hardener (100:30 ratio).",
+      "preconditions": ["resin_measured"],
+      "postconditions": ["hardener_measured"],
+      "assignee": "robot",
+      "robot_actions": ["pick_hardener_container", "pour_controlled", "monitor_weight", "announce_weight"],
+      "parameters": {
+        "target_weight_g": 23,
+        "tolerance_g": 1
+      }
+    },
+    
+    "mix_epoxy": {
+      "id": "mix_epoxy",
+      "name": "Mix Epoxy",
+      "description": "Thoroughly mix resin and hardener for 2-3 minutes. Scrape sides and bottom.",
+      "preconditions": ["hardener_measured"],
+      "postconditions": ["epoxy_mixed"],
+      "assignee": "human",
+      "robot_actions": ["hand_mixing_stick", "start_timer", "announce_mixing_complete"],
+      "parameters": {
+        "mix_time_seconds": 180
+      }
+    },
+    
+    "apply_gel_coat": {
+      "id": "apply_gel_coat",
+      "name": "Apply Gel Coat to Mold",
+      "description": "Apply thin layer of mixed epoxy to mold surface as gel coat",
+      "preconditions": ["epoxy_mixed"],
+      "postconditions": ["gel_coat_applied"],
+      "assignee": "human",
+      "robot_actions": ["hand_brush", "observe_application"]
+    },
+    
+    "layup_ply_1": {
+      "id": "layup_ply_1",
+      "name": "Layup Ply 1 (0°)",
+      "description": "Place first fiberglass ply on wet gel coat, wet out with resin, remove bubbles",
+      "preconditions": ["gel_coat_applied"],
+      "postconditions": ["ply_1_complete"],
+      "assignee": "human",
+      "robot_actions": ["hand_ply_1", "hand_roller", "inspect_for_defects"],
+      "quality_checks": ["no_dry_spots", "no_bubbles", "no_wrinkles", "proper_orientation"]
+    },
+    
+    "layup_ply_2": {
+      "id": "layup_ply_2",
+      "name": "Layup Ply 2 (90°)",
+      "description": "Place second fiberglass ply at 90° orientation, wet out, consolidate",
+      "preconditions": ["ply_1_complete"],
+      "postconditions": ["ply_2_complete"],
+      "assignee": "human",
+      "robot_actions": ["hand_ply_2", "hand_roller_if_needed", "inspect_for_defects"],
+      "quality_checks": ["no_dry_spots", "no_bubbles", "no_wrinkles", "proper_orientation"]
+    },
+    
+    "layup_ply_3": {
+      "id": "layup_ply_3",
+      "name": "Layup Ply 3 (0°)",
+      "description": "Place third fiberglass ply at 0° orientation, wet out, consolidate",
+      "preconditions": ["ply_2_complete"],
+      "postconditions": ["ply_3_complete"],
+      "assignee": "human",
+      "robot_actions": ["hand_ply_3", "add_resin_if_needed", "inspect_for_defects"],
+      "quality_checks": ["no_dry_spots", "no_bubbles", "no_wrinkles", "proper_orientation"]
+    },
+    
+    "layup_ply_4": {
+      "id": "layup_ply_4",
+      "name": "Layup Ply 4 (90°)",
+      "description": "Place fourth and final fiberglass ply at 90° orientation, wet out, final consolidation",
+      "preconditions": ["ply_3_complete"],
+      "postconditions": ["ply_4_complete"],
+      "assignee": "human",
+      "robot_actions": ["hand_ply_4", "hand_squeegee", "inspect_for_defects"],
+      "quality_checks": ["no_dry_spots", "no_bubbles", "no_wrinkles", "proper_orientation"]
+    },
+    
+    "final_inspection": {
+      "id": "final_inspection",
+      "name": "Final Quality Inspection",
+      "description": "Robot performs visual inspection of completed layup for defects",
+      "preconditions": ["ply_4_complete"],
+      "postconditions": ["inspection_complete"],
+      "assignee": "robot",
+      "robot_actions": ["move_to_inspection_pose", "capture_image", "analyze_defects", "report_findings"],
+      "quality_checks": ["surface_quality", "edge_coverage", "thickness_uniformity"]
+    },
+    
+    "cleanup": {
+      "id": "cleanup",
+      "name": "Cleanup Workspace",
+      "description": "Clean tools and dispose of waste properly before epoxy cures",
+      "preconditions": ["inspection_complete"],
+      "postconditions": ["cleanup_complete"],
+      "assignee": "both",
+      "robot_actions": ["collect_tools", "place_in_cleaning_station"],
+      "time_critical": true,
+      "deadline_minutes": 15
+    }
+  },
+  
+  "quality_defects": {
+    "dry_spot": {
+      "description": "Area of fiberglass not wetted with resin - appears white/opaque",
+      "severity": "high",
+      "remedy": "Apply additional resin and work in with brush or roller"
+    },
+    "air_bubble": {
+      "description": "Trapped air between plies - visible as raised area",
+      "severity": "medium",
+      "remedy": "Roll toward edge to expel air, or puncture and flatten for small bubbles"
+    },
+    "wrinkle": {
+      "description": "Fold or crease in fiberglass ply",
+      "severity": "high",
+      "remedy": "Lift ply carefully, smooth out, and re-wet if needed"
+    },
+    "fiber_misalignment": {
+      "description": "Fibers not oriented in specified direction",
+      "severity": "medium",
+      "remedy": "Reposition ply before resin cures"
+    },
+    "resin_rich": {
+      "description": "Excessive resin pooling - glossy thick areas",
+      "severity": "low",
+      "remedy": "Use squeegee to remove excess resin"
+    },
+    "resin_starved": {
+      "description": "Insufficient resin - fibers visible and dry",
+      "severity": "high",
+      "remedy": "Apply additional resin immediately"
+    }
+  },
+  
+  "safety_constraints": {
+    "collision_avoidance": true,
+    "human_priority": true,
+    "speed_limit_near_human_mps": 0.1,
+    "pause_on_unexpected_contact": true,
+    "ventilation_required": true,
+    "ppe_required": ["gloves", "safety_glasses"],
+    "emergency_stop_accessible": true
+  },
+  
+  "timing_constraints": {
+    "pot_life_warning_minutes": 30,
+    "pot_life_critical_minutes": 40,
+    "inter_ply_max_delay_minutes": 10,
+    "cleanup_deadline_after_last_ply_minutes": 15
+  }
+}

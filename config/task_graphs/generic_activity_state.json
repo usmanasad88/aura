@@ -1,0 +1,68 @@
+{
+  "name": "Generic Activity State",
+  "description": "State schema for tracking generic human activity",
+  "version": "1.0",
+  "state_variables": {
+    "current_action": {
+      "type": "string",
+      "description": "The action currently being performed",
+      "valid_values": ["idle", "reach", "grasp", "manipulate", "place", "hold", "release", "retract", "point", "gesture", "walk"],
+      "default": "idle"
+    },
+    "confidence": {
+      "type": "number",
+      "description": "Confidence level (0-1) in the current action detection",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "target_object": {
+      "type": "string",
+      "description": "The object being interacted with, if any",
+      "default": null
+    },
+    "hand_used": {
+      "type": "string",
+      "description": "Which hand is being used",
+      "valid_values": ["left", "right", "both", "none"],
+      "default": "none"
+    },
+    "action_duration_seconds": {
+      "type": "number",
+      "description": "How long the current action has been ongoing",
+      "default": 0.0
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "The predicted next action",
+      "valid_values": ["idle", "reach", "grasp", "manipulate", "place", "hold", "release", "retract", "point", "gesture", "walk", "unknown"],
+      "default": "unknown"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "person_position": {
+      "type": "string",
+      "description": "General position of the person",
+      "valid_values": ["standing", "sitting", "moving", "unknown"],
+      "default": "unknown"
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "current_action": {"type": "string"},
+      "confidence": {"type": "number"},
+      "predicted_next_action": {"type": "string"},
+      "prediction_confidence": {"type": "number"},
+      "target_object": {"type": ["string", "null"]},
+      "hand_used": {"type": "string"},
+      "reasoning": {"type": "string"}
+    },
+    "required": ["current_action", "confidence", "predicted_next_action", "prediction_confidence", "reasoning"]
+  }
+}
