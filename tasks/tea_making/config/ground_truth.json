@@ -1,0 +1,76 @@
+[
+  {
+    "time_sec": 5.0,
+    "action_id": "retrieve_object",
+    "target": "pot",
+    "description": "Retrieve pot to working area at task start"
+  },
+  {
+    "time_sec": 8.0,
+    "action_id": "retrieve_object",
+    "target": "cup_1",
+    "description": "Retrieve first cup"
+  },
+  {
+    "time_sec": 12.0,
+    "action_id": "retrieve_object",
+    "target": "tea_container",
+    "description": "Retrieve tea container"
+  },
+  {
+    "time_sec": 16.0,
+    "action_id": "retrieve_object",
+    "target": "milk_container",
+    "description": "Retrieve milk container"
+  },
+  {
+    "time_sec": 20.0,
+    "action_id": "retrieve_object",
+    "target": "sugar_container",
+    "description": "Retrieve sugar container"
+  },
+  {
+    "time_sec": 24.0,
+    "action_id": "retrieve_object",
+    "target": "spoon",
+    "description": "Retrieve spoon"
+  },
+  {
+    "time_sec": 180.0,
+    "action_id": "ask_preference",
+    "target": null,
+    "description": "Ask about sugar preference after tea is poured",
+    "trigger": "tea_poured"
+  },
+  {
+    "time_sec": 195.0,
+    "action_id": "add_sugar",
+    "target": "cup_1",
+    "description": "Add sugar based on preference",
+    "condition": "sugar_preference != 'none'"
+  },
+  {
+    "time_sec": 202.0,
+    "action_id": "stir",
+    "target": "cup_1",
+    "description": "Stir the cup after adding sugar"
+  },
+  {
+    "time_sec": 220.0,
+    "action_id": "return_object",
+    "target": "tea_container",
+    "description": "Return tea container to storage"
+  },
+  {
+    "time_sec": 228.0,
+    "action_id": "return_object",
+    "target": "milk_container",
+    "description": "Return milk container to storage"
+  },
+  {
+    "time_sec": 236.0,
+    "action_id": "return_object",
+    "target": "sugar_container",
+    "description": "Return sugar container to storage"
+  }
+]

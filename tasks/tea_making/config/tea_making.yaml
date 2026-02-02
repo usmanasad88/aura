@@ -1,0 +1,97 @@
+# Tea Making Task Configuration
+
+task_name: "Collaborative Tea Making"
+task_id: "tea_making"
+version: "1.0.0"
+description: "Proactive robot assistance for making chai tea on an induction cooker"
+
+# Gemini Model Configuration (not hardcoded in code)
+llm:
+  model: "gemini-2.5-pro-preview-06-05"  # Can be changed to other models
+  temperature: 0.3
+  max_tokens: 2048
+  timeout_sec: 10.0
+
+# Decision Engine Settings
+decision_engine:
+  enable_llm_reasoning: true
+  decision_interval_sec: 1.0
+  proactive_threshold: 0.7
+  timing_prediction_enabled: true
+
+# Monitor Settings
+monitors:
+  perception:
+    enabled: true
+    update_rate_hz: 2.0
+    objects_of_interest:
+      - "pot"
+      - "pan"
+      - "cup"
+      - "induction cooker"
+      - "stove"
+      - "sugar container"
+      - "milk container"
+      - "tea container"
+      - "spoon"
+      - "kettle"
+      - "hand"
+      - "person"
+  
+  intent:
+    enabled: true
+    prediction_interval: 2.0
+    capture_duration: 3.0
+    max_image_dimension: 640
+  
+  motion:
+    enabled: true
+    fps: 15.0
+    prediction_horizon: 1.0
+  
+  sound:
+    enabled: true
+    keywords_of_interest:
+      - "sugar"
+      - "more"
+      - "less"
+      - "no"
+      - "none"
+      - "ready"
+      - "help"
+      - "done"
+
+# File paths (relative to this config file)
+paths:
+  dag: "tea_making_dag.json"
+  state: "tea_making_state.json"
+  skills: "robot_skills.json"
+  initial_scene: "initial_scene.json"
+  ground_truth: "ground_truth.json"  # Optional, for evaluation
+
+# Human-Robot Role Assignment
+roles:
+  human:
+    - "heat_water"
+    - "add_chai_powder"
+    - "pour_tea"
+    - "consume_tea"
+  
+  robot:
+    - "retrieve_object"
+    - "return_object"
+    - "add_sugar"
+    - "stir"
+    - "ask_preference"
+  
+  either:
+    - "add_milk"
+
+# Safety Constraints
+safety:
+  min_distance_to_human_m: 0.3
+  max_speed_near_human: 0.5
+  avoid_hot_objects: true
+  hot_object_ids:
+    - "pot"
+    - "induction_cooker"

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA Weigh Bottles Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>🤖 AURA Weigh Bottles Dashboard</h1>
+        <div class="controls">
+            <input type="text" id="resultsPath" placeholder="Results JSON path..." />
+            <button onclick="loadResults()">Load Results</button>
+            <button onclick="refreshState()">Refresh</button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="grid">
+            <!-- Timeline -->
+            <section class="timeline-section">
+                <h2>📊 Timeline</h2>
+                <div id="timeline">
+                    <input type="range" id="frameSlider" min="0" max="100" value="0" />
+                    <div id="frameInfo">Frame: 0 / 0 | Time: 0.0s</div>
+                </div>
+                <canvas id="timelineChart"></canvas>
+            </section>
+            
+            <!-- Monitors Grid -->
+            <section class="monitors">
+                <div class="monitor-card">
+                    <h3>👁️ Perception</h3>
+                    <div id="perceptionOutput" class="output"></div>
+                </div>
+                <div class="monitor-card">
+                    <h3>🎯 Intent</h3>
+                    <div id="intentOutput" class="output"></div>
+                </div>
+                <div class="monitor-card">
+                    <h3>⚡ Affordance</h3>
+                    <div id="affordanceOutput" class="output"></div>
+                </div>
+                <div class="monitor-card">
+                    <h3>📈 Performance</h3>
+                    <div id="performanceOutput" class="output"></div>
+                </div>
+            </section>
+            
+            <!-- SSG Visualization -->
+            <section class="ssg-section">
+                <h2>🌐 Semantic Scene Graph</h2>
+                <div id="ssgVisualization">
+                    <div id="ssgNodes"></div>
+                    <div id="ssgEdges"></div>
+                </div>
+                <div id="taskState" class="output"></div>
+            </section>
+            
+            <!-- Decision Engine -->
+            <section class="decision-section">
+                <h2>🧠 Decision Engine</h2>
+                <div class="decision-display">
+                    <div class="decision-action">
+                        <span class="label">Action:</span>
+                        <span id="decisionAction" class="value">-</span>
+                    </div>
+                    <div class="decision-confidence">
+                        <span class="label">Confidence:</span>
+                        <span id="decisionConfidence" class="value">0%</span>
+                    </div>
+                    <div class="decision-reasoning">
+                        <span class="label">Reasoning:</span>
+                        <p id="decisionReasoning">-</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Ground Truth Comparison -->
+            <section class="gt-section">
+                <h2>✅ Ground Truth</h2>
+                <div class="gt-display">
+                    <div class="gt-action">
+                        <span class="label">Expected Action:</span>
+                        <span id="gtAction" class="value">-</span>
+                    </div>
+                    <div class="gt-program">
+                        <span class="label">Expected Program:</span>
+                        <span id="gtProgram" class="value">-</span>
+                    </div>
+                    <div id="gtMatch" class="match-indicator">-</div>
+                </div>
+            </section>
+            
+            <!-- Results Summary -->
+            <section class="results-section">
+                <h2>📋 Results Summary</h2>
+                <div id="resultsSummary" class="output"></div>
+            </section>
+        </div>
+    </main>
+    
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>

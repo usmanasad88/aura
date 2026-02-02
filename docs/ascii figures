@@ -1,0 +1,144 @@
+┌────────────────────────────────────────────────────────────────────┐
+│                        SSG NODES                                   │
+├────────────────────────────────────────────────────────────────────┤
+│  OBJECT Nodes           │ AGENT Nodes           │ REGION Nodes     │
+│  ───────────────────    │ ───────────────       │ ──────────────   │
+│  • hardener_bottle      │ • human (operator)    │ • storage_table  │
+│  • resin_bottle         │ • robot (UR5)         │ • weighing_station│
+│  • scale                │                       │ • work_area      │
+│  • gripper              │                       │                  │
+├────────────────────────────────────────────────────────────────────┤
+│  NODE ATTRIBUTES:                                                  │
+│  • id, name, position, bbox, confidence                            │
+│  • state (ObjectState: EMPTY, FULL, IN_USE, AVAILABLE...)          │
+│  • affordances: List[Affordance] - available actions               │
+│  • predicted_actions: List[PredictedAction] - future predictions   │
+└────────────────────────────────────────────────────────────────────┘
+
+
+┌──────────────────────────────────────────────────────────────────────┐
+│                        SSG EDGES                                     │
+├──────────────────────────────────────────────────────────────────────┤
+│  SPATIAL Relations              │  SEMANTIC Relations                │
+│  ─────────────────────          │  ─────────────────────             │
+│  • ON: bottle ON table          │  • TARGETS: human --targets--> bottle│
+│  • NEAR: robot NEAR human       │  • HOLDS: robot --holds--> bottle  │
+│  • AT: bottle AT weighing_station│ • BLOCKS: object --blocks--> access│
+│  • INSIDE: liquid INSIDE bottle │  • REACHES_FOR: human reaching     │
+│  • ADJACENT                     │  • NEEDED_FOR: task prerequisites  │
+├──────────────────────────────────────────────────────────────────────┤
+│  Edge Attributes:                                                    │
+│  • confidence (0-1), is_predicted (bool), reasoning (str)            │
+│  • edge_id: "[source]--relation-->[target]"                          │
+└──────────────────────────────────────────────────────────────────────┘
+
+                    ┌──────────────────────────────────────┐
+                    │            VIDEO FRAMES              │
+                    │    (video.mp4 / exp.mp4 360°)        │
+                    └─────────────────┬────────────────────┘
+                                      │
+           ┌──────────────────────────┼──────────────────────────┐
+           │                          │                          │
+           ▼                          ▼                          ▼
+┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐
+│  Perception Monitor │  │   Intent Monitor    │  │ Performance Monitor │
+│  (SAM3 + Gemini)    │  │   (Gemini + DAG)    │  │ (Gemini analysis)   │
+├─────────────────────┤  ├─────────────────────┤  ├─────────────────────┤
+│ detect_objects()    │  │ predict_action()    │  │ check_failure()     │
+│ segment_masks()     │  │ track_state()       │  │ detect_issues()     │
+│                     │  │ predict_next()      │  │                     │
+│ OUTPUT:             │  │ OUTPUT:             │  │ OUTPUT:             │
+│ • TrackedObjects    │  │ • current_action    │  │ • status (OK/WARN)  │
+│ • BoundingBoxes     │  │ • predicted_next    │  │ • failure_type      │
+│ • Masks             │  │ • confidence        │  │ • reasoning         │
+└──────────┬──────────┘  └──────────┬──────────┘  └──────────┬──────────┘
+           │                        │                        │
+           └────────────────────────┼────────────────────────┘
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │  Affordance Monitor           │
+                    │  (Program Management)         │
+                    ├───────────────────────────────┤
+                    │ Programs:                     │
+                    │ • pick_hardener_bottle.prog   │
+                    │ • pick_resin_bottle.prog      │
+                    │ • return_hardener_bottle.prog │
+                    │ • return_resin_bottle.prog    │
+                    │                               │
+                    │ OUTPUT:                       │
+                    │ • available_programs          │
+                    │ • current_program             │
+                    │ • prerequisites_met           │
+                    └───────────────┬───────────────┘
+                                    │
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │   SEMANTIC SCENE GRAPH (SSG)  │
+                    │   (Shared Truth)              │
+                    └───────────────┬───────────────┘
+                                    │
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │      DECISION ENGINE          │
+                    │      (Brain + Gemini)         │
+                    └───────────────────────────────┘
+                    
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    LangGraph StateGraph                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   class WeighBottlesState(TypedDict):                                   │
+│       # SSG State                                                       │
+│       ssg_nodes: Dict[str, Dict]      # All nodes                       │
+│       ssg_edges: List[Dict]           # All edges                       │
+│       task_state: Dict[str, Any]      # Task variables                  │
+│                                                                         │
+│       # Monitor Outputs                                                 │
+│       perception: PerceptionOutput                                      │
+│       intent: IntentOutput                                              │
+│       performance: PerformanceOutput                                    │
+│       affordances: AffordanceOutput                                     │
+│                                                                         │
+│       # Decision State                                                  │
+│       current_action: str             # idle, pick_hardener, etc.       │
+│       next_program: Optional[str]     # Program to execute              │
+│       decision_reasoning: str         # Explainable reasoning           │
+│       should_abort: bool                                                │
+│                                                                         │
+│       # Weigh Bottles Task State (from weigh_bottles_state.json)        │
+│       hardener_location: str          # storage_table/robot/human       │
+│       resin_location: str                                               │
+│       hardener_weighed: bool                                            │
+│       resin_weighed: bool                                               │
+│       hardener_returned: bool                                           │
+│       resin_returned: bool                                              │
+│       gripper_state: str              # empty/holding_hardener/resin    │
+│                                                                         │
+│   ┌────────────────┐    ┌───────────────┐    ┌──────────────┐           │
+│   │ capture_frames │───▶│ run_monitors  │───▶│ update_ssg   │           │
+│   └────────────────┘    └───────────────┘    └──────┬───────┘           │
+│                                                      │                  │
+│                         ┌────────────────────────────┘                  │
+│                         ▼                                               │
+│               ┌──────────────────┐                                      │
+│               │  decide_action   │ (Gemini reasoning)                   │
+│               └────────┬─────────┘                                      │
+│                        │                                                │
+│          ┌─────────────┼─────────────┐                                  │
+│          ▼             ▼             ▼                                  │
+│   ┌────────────┐ ┌──────────┐ ┌───────────┐                             │
+│   │ execute    │ │ wait     │ │ ask_human │                             │
+│   │ _action    │ │          │ │           │                             │
+│   └─────┬──────┘ └────┬─────┘ └─────┬─────┘                             │
+│         │             │             │                                   │
+│         └─────────────┴─────────────┘                                   │
+│                       │                                                 │
+│                       ▼                                                 │
+│              ┌─────────────────┐                                        │
+│              │ check_complete  │────▶ END (if task_complete)            │
+│              └─────────────────┘                                        │
+│                       │                                                 │
+│                       └────────────────▶ (loop to capture_frames)       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘

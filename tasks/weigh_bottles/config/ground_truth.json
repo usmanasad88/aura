@@ -1,0 +1,69 @@
+{
+  "task_id": "weigh_bottles",
+  "experiment_date": "2026-01-19",
+  "collection_method": "wizard_of_oz",
+  "description": "Human operator controlled robot via teach pendant to assist task performer with bottle weighing",
+  "total_duration_seconds": 201.0,
+  "events": [
+    {
+      "timestamp": 0.0,
+      "action": "recording_start",
+      "robot_program": null,
+      "description": "Recording started, robot at home position"
+    },
+    {
+      "timestamp": 3.50,
+      "action": "pick_hardener",
+      "robot_program": "pick_hardener_bottle.prog",
+      "description": "Robot picks hardener bottle from storage, delivers to human"
+    },
+    {
+      "timestamp": 46.70,
+      "action": "pick_hardener_complete",
+      "robot_program": null,
+      "description": "Hardener delivered, robot returning to home"
+    },
+    {
+      "timestamp": 46.70,
+      "action": "pick_resin",
+      "robot_program": "pick_resin_bottle.prog",
+      "description": "Robot picks resin bottle from storage, delivers to human"
+    },
+    {
+      "timestamp": 98.81,
+      "action": "pick_resin_complete",
+      "robot_program": null,
+      "description": "Resin delivered, robot returning to home"
+    },
+    {
+      "timestamp": 98.82,
+      "action": "return_hardener",
+      "robot_program": "return_hardener_bottle.prog",
+      "description": "Robot collects hardener from human, returns to storage"
+    },
+    {
+      "timestamp": 144.86,
+      "action": "return_hardener_complete",
+      "robot_program": null,
+      "description": "Hardener returned to storage"
+    },
+    {
+      "timestamp": 144.87,
+      "action": "return_resin",
+      "robot_program": "return_resin_bottle.prog",
+      "description": "Robot collects resin from human, returns to storage"
+    },
+    {
+      "timestamp": 201.0,
+      "action": "task_complete",
+      "robot_program": null,
+      "description": "All bottles returned, robot at home, task complete"
+    }
+  ],
+  "timing_summary": {
+    "pick_hardener_duration_sec": 43.2,
+    "pick_resin_duration_sec": 52.1,
+    "return_hardener_duration_sec": 46.0,
+    "return_resin_duration_sec": 56.1
+  }
+}

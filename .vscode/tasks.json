@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "AURA Dashboard Server",
+			"type": "shell",
+			"command": "cd /home/mani/Repos/aura && python tasks/weigh_bottles/dashboard/run_server.py",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

@@ -1,0 +1,141 @@
+{
+  "name": "Weigh Bottles Task DAG",
+  "description": "Directed acyclic graph for bottle weighing assistance task. Robot picks bottles from storage, delivers to human for weighing, then returns bottles.",
+  "version": "1.0",
+  "nodes": {
+    "idle": {
+      "description": "Robot at home position, waiting for task to begin or between actions",
+      "visual_cues": ["robot stationary at home", "gripper empty", "no motion"],
+      "next_possible": ["pick_hardener", "pick_resin", "return_hardener", "return_resin"]
+    },
+    "pick_hardener": {
+      "description": "Robot moving to pick hardener bottle from storage table",
+      "visual_cues": ["robot moving toward storage table", "approaching hardener bottle", "gripper opening"],
+      "next_possible": ["grasp_hardener"]
+    },
+    "grasp_hardener": {
+      "description": "Robot grasping hardener bottle",
+      "visual_cues": ["gripper closing on bottle", "hardener bottle in gripper"],
+      "next_possible": ["deliver_hardener"]
+    },
+    "deliver_hardener": {
+      "description": "Robot moving hardener bottle to weighing station",
+      "visual_cues": ["robot moving toward human", "bottle in gripper", "approaching weighing station"],
+      "next_possible": ["handover_hardener"]
+    },
+    "handover_hardener": {
+      "description": "Robot handing over hardener bottle to human",
+      "visual_cues": ["robot near human", "human reaching for bottle", "gripper opening"],
+      "next_possible": ["return_home_1"]
+    },
+    "return_home_1": {
+      "description": "Robot returning to home position after delivering hardener",
+      "visual_cues": ["robot retracting", "moving to home", "gripper empty"],
+      "next_possible": ["human_weighing_hardener"]
+    },
+    "human_weighing_hardener": {
+      "description": "Human is weighing the hardener bottle",
+      "visual_cues": ["human at scale", "bottle on scale", "reading weight"],
+      "next_possible": ["pick_resin"]
+    },
+    "pick_resin": {
+      "description": "Robot moving to pick resin bottle from storage table",
+      "visual_cues": ["robot moving toward storage table", "approaching resin bottle", "gripper opening"],
+      "next_possible": ["grasp_resin"]
+    },
+    "grasp_resin": {
+      "description": "Robot grasping resin bottle",
+      "visual_cues": ["gripper closing on bottle", "resin bottle in gripper"],
+      "next_possible": ["deliver_resin"]
+    },
+    "deliver_resin": {
+      "description": "Robot moving resin bottle to weighing station",
+      "visual_cues": ["robot moving toward human", "bottle in gripper", "approaching weighing station"],
+      "next_possible": ["handover_resin"]
+    },
+    "handover_resin": {
+      "description": "Robot handing over resin bottle to human",
+      "visual_cues": ["robot near human", "human reaching for bottle", "gripper opening"],
+      "next_possible": ["return_home_2"]
+    },
+    "return_home_2": {
+      "description": "Robot returning to home position after delivering resin",
+      "visual_cues": ["robot retracting", "moving to home", "gripper empty"],
+      "next_possible": ["human_weighing_resin"]
+    },
+    "human_weighing_resin": {
+      "description": "Human is weighing the resin bottle",
+      "visual_cues": ["human at scale", "bottle on scale", "reading weight"],
+      "next_possible": ["return_hardener"]
+    },
+    "return_hardener": {
+      "description": "Robot picking up hardener bottle from human to return to storage",
+      "visual_cues": ["robot moving to human", "human offering bottle", "gripper approaching"],
+      "next_possible": ["grasp_hardener_return"]
+    },
+    "grasp_hardener_return": {
+      "description": "Robot grasping hardener bottle from human",
+      "visual_cues": ["gripper closing", "bottle in gripper", "human releasing"],
+      "next_possible": ["move_hardener_storage"]
+    },
+    "move_hardener_storage": {
+      "description": "Robot moving hardener bottle back to storage table",
+      "visual_cues": ["robot moving to storage", "bottle in gripper"],
+      "next_possible": ["place_hardener"]
+    },
+    "place_hardener": {
+      "description": "Robot placing hardener bottle on storage table",
+      "visual_cues": ["robot at storage table", "lowering bottle", "gripper opening"],
+      "next_possible": ["return_home_3"]
+    },
+    "return_home_3": {
+      "description": "Robot returning to home after placing hardener",
+      "visual_cues": ["robot retracting", "moving to home", "gripper empty"],
+      "next_possible": ["return_resin"]
+    },
+    "return_resin": {
+      "description": "Robot picking up resin bottle from human to return to storage",
+      "visual_cues": ["robot moving to human", "human offering bottle", "gripper approaching"],
+      "next_possible": ["grasp_resin_return"]
+    },
+    "grasp_resin_return": {
+      "description": "Robot grasping resin bottle from human",
+      "visual_cues": ["gripper closing", "bottle in gripper", "human releasing"],
+      "next_possible": ["move_resin_storage"]
+    },
+    "move_resin_storage": {
+      "description": "Robot moving resin bottle back to storage table",
+      "visual_cues": ["robot moving to storage", "bottle in gripper"],
+      "next_possible": ["place_resin"]
+    },
+    "place_resin": {
+      "description": "Robot placing resin bottle on storage table",
+      "visual_cues": ["robot at storage table", "lowering bottle", "gripper opening"],
+      "next_possible": ["return_home_final"]
+    },
+    "return_home_final": {
+      "description": "Robot returning to home position, task complete",
+      "visual_cues": ["robot retracting", "moving to home", "gripper empty"],
+      "next_possible": ["task_complete"]
+    },
+    "task_complete": {
+      "description": "Task finished, all bottles weighed and returned",
+      "visual_cues": ["robot at home", "all bottles on storage table", "human finished"],
+      "next_possible": []
+    }
+  },
+  "start_node": "idle",
+  "end_nodes": ["task_complete"],
+  "transition_rules": {
+    "home_required_between_major_actions": "Robot must return to home position after each delivery or return",
+    "sequential_bottle_handling": "Handle hardener first, then resin for both weighing and returning",
+    "human_weighing_during_robot_home": "Human weighs while robot is at home position",
+    "grasp_before_move": "Must grasp bottle before moving it"
+  },
+  "program_to_node_mapping": {
+    "pick_hardener_bottle.prog": ["pick_hardener", "grasp_hardener", "deliver_hardener", "handover_hardener"],
+    "pick_resin_bottle.prog": ["pick_resin", "grasp_resin", "deliver_resin", "handover_resin"],
+    "return_hardener_bottle.prog": ["return_hardener", "grasp_hardener_return", "move_hardener_storage", "place_hardener"],
+    "return_resin_bottle.prog": ["return_resin", "grasp_resin_return", "move_resin_storage", "place_resin"]
+  }
+}

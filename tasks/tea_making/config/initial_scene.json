@@ -1,0 +1,321 @@
+{
+  "name": "Tea Making Initial Scene",
+  "description": "Initial scene graph setup for tea making task",
+  "version": "1.0",
+  "regions": [
+    {
+      "id": "storage_area",
+      "name": "Storage Area",
+      "region_type": "storage",
+      "position": [0.5, -0.5, 0.0],
+      "bounds": [[0.3, -0.7, 0.0], [0.7, -0.3, 0.5]],
+      "is_accessible": true,
+      "attributes": {
+        "description": "Shelf or cabinet where items are stored"
+      }
+    },
+    {
+      "id": "working_area",
+      "name": "Working Area",
+      "region_type": "workspace",
+      "position": [0.0, 0.3, 0.0],
+      "bounds": [[-0.3, 0.1, 0.0], [0.3, 0.5, 0.3]],
+      "is_accessible": true,
+      "attributes": {
+        "description": "Main counter space in front of human"
+      }
+    },
+    {
+      "id": "stove_area",
+      "name": "Induction Cooker",
+      "region_type": "appliance",
+      "position": [0.0, 0.0, 0.0],
+      "bounds": [[-0.2, -0.15, 0.0], [0.2, 0.15, 0.1]],
+      "is_accessible": true,
+      "attributes": {
+        "description": "Induction cooker surface",
+        "is_hot_when_on": true
+      }
+    }
+  ],
+  "objects": [
+    {
+      "id": "pot",
+      "name": "Cooking Pot",
+      "category": "container",
+      "state": "EMPTY",
+      "is_movable": true,
+      "is_graspable": true,
+      "initial_location": "storage_area",
+      "attributes": {
+        "can_contain_liquid": true,
+        "heat_safe": true
+      },
+      "affordances": [
+        {
+          "action_id": "retrieve_object",
+          "name": "Retrieve pot",
+          "preconditions": {"at_region": "storage_area"},
+          "effects": {"location": "working_area"},
+          "feasibility": 1.0
+        }
+      ]
+    },
+    {
+      "id": "cup_1",
+      "name": "Disposable Cup 1",
+      "category": "container",
+      "state": "EMPTY",
+      "is_movable": true,
+      "is_graspable": true,
+      "initial_location": "storage_area",
+      "attributes": {
+        "can_contain_liquid": true,
+        "disposable": true
+      },
+      "affordances": [
+        {
+          "action_id": "retrieve_object",
+          "name": "Retrieve cup",
+          "preconditions": {"at_region": "storage_area"},
+          "effects": {"location": "working_area"},
+          "feasibility": 1.0
+        },
+        {
+          "action_id": "add_sugar",
+          "name": "Add sugar to cup",
+          "preconditions": {"task.cup_has_tea": true, "task.sugar_preference_known": true},
+          "effects": {"task.sugar_added": true},
+          "feasibility": 0.9
+        },
+        {
+          "action_id": "stir",
+          "name": "Stir cup",
+          "preconditions": {"at_region": "working_area"},
+          "effects": {"task.cup_stirred": true},
+          "feasibility": 0.9
+        }
+      ]
+    },
+    {
+      "id": "cup_2",
+      "name": "Disposable Cup 2",
+      "category": "container",
+      "state": "EMPTY",
+      "is_movable": true,
+      "is_graspable": true,
+      "initial_location": "storage_area",
+      "attributes": {
+        "can_contain_liquid": true,
+        "disposable": true
+      },
+      "affordances": [
+        {
+          "action_id": "retrieve_object",
+          "name": "Retrieve cup",
+          "preconditions": {"at_region": "storage_area"},
+          "effects": {"location": "working_area"},
+          "feasibility": 1.0
+        }
+      ]
+    },
+    {
+      "id": "tea_container",
+      "name": "Chai Powder Container",
+      "category": "ingredient_container",
+      "state": "FULL",
+      "is_movable": true,
+      "is_graspable": true,
+      "initial_location": "storage_area",
+      "contents": "chai_powder",
+      "attributes": {
+        "ingredient_type": "tea"
+      },
+      "affordances": [
+        {
+          "action_id": "retrieve_object",
+          "name": "Retrieve tea",
+          "preconditions": {"at_region": "storage_area"},
+          "effects": {"location": "working_area"},
+          "feasibility": 1.0
+        },
+        {
+          "action_id": "return_object",
+          "name": "Return tea",
+          "preconditions": {"at_region": "working_area"},
+          "effects": {"location": "storage_area"},
+          "feasibility": 0.8
+        }
+      ]
+    },
+    {
+      "id": "milk_container",
+      "name": "Powdered Milk Container",
+      "category": "ingredient_container",
+      "state": "FULL",
+      "is_movable": true,
+      "is_graspable": true,
+      "initial_location": "storage_area",
+      "contents": "milk_powder",
+      "attributes": {
+        "ingredient_type": "milk"
+      },
+      "affordances": [
+        {
+          "action_id": "retrieve_object",
+          "name": "Retrieve milk",
+          "preconditions": {"at_region": "storage_area"},
+          "effects": {"location": "working_area"},
+          "feasibility": 1.0
+        },
+        {
+          "action_id": "add_milk_powder",
+          "name": "Add milk powder",
+          "preconditions": {"at_region": "working_area"},
+          "effects": {"task.milk_added": true},
+          "feasibility": 0.9
+        }
+      ]
+    },
+    {
+      "id": "sugar_container",
+      "name": "Sugar Container",
+      "category": "ingredient_container",
+      "state": "FULL",
+      "is_movable": true,
+      "is_graspable": true,
+      "initial_location": "storage_area",
+      "contents": "sugar",
+      "attributes": {
+        "ingredient_type": "sweetener"
+      },
+      "affordances": [
+        {
+          "action_id": "retrieve_object",
+          "name": "Retrieve sugar",
+          "preconditions": {"at_region": "storage_area"},
+          "effects": {"location": "working_area"},
+          "feasibility": 1.0
+        }
+      ]
+    },
+    {
+      "id": "spoon",
+      "name": "Stirring Spoon",
+      "category": "tool",
+      "state": "AVAILABLE",
+      "is_movable": true,
+      "is_graspable": true,
+      "initial_location": "storage_area",
+      "attributes": {
+        "tool_type": "stirring"
+      },
+      "affordances": [
+        {
+          "action_id": "retrieve_object",
+          "name": "Retrieve spoon",
+          "preconditions": {"at_region": "storage_area"},
+          "effects": {"location": "working_area"},
+          "feasibility": 1.0
+        }
+      ]
+    },
+    {
+      "id": "induction_cooker",
+      "name": "Induction Cooker",
+      "category": "appliance",
+      "state": "AVAILABLE",
+      "is_movable": false,
+      "is_graspable": false,
+      "initial_location": "stove_area",
+      "attributes": {
+        "is_on": false,
+        "temperature": "off",
+        "avoid_robot_contact": true
+      },
+      "affordances": []
+    }
+  ],
+  "agents": [
+    {
+      "id": "human",
+      "name": "Human Operator",
+      "agent_type": "human",
+      "state": "IDLE",
+      "position": [0.0, 0.8, 0.0],
+      "capabilities": [],
+      "attributes": {
+        "role": "primary_operator"
+      }
+    },
+    {
+      "id": "robot",
+      "name": "Robot Assistant",
+      "agent_type": "robot",
+      "state": "IDLE",
+      "position": [0.6, 0.0, 0.0],
+      "capabilities": [
+        "retrieve_object",
+        "return_object",
+        "add_sugar",
+        "stir",
+        "ask_preference",
+        "add_milk_powder",
+        "wait"
+      ],
+      "attributes": {
+        "role": "assistant"
+      }
+    }
+  ],
+  "initial_edges": [
+    {
+      "source_id": "pot",
+      "target_id": "storage_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    },
+    {
+      "source_id": "cup_1",
+      "target_id": "storage_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    },
+    {
+      "source_id": "cup_2",
+      "target_id": "storage_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    },
+    {
+      "source_id": "tea_container",
+      "target_id": "storage_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    },
+    {
+      "source_id": "milk_container",
+      "target_id": "storage_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    },
+    {
+      "source_id": "sugar_container",
+      "target_id": "storage_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    },
+    {
+      "source_id": "spoon",
+      "target_id": "storage_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    },
+    {
+      "source_id": "induction_cooker",
+      "target_id": "stove_area",
+      "edge_type": "SPATIAL",
+      "relation": "at"
+    }
+  ]
+}

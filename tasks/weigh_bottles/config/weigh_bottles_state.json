@@ -1,0 +1,135 @@
+{
+  "name": "Weigh Bottles Task State",
+  "description": "State schema for tracking progress in the bottle weighing assistance task",
+  "version": "1.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "The current high-level phase of the task",
+      "valid_values": ["initialization", "hardener_delivery", "hardener_weighing", "resin_delivery", "resin_weighing", "hardener_return", "resin_return", "complete"],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "The specific action currently being performed",
+      "valid_values": ["idle", "pick_hardener", "grasp_hardener", "deliver_hardener", "handover_hardener", "return_home", "human_weighing_hardener", "pick_resin", "grasp_resin", "deliver_resin", "handover_resin", "human_weighing_resin", "return_hardener", "grasp_hardener_return", "move_hardener_storage", "place_hardener", "return_resin", "grasp_resin_return", "move_resin_storage", "place_resin", "task_complete"],
+      "default": "idle"
+    },
+    "robot_state": {
+      "type": "string",
+      "description": "Current state of the robot",
+      "valid_values": ["at_home", "moving_to_storage", "at_storage", "grasping", "moving_to_human", "at_human", "releasing", "moving_home"],
+      "default": "at_home"
+    },
+    "gripper_state": {
+      "type": "string",
+      "description": "State of the robot gripper",
+      "valid_values": ["empty", "holding_hardener", "holding_resin"],
+      "default": "empty"
+    },
+    "hardener_location": {
+      "type": "string",
+      "description": "Current location of the hardener bottle",
+      "valid_values": ["storage_table", "robot_gripper", "human_hands", "weighing_scale"],
+      "default": "storage_table"
+    },
+    "resin_location": {
+      "type": "string",
+      "description": "Current location of the resin bottle",
+      "valid_values": ["storage_table", "robot_gripper", "human_hands", "weighing_scale"],
+      "default": "storage_table"
+    },
+    "hardener_weighed": {
+      "type": "boolean",
+      "description": "Whether hardener bottle has been weighed",
+      "default": false
+    },
+    "resin_weighed": {
+      "type": "boolean",
+      "description": "Whether resin bottle has been weighed",
+      "default": false
+    },
+    "hardener_returned": {
+      "type": "boolean",
+      "description": "Whether hardener bottle has been returned to storage",
+      "default": false
+    },
+    "resin_returned": {
+      "type": "boolean",
+      "description": "Whether resin bottle has been returned to storage",
+      "default": false
+    },
+    "current_program": {
+      "type": "string",
+      "description": "The UR program currently executing, if any",
+      "valid_values": ["none", "pick_hardener_bottle.prog", "pick_resin_bottle.prog", "return_hardener_bottle.prog", "return_resin_bottle.prog"],
+      "default": "none"
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": ["waiting", "receiving_bottle", "placing_on_scale", "reading_weight", "offering_bottle", "done"],
+      "default": "waiting"
+    },
+    "action_confidence": {
+      "type": "number",
+      "description": "Confidence level (0-1) in the current action detection",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "The predicted next action based on task graph",
+      "default": "pick_hardener"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "elapsed_time_seconds": {
+      "type": "number",
+      "description": "Time elapsed since task start",
+      "default": 0.0
+    },
+    "current_program_elapsed_seconds": {
+      "type": "number",
+      "description": "Time elapsed since current program started",
+      "default": 0.0
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "current_phase": {"type": "string"},
+      "current_action": {"type": "string"},
+      "robot_state": {"type": "string"},
+      "gripper_state": {"type": "string"},
+      "hardener_location": {"type": "string"},
+      "resin_location": {"type": "string"},
+      "human_state": {"type": "string"},
+      "action_confidence": {"type": "number"},
+      "predicted_next_action": {"type": "string"},
+      "prediction_confidence": {"type": "number"},
+      "reasoning": {"type": "string"}
+    },
+    "required": ["current_phase", "current_action", "robot_state", "human_state", "predicted_next_action", "reasoning"]
+  },
+  "ground_truth_events": {
+    "description": "Timestamps from Wizard-of-Oz experiment for validation",
+    "events": [
+      {"timestamp": 0.0, "action": "recording_start", "phase": "initialization"},
+      {"timestamp": 3.50, "action": "pick_hardener_start", "phase": "hardener_delivery", "program": "pick_hardener_bottle.prog"},
+      {"timestamp": 46.70, "action": "pick_hardener_end", "phase": "hardener_weighing"},
+      {"timestamp": 46.70, "action": "pick_resin_start", "phase": "resin_delivery", "program": "pick_resin_bottle.prog"},
+      {"timestamp": 98.81, "action": "pick_resin_end", "phase": "resin_weighing"},
+      {"timestamp": 98.82, "action": "return_hardener_start", "phase": "hardener_return", "program": "return_hardener_bottle.prog"},
+      {"timestamp": 144.86, "action": "return_hardener_end", "phase": "hardener_return_complete"},
+      {"timestamp": 144.87, "action": "return_resin_start", "phase": "resin_return", "program": "return_resin_bottle.prog"},
+      {"timestamp": 201.0, "action": "task_complete", "phase": "complete"}
+    ]
+  }
+}

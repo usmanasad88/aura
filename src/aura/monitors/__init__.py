@@ -9,18 +9,57 @@ from .motion_predictor import (
     HandTrackingResult, 
     visualize_motion_prediction
 )
+from .gesture_monitor import (
+    GestureMonitor,
+    GestureMonitorConfig,
+    GestureOutput,
+    GestureRecognitionResult,
+)
+from .affordance_monitor import (
+    AffordanceMonitor,
+    AffordanceMonitorConfig,
+    RobotProgram,
+    ProgramStatus,
+)
+from .performance_monitor import (
+    PerformanceMonitor,
+    PerformanceMonitorConfig,
+    PerformanceCheckResult,
+    PerformanceStatus,
+    FailureType,
+)
 
 __all__ = [
+    # Base
     "BaseMonitor",
     "MonitorConfig", 
     "MonitorEventBus",
     "MonitorEvent",
+    # Perception
     "PerceptionModule",
     "PerceptionConfig",
+    # Intent
     "IntentMonitor",
     "IntentPrediction",
     "visualize_intent",
+    # Motion
     "MotionPredictor",
     "HandTrackingResult",
     "visualize_motion_prediction",
+    # Gesture
+    "GestureMonitor",
+    "GestureMonitorConfig",
+    "GestureOutput",
+    "GestureRecognitionResult",
+    # Affordance
+    "AffordanceMonitor",
+    "AffordanceMonitorConfig",
+    "RobotProgram",
+    "ProgramStatus",
+    # Performance
+    "PerformanceMonitor",
+    "PerformanceMonitorConfig",
+    "PerformanceCheckResult",
+    "PerformanceStatus",
+    "FailureType",
 ]

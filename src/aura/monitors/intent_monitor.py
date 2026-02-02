@@ -151,7 +151,17 @@ class IntentMonitor(BaseMonitor):
         if config and config.dag_file:
             dag = load_json_file(config.dag_file)
             if dag:
-                return dag
+                # Handle both formats: list or dict with 'nodes' key
+                if isinstance(dag, list):
+                    return dag
+                elif isinstance(dag, dict):
+                    if 'nodes' in dag:
+                        # Convert nodes dict to list format
+                        nodes = dag['nodes']
+                        if isinstance(nodes, dict):
+                            return [{"id": k, **v} for k, v in nodes.items()]
+                        return nodes
+                    return [dag]
         return self._default_task_graph()
     
     def _load_state_schema(self, config: Optional[IntentMonitorConfig]) -> List[Dict]:
@@ -159,7 +169,17 @@ class IntentMonitor(BaseMonitor):
         if config and config.state_file:
             schema = load_json_file(config.state_file)
             if schema:
-                return schema
+                # Handle both formats: list or dict with 'state_variables' key
+                if isinstance(schema, list):
+                    return schema
+                elif isinstance(schema, dict):
+                    if 'state_variables' in schema:
+                        # Convert state_variables dict to list format
+                        variables = schema['state_variables']
+                        if isinstance(variables, dict):
+                            return [{"name": k, **v} for k, v in variables.items()]
+                        return variables
+                    return [schema]
         return self._default_state_schema()
     
     def _default_task_graph(self) -> List[Dict]:
@@ -436,6 +456,77 @@ Identify their current action and predict what they will do next based on the ta
     def get_task_graph(self) -> List[Dict]:
         """Get the current task graph."""
         return self.task_graph.copy()
+    
+    async def predict_from_frames(self, frames: List[np.ndarray]) -> Optional[IntentPrediction]:
+        """Predict intent from a list of frames directly.
+        
+        This is a convenience method for processing pre-captured frames
+        without using the internal frame buffer.
+        
+        Args:
+            frames: List of RGB numpy arrays
+            
+        Returns:
+            IntentPrediction or None if prediction fails
+        """
+        if not self.client or len(frames) < 1:
+            return None
+        
+        try:
+            # Convert frames to PIL images
+            frames_for_gemini = []
+            for frame in frames:
+                # Assume RGB input
+                if frame.ndim == 3 and frame.shape[2] == 3:
+                    pil_image = Image.fromarray(frame)
+                else:
+                    pil_image = Image.fromarray(frame)
+                
+                # Resize to reduce token usage
+                if max(pil_image.size) > self.max_image_dimension:
+                    scale = self.max_image_dimension / max(pil_image.size)
+                    new_size = (int(pil_image.width * scale), int(pil_image.height * scale))
+                    pil_image = pil_image.resize(new_size, Image.Resampling.LANCZOS)
+                
+                frames_for_gemini.append(pil_image)
+            
+            # Build prompt
+            prompt = self._build_prompt()
+            
+            # Query Gemini
+            response = await asyncio.to_thread(
+                self.client.models.generate_content,
+                model=self.model,
+                contents=[prompt] + frames_for_gemini,
+                config=types.GenerateContentConfig(
+                    temperature=0.5,
+                    response_mime_type="application/json",
+                    response_schema=self._get_response_schema()
+                )
+            )
+            
+            # Parse response
+            result = json.loads(response.text)
+            
+            prediction = IntentPrediction(
+                current_action=result.get("current_action", "Unknown"),
+                current_action_confidence=result.get("current_action_confidence", 0.5),
+                predicted_next_action=result.get("predicted_next_action", "Unknown"),
+                predicted_next_confidence=result.get("predicted_next_confidence", 0.5),
+                reasoning=result.get("reasoning", ""),
+                task_state=result.get("state", {}),
+                raw_response=response.text
+            )
+            
+            # Update internal state
+            self.last_prediction = prediction
+            self.task_state = prediction.task_state
+            
+            return prediction
+            
+        except Exception as e:
+            logger.error(f"Error predicting intent from frames: {e}")
+            return None
 
 
 def visualize_intent(

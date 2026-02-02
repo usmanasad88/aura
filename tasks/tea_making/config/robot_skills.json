@@ -1,0 +1,217 @@
+{
+  "name": "Tea Making Robot Skills",
+  "description": "Robot skills available for tea making task",
+  "version": "1.0",
+  "skills": [
+    {
+      "id": "retrieve_object",
+      "name": "Retrieve Object",
+      "description": "Pick up an object from storage area and place it in the working area in front of the human",
+      "category": "manipulation",
+      "parameters": [
+        {
+          "name": "object_id",
+          "type": "object_id",
+          "description": "ID of the object to retrieve",
+          "required": true
+        },
+        {
+          "name": "from_region",
+          "type": "region_id",
+          "description": "Region to pick from",
+          "required": false,
+          "default": "storage_area"
+        },
+        {
+          "name": "to_region",
+          "type": "region_id",
+          "description": "Region to place in",
+          "required": false,
+          "default": "working_area"
+        }
+      ],
+      "preconditions": {
+        "object.at_region": "storage_area",
+        "object.is_graspable": true
+      },
+      "effects": {
+        "object.location": "working_area"
+      },
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "return_object",
+      "name": "Return Object",
+      "description": "Return an object from working area back to storage",
+      "category": "manipulation",
+      "parameters": [
+        {
+          "name": "object_id",
+          "type": "object_id",
+          "description": "ID of the object to return",
+          "required": true
+        },
+        {
+          "name": "to_region",
+          "type": "region_id",
+          "description": "Region to return to",
+          "required": false,
+          "default": "storage_area"
+        }
+      ],
+      "preconditions": {
+        "object.at_region": "working_area",
+        "task.tea_served": true
+      },
+      "effects": {
+        "object.location": "storage_area"
+      },
+      "estimated_duration_sec": 6.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "add_sugar",
+      "name": "Add Sugar",
+      "description": "Add sugar to a cup based on user preference",
+      "category": "manipulation",
+      "parameters": [
+        {
+          "name": "target_id",
+          "type": "object_id",
+          "description": "Cup to add sugar to",
+          "required": true
+        },
+        {
+          "name": "amount",
+          "type": "string",
+          "description": "Amount of sugar to add",
+          "required": false,
+          "default": "standard",
+          "valid_values": ["little", "standard", "extra"]
+        }
+      ],
+      "preconditions": {
+        "target.at_region": "working_area",
+        "task.cup_has_tea": true,
+        "task.sugar_preference_known": true,
+        "sugar_container.at_region": "working_area"
+      },
+      "effects": {
+        "task.sugar_added": true
+      },
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "stir",
+      "name": "Stir Contents",
+      "description": "Stir the contents of a cup using a spoon",
+      "category": "manipulation",
+      "parameters": [
+        {
+          "name": "target_id",
+          "type": "object_id",
+          "description": "Cup to stir",
+          "required": true
+        },
+        {
+          "name": "duration_sec",
+          "type": "number",
+          "description": "How long to stir",
+          "required": false,
+          "default": 5.0
+        }
+      ],
+      "preconditions": {
+        "target.at_region": "working_area",
+        "spoon.at_region": "working_area"
+      },
+      "effects": {
+        "task.cup_stirred": true
+      },
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "ask_preference",
+      "name": "Ask Sugar Preference",
+      "description": "Ask the human about their sugar preference",
+      "category": "communication",
+      "parameters": [
+        {
+          "name": "topic",
+          "type": "string",
+          "description": "What to ask about",
+          "required": true,
+          "default": "sugar"
+        }
+      ],
+      "preconditions": {
+        "task.cup_has_tea": true,
+        "task.sugar_preference_known": false
+      },
+      "effects": {
+        "awaiting_response": true
+      },
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": true,
+      "speech_template": "How much sugar would you like in your tea? Options are: none, a little, standard, or extra."
+    },
+    {
+      "id": "add_milk_powder",
+      "name": "Add Powdered Milk",
+      "description": "Add powdered milk to a container",
+      "category": "manipulation",
+      "parameters": [
+        {
+          "name": "target_id",
+          "type": "object_id",
+          "description": "Container to add milk to",
+          "required": true
+        },
+        {
+          "name": "amount",
+          "type": "string",
+          "description": "Amount of milk powder",
+          "required": false,
+          "default": "standard"
+        }
+      ],
+      "preconditions": {
+        "target.at_region": "working_area",
+        "milk_container.at_region": "working_area"
+      },
+      "effects": {
+        "task.milk_added": true
+      },
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "wait",
+      "name": "Wait",
+      "description": "Wait for a duration or condition",
+      "category": "utility",
+      "parameters": [
+        {
+          "name": "duration_sec",
+          "type": "number",
+          "description": "How long to wait",
+          "required": false,
+          "default": 5.0
+        },
+        {
+          "name": "condition",
+          "type": "string",
+          "description": "Condition to wait for",
+          "required": false
+        }
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    }
+  ]
+}

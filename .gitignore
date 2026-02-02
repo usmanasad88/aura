@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# Environment variables with secrets
+.env
+
 # Demo data and media files
 demo_data/
 demo/

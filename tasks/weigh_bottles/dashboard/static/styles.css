@@ -1,0 +1,292 @@
+/* AURA Dashboard Styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+}
+
+header {
+    background: #16213e;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #0f3460;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    color: #00d9ff;
+}
+
+.controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.controls input {
+    padding: 0.5rem;
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    background: #1a1a2e;
+    color: #eee;
+    width: 300px;
+}
+
+.controls button {
+    padding: 0.5rem 1rem;
+    background: #0f3460;
+    color: #00d9ff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.controls button:hover {
+    background: #1a4b8f;
+}
+
+main {
+    padding: 1rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+section {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #0f3460;
+}
+
+section h2 {
+    color: #00d9ff;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #0f3460;
+    padding-bottom: 0.5rem;
+}
+
+section h3 {
+    color: #4cc9f0;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Timeline */
+.timeline-section {
+    grid-column: 1 / -1;
+}
+
+#timeline {
+    margin-bottom: 1rem;
+}
+
+#frameSlider {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+#frameInfo {
+    text-align: center;
+    color: #888;
+}
+
+#timelineChart {
+    max-height: 200px;
+}
+
+/* Monitors Grid */
+.monitors {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.monitor-card {
+    background: #1a1a2e;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #0f3460;
+}
+
+.output {
+    font-size: 0.85rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.output ul {
+    list-style: none;
+    padding-left: 0.5rem;
+}
+
+.output li {
+    padding: 0.2rem 0;
+    border-bottom: 1px dotted #0f3460;
+}
+
+.output pre {
+    background: #1a1a2e;
+    padding: 0.5rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+}
+
+/* Intent styling */
+.intent-item {
+    margin-bottom: 0.5rem;
+}
+
+.confidence {
+    color: #4cc9f0;
+    font-size: 0.8rem;
+}
+
+.reasoning {
+    font-style: italic;
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+/* Affordance styling */
+.affordance-section {
+    margin-bottom: 0.5rem;
+}
+
+.available {
+    color: #4ade80;
+}
+
+.completed {
+    color: #888;
+    text-decoration: line-through;
+}
+
+/* Performance styling */
+.performance-status {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.performance-status.ok {
+    background: #166534;
+    color: #4ade80;
+}
+
+.performance-status.warning {
+    background: #854d0e;
+    color: #fbbf24;
+}
+
+.performance-status.error {
+    background: #991b1b;
+    color: #f87171;
+}
+
+/* Decision section */
+.decision-display, .gt-display {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.decision-action, .decision-confidence, .gt-action, .gt-program {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.label {
+    color: #888;
+}
+
+.value {
+    color: #4cc9f0;
+    font-weight: bold;
+}
+
+/* Match indicator */
+.match-indicator {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.match-indicator.match {
+    background: #166534;
+    color: #4ade80;
+}
+
+.match-indicator.mismatch {
+    background: #991b1b;
+    color: #f87171;
+}
+
+/* Results summary */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem;
+    background: #1a1a2e;
+    border-radius: 4px;
+}
+
+/* SSG */
+.ssg-stats {
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .monitors {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .monitors {
+        grid-template-columns: 1fr;
+    }
+    
+    header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .controls {
+        flex-wrap: wrap;
+    }
+    
+    .controls input {
+        width: 100%;
+    }
+}

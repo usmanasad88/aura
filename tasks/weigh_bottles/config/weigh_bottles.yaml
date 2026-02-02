@@ -1,0 +1,196 @@
+# AURA Configuration for Weigh Bottles Task
+# UR5 + Robotiq 2F-85 assisting with bottle weighing for resin/hardener preparation
+
+demo:
+  name: "weigh_bottles"
+  description: "Robot picks bottles from storage table and delivers to human at weighing station"
+  sop_file: "sops/weigh_bottles.json"
+  demo_data_dir: "demo_data/weigh_bottles"
+
+# Data files from Wizard-of-Oz experiment
+data:
+  video_3rd_person: "demo_data/weigh_bottles/video.mp4"
+  video_gripper_360: "demo_data/weigh_bottles/exp.mp4"
+  joint_states: "demo_data/weigh_bottles/joint_states.h5"
+  program_events: "demo_data/weigh_bottles/program_events.json"
+  metadata: "demo_data/weigh_bottles/metadata.json"
+
+# Brain / Decision Engine
+brain:
+  model: "gemini-2.0-flash"
+  temperature: 0.3
+  max_tokens: 4096
+  reasoning_style: "chain_of_thought"
+  explanation_verbosity: "high"
+  
+  # Task-specific decision parameters
+  proactive_assistance: true
+  anticipation_horizon_seconds: 5
+  verbal_announcements: true
+  
+  # Wait for home position before next action
+  wait_for_home_position: true
+  
+  # Safety overrides
+  pause_on_human_proximity: true
+  minimum_clearance_m: 0.15
+
+# Perception Pipeline  
+perception:
+  camera:
+    type: "gopro"
+    model: "hero_max"  # 360 camera on gripper
+    resolution: [1920, 960]  # 360 equirectangular
+    fps: 30
+  
+  camera_3rd_person:
+    type: "webcam"
+    resolution: [1920, 1080]
+    fps: 30
+  
+  # Object detection for bottles and workspace
+  object_detection:
+    model: "sam3"  # Using SAM3 with text prompts
+    confidence_threshold: 0.4
+    use_sam3: true
+    # SAM3 prompts - use natural language for best detection
+    classes:
+      - "plastic bottle"
+      - "bottle"
+      - "weighing scale"
+      - "digital scale"
+      - "cup"
+      - "person"
+      - "hand"
+      - "table"
+      - "robot arm"
+    # Semantic aliases for task-specific naming
+    aliases:
+      resin_bottle: "plastic bottle"
+      hardener_bottle: "plastic bottle"
+      weigh_scale: "weighing scale"
+      mixing_cup: "cup"
+      human_hand: "hand"
+  
+  # Human pose for safety and intent
+  human_pose:
+    model: "rtmpose"
+    track_hands: true
+    track_gaze: true
+    
+  # Scale reading (OCR for displayed weight)
+  scale_reader:
+    type: "vision_ocr"
+    update_rate_hz: 5
+    units: "grams"
+
+# Sound Monitor
+sound:
+  enabled: true
+  sample_rate: 16000
+  
+  # Voice command recognition
+  wake_words: ["robot", "helper", "aura"]
+  command_phrases:
+    - "bring the {bottle}"
+    - "pick hardener"
+    - "pick resin"
+    - "return bottle"
+    - "done weighing"
+    - "pause"
+    - "continue"
+    - "emergency stop"
+  
+  # Speech synthesis for announcements
+  tts:
+    enabled: true
+    voice: "en-US-Neural2-J"
+    announcements:
+      - "Picking {bottle_name}"
+      - "Delivering bottle to weighing station"
+      - "Returning {bottle_name} to storage"
+      - "Ready for next bottle"
+      - "Task complete"
+
+# Motion Prediction
+motion:
+  enabled: true
+  model_type: "mediapipe"
+  update_rate_hz: 15.0
+  prediction_horizon_seconds: 2.0
+  
+  # Key poses to recognize
+  poses:
+    - "reaching_for_bottle"
+    - "weighing"
+    - "waiting"
+    - "gesturing_done"
+
+# Monitors Configuration (defaults with task-specific overrides)
+monitors:
+  perception:
+    enabled: true
+    update_rate_hz: 15.0
+    use_sam3: false  # Not needed for known objects
+    use_gemini_detection: true
+    max_objects: 10
+  
+  motion:
+    enabled: true
+    update_rate_hz: 15.0
+    prediction_horizon_seconds: 2.0
+  
+  sound:
+    enabled: true
+    use_gemini_live: true
+    wake_word_enabled: true
+    wake_word: "robot"
+  
+  affordance:
+    enabled: true
+    update_rate_hz: 5.0
+    use_llm: true
+
+# Actions - UR5 robot with ROS 2 control
+actions:
+  executor_type: "ros2"  # or "simulation" for offline analysis
+  action_timeout_seconds: 60.0
+  verify_completion: true
+  
+  # Robot programs (corresponding to UR teach pendant programs)
+  programs:
+    pick_hardener: "pick_hardener_bottle.prog"
+    pick_resin: "pick_resin_bottle.prog"
+    return_hardener: "return_hardener_bottle.prog"
+    return_resin: "return_resin_bottle.prog"
+    go_home: "home_position.prog"
+
+# Communication
+communication:
+  speech_enabled: true
+  text_display_enabled: true
+  digital_twin_enabled: false
+
+# Interface
+interface:
+  interface_type: "offline_analysis"  # For processing recorded data
+  
+# Logging
+logging:
+  level: "DEBUG"
+  log_to_file: true
+  log_directory: "logs/weigh_bottles"
+
+# Evaluation metrics (A-Score components from paper)
+evaluation:
+  enabled: true
+  metrics:
+    timeliness:
+      enabled: true
+      optimal_window_seconds: 2.0  # Time before human expects action
+    modality:
+      enabled: true
+      expected_modalities: ["pick", "deliver", "return"]
+    necessity:
+      enabled: true
+      track_human_requests: true

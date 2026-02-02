@@ -1,0 +1,246 @@
+{
+  "id": "weigh_bottles",
+  "name": "Bottle Weighing Assistance",
+  "description": "Robot picks resin and hardener bottles from storage table and delivers to human operator at weighing station. Human weighs each bottle, then robot returns bottles to storage. Sequential workflow with robot returning to home between actions.",
+  "version": "1.0.0",
+  
+  "role_instructions": {
+    "robot": "You are assisting a human operator with weighing resin and hardener bottles. Your responsibilities are: (1) Pick bottles from the storage table when the human is ready, (2) Deliver bottles to the weighing station, (3) Wait at home position while human weighs, (4) Return bottles to storage after weighing. Always return to home position before the next action. Announce actions before executing. Prioritize human safety.",
+    "human": "You are performing the weighing task at the weighing station. The robot will bring bottles to you one at a time. Weigh each bottle on the scale, then signal the robot when done. Wait for the robot to return to home position before requesting the next bottle."
+  },
+  
+  "materials": {
+    "hardener_bottle": {
+      "name": "Hardener Bottle",
+      "description": "Epoxy hardener container",
+      "weight_empty_g": 150,
+      "location": "storage_table"
+    },
+    "resin_bottle": {
+      "name": "Resin Bottle", 
+      "description": "Epoxy resin container",
+      "weight_empty_g": 200,
+      "location": "storage_table"
+    }
+  },
+  
+  "tools": [
+    {"id": "weigh_scale", "name": "Digital Weigh Scale", "location": "weighing_station", "tare_capable": true}
+  ],
+  
+  "workstations": {
+    "storage_table": {
+      "description": "Table where resin and hardener bottles are stored",
+      "pose": {"x": 0.4, "y": 0.3, "z": 0.8},
+      "objects": ["resin_bottle", "hardener_bottle"]
+    },
+    "weighing_station": {
+      "description": "Table where human operator sits with weigh scale",
+      "pose": {"x": 0.4, "y": -0.3, "z": 0.8},
+      "objects": ["weigh_scale"]
+    },
+    "robot_home": {
+      "description": "Robot home/safe position between actions",
+      "pose": {"x": 0.0, "y": 0.0, "z": 0.5}
+    }
+  },
+  
+  "nodes": {
+    "initialize": {
+      "id": "initialize",
+      "name": "Initialize Task",
+      "description": "Robot starts at home position, human is ready at weighing station",
+      "preconditions": [],
+      "postconditions": ["robot_at_home", "human_ready"],
+      "assignee": "robot",
+      "robot_actions": ["go_to_home", "announce_ready"],
+      "program": null
+    },
+    
+    "pick_hardener": {
+      "id": "pick_hardener",
+      "name": "Pick Hardener Bottle",
+      "description": "Robot picks hardener bottle from storage table and delivers to weighing station",
+      "preconditions": ["initialize"],
+      "postconditions": ["hardener_delivered"],
+      "assignee": "robot",
+      "robot_actions": ["announce_picking_hardener", "pick_from_storage", "move_to_weighing_station", "handover_to_human"],
+      "program": "pick_hardener_bottle.prog",
+      "ground_truth": {
+        "start_timestamp": 3.50,
+        "end_timestamp": 46.70
+      }
+    },
+    
+    "weigh_hardener": {
+      "id": "weigh_hardener",
+      "name": "Weigh Hardener",
+      "description": "Human weighs the hardener bottle on the scale",
+      "preconditions": ["pick_hardener"],
+      "postconditions": ["hardener_weighed"],
+      "assignee": "human",
+      "robot_actions": ["wait_at_handover", "observe"],
+      "human_actions": ["receive_bottle", "place_on_scale", "read_weight", "signal_done"]
+    },
+    
+    "robot_home_after_hardener": {
+      "id": "robot_home_after_hardener",
+      "name": "Return to Home After Hardener Delivery",
+      "description": "Robot returns to home position while human weighs hardener",
+      "preconditions": ["pick_hardener"],
+      "postconditions": ["robot_at_home"],
+      "assignee": "robot",
+      "robot_actions": ["return_to_home"],
+      "implicit": true
+    },
+    
+    "pick_resin": {
+      "id": "pick_resin",
+      "name": "Pick Resin Bottle",
+      "description": "Robot picks resin bottle from storage table and delivers to weighing station",
+      "preconditions": ["robot_home_after_hardener"],
+      "postconditions": ["resin_delivered"],
+      "assignee": "robot",
+      "robot_actions": ["announce_picking_resin", "pick_from_storage", "move_to_weighing_station", "handover_to_human"],
+      "program": "pick_resin_bottle.prog",
+      "ground_truth": {
+        "start_timestamp": 46.70,
+        "end_timestamp": 98.81
+      }
+    },
+    
+    "weigh_resin": {
+      "id": "weigh_resin",
+      "name": "Weigh Resin",
+      "description": "Human weighs the resin bottle on the scale",
+      "preconditions": ["pick_resin"],
+      "postconditions": ["resin_weighed"],
+      "assignee": "human",
+      "robot_actions": ["wait_at_handover", "observe"],
+      "human_actions": ["receive_bottle", "place_on_scale", "read_weight", "signal_done"]
+    },
+    
+    "robot_home_after_resin": {
+      "id": "robot_home_after_resin",
+      "name": "Return to Home After Resin Delivery",
+      "description": "Robot returns to home position while human weighs resin",
+      "preconditions": ["pick_resin"],
+      "postconditions": ["robot_at_home"],
+      "assignee": "robot",
+      "robot_actions": ["return_to_home"],
+      "implicit": true
+    },
+    
+    "return_hardener": {
+      "id": "return_hardener",
+      "name": "Return Hardener Bottle",
+      "description": "Robot picks hardener from human and returns to storage table",
+      "preconditions": ["robot_home_after_resin", "hardener_weighed"],
+      "postconditions": ["hardener_returned"],
+      "assignee": "robot",
+      "robot_actions": ["announce_returning_hardener", "receive_from_human", "move_to_storage", "place_on_table"],
+      "program": "return_hardener_bottle.prog",
+      "ground_truth": {
+        "start_timestamp": 98.82,
+        "end_timestamp": 144.86
+      }
+    },
+    
+    "robot_home_after_return_hardener": {
+      "id": "robot_home_after_return_hardener",
+      "name": "Return to Home After Returning Hardener",
+      "description": "Robot returns to home position after returning hardener",
+      "preconditions": ["return_hardener"],
+      "postconditions": ["robot_at_home"],
+      "assignee": "robot",
+      "robot_actions": ["return_to_home"],
+      "implicit": true
+    },
+    
+    "return_resin": {
+      "id": "return_resin",
+      "name": "Return Resin Bottle",
+      "description": "Robot picks resin from human and returns to storage table",
+      "preconditions": ["robot_home_after_return_hardener", "resin_weighed"],
+      "postconditions": ["resin_returned"],
+      "assignee": "robot",
+      "robot_actions": ["announce_returning_resin", "receive_from_human", "move_to_storage", "place_on_table"],
+      "program": "return_resin_bottle.prog",
+      "ground_truth": {
+        "start_timestamp": 144.87,
+        "end_timestamp": null
+      }
+    },
+    
+    "finalize": {
+      "id": "finalize",
+      "name": "Complete Task",
+      "description": "Robot returns to home, task complete",
+      "preconditions": ["return_resin"],
+      "postconditions": ["task_complete"],
+      "assignee": "robot",
+      "robot_actions": ["return_to_home", "announce_complete"]
+    }
+  },
+  
+  "action_sequence": [
+    "initialize",
+    "pick_hardener",
+    "weigh_hardener",
+    "robot_home_after_hardener",
+    "pick_resin", 
+    "weigh_resin",
+    "robot_home_after_resin",
+    "return_hardener",
+    "robot_home_after_return_hardener",
+    "return_resin",
+    "finalize"
+  ],
+  
+  "robot_programs": {
+    "pick_hardener_bottle.prog": {
+      "description": "UR program to pick hardener bottle from storage and deliver",
+      "duration_seconds": 43.2
+    },
+    "pick_resin_bottle.prog": {
+      "description": "UR program to pick resin bottle from storage and deliver",
+      "duration_seconds": 52.1
+    },
+    "return_hardener_bottle.prog": {
+      "description": "UR program to return hardener bottle to storage",
+      "duration_seconds": 46.0
+    },
+    "return_resin_bottle.prog": {
+      "description": "UR program to return resin bottle to storage",
+      "duration_seconds": 56.1
+    }
+  },
+  
+  "safety_constraints": {
+    "collision_avoidance": true,
+    "human_priority": true,
+    "speed_limit_near_human_mps": 0.15,
+    "pause_on_unexpected_contact": true,
+    "wait_for_home_before_next_action": true,
+    "emergency_stop_accessible": true
+  },
+  
+  "timing_constraints": {
+    "max_wait_at_handover_seconds": 30,
+    "announce_before_action": true,
+    "home_position_required_between_actions": true
+  },
+  
+  "ground_truth_source": {
+    "method": "wizard_of_oz",
+    "description": "Human operator controlled robot via teach pendant while task performer weighed bottles",
+    "data_files": {
+      "video_3rd_person": "demo_data/weigh_bottles/video.mp4",
+      "video_gripper_360": "demo_data/weigh_bottles/exp.mp4",
+      "joint_states": "demo_data/weigh_bottles/joint_states.h5",
+      "program_events": "demo_data/weigh_bottles/program_events.json"
+    },
+    "experiment_date": "2026-01-19",
+    "total_duration_seconds": 201.0
+  }
+}

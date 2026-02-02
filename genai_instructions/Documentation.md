@@ -22,6 +22,10 @@ AURA (Autonomous Understanding for Robotic Assistance) is a modular, explainable
 │  │   Monitor   │ │  Predictor  │ │   Module    │ │        Monitor          ││
 │  │             │ │             │ │  (SAM3/VLM) │ │    (Gemini Live)        ││
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────────────────┘│
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │                        Gesture Monitor (MediaPipe)                       ││
+│  │                   (Safety Control & Gesture Recognition)                 ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                          CAPABILITY LAYER                                    │
 │  ┌─────────────────────┐           ┌─────────────────────┐                  │
@@ -65,7 +69,19 @@ AURA (Autonomous Understanding for Robotic Assistance) is a modular, explainable
 - **Based on**: Previous HCDT motion prediction work
 - **Outputs**: Predicted trajectories, collision risks
 
-### 4. Perception Module
+### 4. Gesture Monitor (NEW)
+- **Location**: `src/aura/monitors/gesture_monitor.py`
+- **Purpose**: Real-time hand gesture recognition for safety and interaction
+- **Technology**: MediaPipe Gesture Recognizer
+- **Features**:
+  - Multi-hand tracking (up to 2 hands)
+  - Safety control (stop/resume gestures)
+  - Intent mapping from gestures
+  - Debouncing for stable recognition
+- **Outputs**: Detected gestures, safety status, mapped intent
+- **Documentation**: See [Gesture Monitor Guide](docs/gesture_monitor.md)
+
+### 5. Perception Module
 - **Location**: `src/aura/monitors/perception_module.py`
 - **Purpose**: Object detection, segmentation, tracking
 - **Components**:
@@ -73,18 +89,18 @@ AURA (Autonomous Understanding for Robotic Assistance) is a modular, explainable
   - Gemini for scene understanding
   - Object pose estimation
 
-### 5. Sound Monitor
+### 6. Sound Monitor
 - **Location**: `src/aura/monitors/sound_monitor.py`
 - **Purpose**: Speech recognition and intent extraction
 - **Technology**: Gemini Live API
 - **Features**: Real-time transcription, command extraction
 
-### 6. Affordance Monitor
+### 7. Affordance Monitor
 - **Location**: `src/aura/monitors/affordance_monitor.py`
 - **Purpose**: Determine what actions are possible
 - **Outputs**: List of available actions with parameters
 
-### 7. Performance Monitor
+### 8. Performance Monitor
 - **Location**: `src/aura/monitors/performance_monitor.py`
 - **Purpose**: Track execution success/failure
 - **Features**: Timeout detection, error recovery

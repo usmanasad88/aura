@@ -1,0 +1,151 @@
+{
+  "name": "Collaborative Tea Making",
+  "description": "DAG for making chai tea with human-robot collaboration",
+  "version": "1.0",
+  "nodes": {
+    "start": {
+      "id": "start",
+      "description": "Task begins - workspace ready",
+      "visual_cues": ["empty workspace", "clean counter"],
+      "next_possible": ["setup_workspace"],
+      "assignee": "system"
+    },
+    "setup_workspace": {
+      "id": "setup_workspace",
+      "description": "Robot retrieves necessary items to working area",
+      "visual_cues": ["robot moving", "items appearing on counter"],
+      "next_possible": ["fill_pot_with_water"],
+      "assignee": "robot",
+      "robot_actions": ["retrieve_object"],
+      "items_to_retrieve": ["pot", "cups", "tea_container", "milk_container", "sugar_container", "spoon"]
+    },
+    "fill_pot_with_water": {
+      "id": "fill_pot_with_water",
+      "description": "Human fills pot with water",
+      "visual_cues": ["water flowing", "pot under tap", "hand on tap"],
+      "next_possible": ["place_pot_on_stove"],
+      "assignee": "human"
+    },
+    "place_pot_on_stove": {
+      "id": "place_pot_on_stove",
+      "description": "Human places pot on induction cooker",
+      "visual_cues": ["pot on stove", "hand releasing pot"],
+      "next_possible": ["turn_on_stove"],
+      "assignee": "human"
+    },
+    "turn_on_stove": {
+      "id": "turn_on_stove",
+      "description": "Human turns on induction cooker",
+      "visual_cues": ["hand near controls", "display lighting up"],
+      "next_possible": ["wait_for_boil"],
+      "assignee": "human"
+    },
+    "wait_for_boil": {
+      "id": "wait_for_boil",
+      "description": "Wait for water to boil",
+      "visual_cues": ["steam rising", "bubbles in water", "pot on hot stove"],
+      "next_possible": ["add_chai_powder"],
+      "assignee": "system",
+      "estimated_duration_sec": 180
+    },
+    "add_chai_powder": {
+      "id": "add_chai_powder",
+      "description": "Human adds chai powder to boiling water",
+      "visual_cues": ["hand holding tea container", "pouring into pot", "stirring"],
+      "next_possible": ["simmer_tea"],
+      "assignee": "human"
+    },
+    "simmer_tea": {
+      "id": "simmer_tea",
+      "description": "Let tea simmer",
+      "visual_cues": ["pot on stove", "liquid changing color"],
+      "next_possible": ["add_milk_to_pot"],
+      "assignee": "system",
+      "estimated_duration_sec": 120
+    },
+    "add_milk_to_pot": {
+      "id": "add_milk_to_pot",
+      "description": "Add powdered milk to pot",
+      "visual_cues": ["milk container in hand", "pouring white powder"],
+      "next_possible": ["stir_pot"],
+      "assignee": "either"
+    },
+    "stir_pot": {
+      "id": "stir_pot",
+      "description": "Stir the tea in pot",
+      "visual_cues": ["spoon in pot", "circular motion"],
+      "next_possible": ["pour_tea"],
+      "assignee": "human"
+    },
+    "pour_tea": {
+      "id": "pour_tea",
+      "description": "Human pours tea into cups",
+      "visual_cues": ["pot tilting", "liquid flowing into cup"],
+      "next_possible": ["ask_sugar_preference"],
+      "assignee": "human"
+    },
+    "ask_sugar_preference": {
+      "id": "ask_sugar_preference",
+      "description": "Robot asks about sugar preference",
+      "visual_cues": [],
+      "next_possible": ["add_sugar", "skip_sugar"],
+      "assignee": "robot",
+      "robot_actions": ["ask_preference"],
+      "trigger_condition": "cup_has_tea AND NOT sugar_preference_known"
+    },
+    "add_sugar": {
+      "id": "add_sugar",
+      "description": "Robot adds sugar based on preference",
+      "visual_cues": ["sugar container near cup", "pouring"],
+      "next_possible": ["stir_cup"],
+      "assignee": "robot",
+      "robot_actions": ["add_sugar"],
+      "trigger_condition": "sugar_preference_known AND sugar_preference != 'none'"
+    },
+    "skip_sugar": {
+      "id": "skip_sugar",
+      "description": "Skip sugar (user declined)",
+      "visual_cues": [],
+      "next_possible": ["serve_tea"],
+      "assignee": "system",
+      "trigger_condition": "sugar_preference == 'none'"
+    },
+    "stir_cup": {
+      "id": "stir_cup",
+      "description": "Robot stirs the cup",
+      "visual_cues": ["spoon in cup", "circular motion"],
+      "next_possible": ["serve_tea"],
+      "assignee": "robot",
+      "robot_actions": ["stir"]
+    },
+    "serve_tea": {
+      "id": "serve_tea",
+      "description": "Tea is ready to serve",
+      "visual_cues": ["cup in position", "steam from cup"],
+      "next_possible": ["cleanup"],
+      "assignee": "system"
+    },
+    "cleanup": {
+      "id": "cleanup",
+      "description": "Robot returns unused items to storage",
+      "visual_cues": ["robot moving", "items being put away"],
+      "next_possible": ["end"],
+      "assignee": "robot",
+      "robot_actions": ["return_object"]
+    },
+    "end": {
+      "id": "end",
+      "description": "Task complete",
+      "visual_cues": ["clean workspace", "human drinking tea"],
+      "next_possible": [],
+      "assignee": "system"
+    }
+  },
+  "start_node": "start",
+  "end_nodes": ["end"],
+  "transition_rules": {
+    "boil_detection": "Look for steam or bubbles to detect boiling",
+    "pour_detection": "Pot tilting toward cup indicates pouring",
+    "sugar_timing": "Ask about sugar after tea is poured, before drinking"
+  }
+}

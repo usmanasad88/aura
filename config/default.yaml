@@ -14,7 +14,7 @@ monitors:
     use_gemini_detection: true
     max_objects: 10
     confidence_threshold: 0.5
-    gemini_model: "gemini-2.0-flash-exp"
+    gemini_model: "gemini-3-pro-preview"
     default_prompts:
       - "person"
       - "hand"
@@ -33,7 +33,7 @@ monitors:
     update_rate_hz: 20.0
     timeout_seconds: 1.0
     use_gemini_live: true
-    gemini_model: "gemini-2.0-flash-exp"
+    gemini_model: "gemini-2.0-flash"
     sample_rate: 16000
     chunk_size: 1024
     wake_word_enabled: false
@@ -44,12 +44,12 @@ monitors:
     update_rate_hz: 5.0
     timeout_seconds: 3.0
     use_llm: true
-    model: "gemini-2.0-flash-exp"
+    model: "gemini-2.0-flash"
     check_physical_constraints: true
 
 # Brain Configuration
 brain:
-  decision_model: "gemini-2.0-flash-exp"
+  decision_model: "gemini-3-pro-preview"
   reasoning_depth: "standard"
   enable_explainability: true
   state_update_rate_hz: 10.0

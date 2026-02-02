@@ -1,0 +1,123 @@
+{
+  "name": "Tea Making State Schema",
+  "description": "State variables for tracking tea making progress",
+  "version": "1.0",
+  "state_variables": {
+    "workspace_setup": {
+      "type": "boolean",
+      "description": "Whether required items are in working area",
+      "default": false
+    },
+    "water_in_pot": {
+      "type": "boolean",
+      "description": "Water has been added to the pot",
+      "default": false
+    },
+    "pot_on_stove": {
+      "type": "boolean",
+      "description": "Pot is on the induction cooker",
+      "default": false
+    },
+    "stove_on": {
+      "type": "boolean",
+      "description": "Induction cooker is turned on",
+      "default": false
+    },
+    "water_boiling": {
+      "type": "boolean",
+      "description": "Water is boiling (steam/bubbles visible)",
+      "default": false
+    },
+    "chai_added": {
+      "type": "boolean",
+      "description": "Chai powder added to boiling water",
+      "default": false
+    },
+    "tea_simmering": {
+      "type": "boolean",
+      "description": "Tea is simmering after chai added",
+      "default": false
+    },
+    "milk_added_to_pot": {
+      "type": "boolean",
+      "description": "Powdered milk added to pot",
+      "default": false
+    },
+    "pot_stirred": {
+      "type": "boolean",
+      "description": "Pot contents have been stirred",
+      "default": false
+    },
+    "tea_poured": {
+      "type": "boolean",
+      "description": "Tea has been poured into cups",
+      "default": false
+    },
+    "cup_has_tea": {
+      "type": "boolean",
+      "description": "At least one cup has tea in it",
+      "default": false
+    },
+    "sugar_preference_known": {
+      "type": "boolean",
+      "description": "Human's sugar preference has been determined",
+      "default": false
+    },
+    "sugar_preference": {
+      "type": "string",
+      "description": "Amount of sugar requested",
+      "valid_values": ["none", "little", "standard", "extra"],
+      "default": null
+    },
+    "sugar_added": {
+      "type": "boolean",
+      "description": "Sugar has been added to cup (if requested)",
+      "default": false
+    },
+    "cup_stirred": {
+      "type": "boolean",
+      "description": "Cup has been stirred after sugar",
+      "default": false
+    },
+    "tea_served": {
+      "type": "boolean",
+      "description": "Tea is ready and served",
+      "default": false
+    },
+    "cleanup_done": {
+      "type": "boolean",
+      "description": "Unused items returned to storage",
+      "default": false
+    },
+    "current_phase": {
+      "type": "string",
+      "description": "Current phase of tea making",
+      "valid_values": ["setup", "heating", "brewing", "serving", "cleanup", "done"],
+      "default": "setup"
+    },
+    "human_action": {
+      "type": "string",
+      "description": "Current action being performed by human",
+      "default": "idle"
+    },
+    "robot_busy": {
+      "type": "boolean",
+      "description": "Robot is currently executing an action",
+      "default": false
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "current_phase": {"type": "string"},
+      "human_action": {"type": "string"},
+      "water_boiling": {"type": "boolean"},
+      "cup_has_tea": {"type": "boolean"},
+      "sugar_preference_known": {"type": "boolean"},
+      "sugar_preference": {"type": ["string", "null"]},
+      "recommended_robot_action": {"type": ["string", "null"]},
+      "reasoning": {"type": "string"}
+    },
+    "required": ["current_phase", "human_action", "reasoning"]
+  }
+}

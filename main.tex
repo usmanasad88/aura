@@ -1,0 +1,544 @@
+\documentclass[11pt, a4paper]{article}
+
+% ============================================================================
+% PACKAGES
+% ============================================================================
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hyphens]{url}
+\usepackage{hyperref}
+\usepackage{natbib}
+
+% ============================================================================
+% HYPERREF SETUP
+% ============================================================================
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+}
+
+% ============================================================================
+% LISTINGS SETUP
+% ============================================================================
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+% ============================================================================
+% TITLE AND AUTHORS
+% ============================================================================
+\title{An Agentic Framework for Need-Based Proactive Robotic Assistance with Explainable Decision Making}
+
+% \author{
+%     Usman Asad \\
+%     \textit{Department of Mechanical Engineering} \\
+%     \textit{Capital University of Sciences and Technology} \\
+%     \texttt{usman.asad@ceme.nust.edu.pk}
+% }
+
+% \date{\today}
+
+% ============================================================================
+% DOCUMENT
+% ============================================================================
+\begin{document}
+
+\maketitle
+
+% ============================================================================
+% ABSTRACT
+% ============================================================================
+%AI Instructions: Keep the language simple. Nothing should be bold. No bullet points. No numbering. Provide a bib entry separately and cite references as  ~\cite{entry}
+\begin{abstract}
+The paradigm of Human-Robot Collaboration (HRC) is undergoing a fundamental transformation from reactive, instruction-based execution toward proactive, need-based assistance. Traditional collaborative robots operate as subordinate agents awaiting explicit commands, imposing significant cognitive load on human operators and failing to capitalize on the potential for true collaborative partnerships. This paper presents AURA (Agentic Unified Robotic Assistance), a comprehensive framework for proactive robotic assistance that bridges the semantic reasoning capabilities of Frontier Vision-Language Models (VLMs), with real-time perception, motion prediction, and deterministic low-level control. Central to this framework is the integration of Standard Operating Procedures (SOPs) as constraints that guide the reasoning and decision making. The framework employs a modular monitor-based architecture comprising Intent, Motion, Perception, Sound, and Affordance monitors that continuously inform a central decision-making system. The framework utilizes structured LLM reasoning to determine appropriate actions while providing explicit explanations for its decisions. We introduce a novel composite metric for evaluating proactive interventions based on Timeliness, Modality, and Necessity. To address the absence of benchmark datasets for proactive HRC, we propose a Wizard-of-Oz data collection methodology where a human operator controls the robot to assist a task performer, creating ground truth intervention timings and action selections. The resulting dataset enables quantitative evaluation by comparing algorithmic predictions against expert human decisions. This work addresses the critical gap between passive intent prediction and active, intelligent robotic intervention, while providing the research community with both a framework and a benchmark for evaluating proactive assistance systems.
+\end{abstract}
+
+\textbf{Keywords:} Human-Robot Collaboration, Proactive Assistance, Vision-Language Models, Intent Prediction, Explainable AI, Digital Twins, Industry 5.0
+
+% ============================================================================
+% SECTION 1: INTRODUCTION
+% ============================================================================
+\section{Introduction}
+
+\subsection{The Shift to Proactive HRC in Industry 5.0}
+
+The manufacturing landscape is undergoing a profound transformation, moving beyond the efficiency-driven paradigm of Industry 4.0 towards the human-centric, sustainable, and resilient principles of Industry 5.0~\cite{Andronas2021}. This evolution places renewed emphasis on the human operator not as a mere component in a mechanized process, but as the central agent whose cognitive skills, dexterity, and adaptability are paramount~\cite{Polini2020}. In this context, Human-Robot Collaboration (HRC) is evolving from simple coexistence, where robots operate behind safety fences, to more advanced symbiotic and proactive paradigms~\cite{Andronas2021, Asad2023}. The goal is no longer just to automate repetitive tasks but to create dynamic partnerships combining the endurance, precision, and strength of robots with the nuanced reasoning and problem-solving capabilities of humans. This synergy is particularly critical in high-mix, low-volume (HMLV) manufacturing environments, where traditional, rigid automation is often impractical and economically unviable~\cite{Polini2020, David2023}.
+
+%However, the method described here is intended to be a guideline for adapting new techniques in generative AI and robotics to manufacturing, assembly, or maintenance small and medium enterprises, 
+
+Despite the high pace of technological advancements in AI and Robotics, significant obstacles remain, limiting the adoption of embodied AI by industry. Specifically, there is a critical need to have modular, explainable actions which are not just opaque outputs of a black box. Operators in industrial settings require transparency to trust robotic partners; systems that function as black boxes prevent verification and complicate error recovery. Therefore, the adoption of these technologies in SMEs relies on bridging the gap between high-performance neural models and the requirement for interpretability and safety~\cite{Adadi2018, Gunning2019}.
+
+A key technological enabler for this shift is the concept of the Human-Centric Digital Twin (HCDT). An HCDT is a high-fidelity virtual model encompassing not just the physical environment and robot, but also the human operator, including their actions, intentions, and even cognitive states~\cite{Polini2020}. By creating a predictive model of the human, an HCDT can serve as the foundation for a robotic system that does not merely react to commands but actively anticipates the operator's needs, paving the way for truly proactive assistance~\cite{Polini2020}.
+
+\subsection{From Intent Prediction to Proactive Action}
+
+Previous research has made significant strides in the foundational challenge of building such HCDTs. Asad et al.~\cite{Asad2024_intention} introduced a modular framework capable of forecasting human intent and generating plausible future motion from multimodal inputs, including video streams and structured task knowledge represented as action graphs. This framework demonstrated that by leveraging Vision-Language Models (VLMs) and carefully engineered context, it is possible to achieve robust understanding of an operator's position within a task sequence and predict their immediate future actions with considerable accuracy~\cite{Asad2024_intention}
+
+However, predicting intent is only the first, albeit critical, step. The ultimate promise of an HCDT lies in its ability to drive intelligent action. While prior work established that a system can predict \textit{what} an operator is likely to do next, it left open the crucial subsequent question: what should a collaborative robot \textit{do} with that prediction? The next frontier in HRC research, and the focus of this work, is to bridge the gap between passive prediction and active, intelligent intervention. This involves developing a framework that can translate predicted intent into timely, appropriate, and unsolicited robotic assistance, thereby transforming the robot from a reactive tool into a proactive partner.
+
+\subsection{Evaluation in Proactive HRC}
+
+As the field pushes towards more sophisticated proactive behaviors, a significant methodological gap has emerged: the lack of adequate evaluation metrics. Conventional metrics for HRC, while valuable, are largely rooted in a reactive or command-driven paradigm. Measures such as task completion time, human or robot idle time, and error rates are effective at quantifying the efficiency of a collaborative process~\cite{Umbrico2022}. However, they are fundamentally insufficient for capturing the \textit{quality} or \textit{appropriateness} of proactive, unsolicited assistance.
+
+A robot could, for example, aggressively take over the majority of an operator's tasks, resulting in optimized completion times and minimal human idle time. While conventional metrics would classify such a system as highly successful, from a human-centric perspective, this interaction represents a failure if the aggressive takeover results in actions that do not align with the human's specific requirements or preferences. In these instances, the robot becomes intrusive and disempowering, ultimately undermining the collaborative synergy it is intended to support. This highlights a central challenge in the field: existing metrics often fail to distinguish between genuinely helpful assistance and well-timed but unwelcome interference, as they do not account for whether the intervention was truly desired or delivered in a manner consistent with the operator’s intent~\cite{Makris2023, Cotta2023}.
+
+\subsection{Benchmark Data for Proactive HRC}
+
+Beyond measurement challenges, a significant constraint in proactive Human-Robot Collaboration (HRC) research is the lack of standardized benchmark datasets. While fields such as computer vision and natural language processing utilize established datasets to facilitate reproducible comparative studies, proactive robotics lacks equivalent resources. For instance, while systems like MOSAIC~\cite{Wang2024} demonstrate effectiveness in assistive tasks, they are typically presented as standalone system evaluations rather than as publicly available, annotated datasets with ground-truth intervention timings. Furthermore, most existing HRC datasets focus on reactive interactions, teleoperation, or kinesthetic teaching, which do not fully capture the anticipatory decision-making required for proactive assistance. Addressing this issue requires both new evaluation metrics and new methods for collecting ground-truth data, which accurately represents the appropriate context-dependent proactive behavior.
+
+\subsection{Contributions}
+
+This paper makes the following contributions. First, we present the Agentic Unified Robotic Assistance (AURA) Framework, a comprehensive agentic architecture for proactive robotic assistance that integrates real-time multimodal perception with LLM-based reasoning, grounded by Standard Operating Procedures (SOPs) as domain-specific constraints. Second, we introduce a Monitor-Based Architecture, a modular system comprising specialized monitors (Intent, Motion, Perception, Sound, Affordance, Performance) that continuously inform a central decision-making module, enabling explainable and context-aware decisions. Third, we propose The Appropriateness Score (A-Score), a novel composite metric for evaluating proactive interventions based on three dimensions: Timeliness ($A_{time}$), Modality ($A_{mod}$), and Necessity ($A_{nec}$). Fourth, we introduce a Wizard-of-Oz Data Collection Methodology for creating ground truth datasets of proactive assistance, where a human operator controls the robot to help a task performer, capturing expert judgment on intervention timing and action selection. Fifth, we release a Proactive HRC Benchmark Dataset comprising synchronized multimodal recordings (workspace video, robot wrist camera, robot joint states) with annotated intervention events, enabling reproducible evaluation of proactive assistance algorithms. Finally, we demonstrate an Offline Evaluation Pipeline that processes recorded data through the  framework and compares predicted interventions against human operator ground truth, providing quantitative metrics for system performance.
+
+% ============================================================================
+% SECTION 2: RELATED WORK
+% ============================================================================
+\section{Related Work}
+
+\subsection{Evolution of Collaborative Paradigms}
+
+Human-Robot Collaboration has progressed through several distinct stages, each characterized by increasing integration and intelligence. The earliest stage was coexistence, where industrial robots operated in isolation, separated from humans by physical barriers for safety~\cite{Asad2023}. The advent of collaborative robots (cobots) enabled sequential collaboration, where humans and robots could share a workspace but worked on a task in turn, and simultaneous collaboration, where they could work on the same product at the same time but on different sub-tasks~\cite{Zhou2024}.
+
+More recently, the field has moved towards advanced paradigms. Symbiotic HRC describes systems where humans and robots engage in tightly coupled interactions, often involving active collision avoidance and adaptive control based on multimodal communication (e.g., voice, gesture)~\cite{Andronas2021, Asad2023}. This paradigm, however, often maintains a master/slave dynamic, with the robot reacting to human commands or a predefined plan. The ultimate goal, and the focus of this research, is Proactive HRC. This paradigm is defined by anticipatory, self-initiated, and change-oriented robot behavior~\cite{Sirintuna2024}. In a proactive system, the robot does not wait for an explicit request; it anticipates the user's needs, goals, and potential difficulties, and offers unsolicited assistance to achieve a shared objective~\cite{Andronas2021, Nezhad2020}.
+
+\subsection{Architectures for Intent-Driven HRC}
+
+The development of proactive systems relies on sophisticated software architectures capable of interpreting human intent and planning synchronized actions. The Proactive Assistance through Action-Completion Estimation (PACE) framework by De Lazzari et al.~\cite{PACE} uses hand-tracking and reinforcement learning to align robot actions with human task progress. This system estimates the completion time of human actions in real time to minimize robotic idle time and improve interaction fluency. David et al.~\cite{David2023} presented the Collaborative Agents for Manufacturing Ontology (CAMO), which uses semantic modeling and multi-agent systems to enable self-organization in human-robot teams. Their architecture incorporates mixed reality to project robot intentions and support dynamic task allocation. Umbrico et al.~\cite{Umbrico2022} developed a framework that transitions from general human-aware control to personalized user-aware control. This approach uses artificial intelligence to adapt the robot's behavior to the specific skills and requirements of individual operators. % Paragraph needs a conclusion
+
+\subsection{The Grounding Problem: Connecting Language to Action}
+
+Large Language Models (LLMs) and Vision-Language Models (VLMs) are trained on vast datasets from the internet, endowing them with remarkable semantic knowledge and reasoning capabilities. However, this knowledge is disembodied; the models lack direct experience with the physical world, its constraints, and the consequences of actions~\cite{Chi2023}. An LLM might plausibly suggest ``using a vacuum cleaner'' to clean a liquid spill, an action that is nonsensical for a typical manipulator arm~\cite{Ahn2022}.
+
+The SayCan framework was a seminal contribution to solving this problem~\cite{Ahn2022}. It combines the strengths of LLMs and robotic learning: for a given high-level instruction, the LLM provides the a probability distribution over available robot skills indicating semantic relevance. Simultaneously, pre-trained value functions provide the the probability that each skill can be successfully executed from the robot's current state. By multiplying these probabilities, SayCan selects an action that is both semantically plausible and physically possible~\cite{Ahn2022}.
+
+The advent of powerful VLMs, represents a further step, as they can directly process visual input alongside text, allowing them to reason about objects and scenes in front of the robot~\cite{Chi2023}. This reduces the need for separate, pre-trained value functions, as the model can implicitly learn affordances from visual data. Techniques like affordance prompting have been proposed to explicitly encourage the LLM to reason about physical consequences of planned actions~\cite{Yu2024}.
+
+\subsection{Vision-Language-Action Models for Robot Control}
+
+The Vision-Language-Action (VLA) paradigm represents a fundamental departure from classical robotics, aiming to unify visual perception, natural language understanding, and embodied control within a single, end-to-end learning framework~\cite{Wei2022}. Models like RT-2 demonstrated that by representing robot actions as text tokens, a VLM can directly leverage its semantic understanding for control, exhibiting emergent capabilities such as understanding symbols and spatial relationships~\cite{Ahn2022}.
+
+Recent developments include Diffusion Policies...
+
+\subsection{Neuro-Symbolic AI and SOP Integration}
+
+Neuro-symbolic AI combines the learning capability of neural networks with the logic of symbolic systems~\cite{Singh2023}. In industrial contexts, Standard Operating Procedures (SOPs) represent the symbolic logic. Research into SOP-driven planning focuses on converting these documents into structured representations like Directed Acyclic Graphs (DAGs) or PDDL domains. LLMs act as the translator, parsing text into formal constraints, which are then used to verify the robot's actions~\cite{Singh2023}. This ensures that the flexibility of the LLM does not violate the rigidity of safety protocols.
+
+\subsection{Datasets and Benchmarks for HRC}
+
+The robotics community has developed numerous datasets for manipulation, navigation, and human activity recognition, yet datasets specifically designed for evaluating proactive human-robot collaboration remain scarce. Existing HRC datasets primarily address reactive scenarios: teleoperation datasets capture human demonstrations for imitation learning, kinesthetic teaching datasets record physical guidance for skill transfer, and activity recognition datasets label human actions without considering robotic intervention~\cite{Mandlekar2021}.
+
+Recent systems like MOSAIC~\cite{Wang2024} demonstrate proactive assistance in cooking scenarios, with the robot anticipating user needs and offering help. However, such work evaluates performance through end-to-end task success rates rather than releasing annotated datasets with intervention timings that would enable comparison of the underlying decision algorithms. Similarly, PACE~\cite{Umbrico2022} evaluates synchronization quality but does not provide datasets for reproducing or benchmarking against their results.
+
+The challenge in creating proactive HRC datasets lies in defining ground truth. Unlike object detection or action recognition where annotations are relatively objective, determining the optimal moment and modality for proactive assistance involves subjective human judgment that depends on task context, operator skill level, and individual preferences. This paper addresses this challenge through a Wizard-of-Oz methodology that captures expert human decisions as ground truth, enabling quantitative evaluation of proactive assistance algorithms.
+
+% ============================================================================
+% SECTION 3: PROBLEM FORMULATION
+% ============================================================================
+\section{Problem Formulation}
+
+\subsection{Need-Based Proactive Assistance}
+
+We formalize the problem of proactive robotic assistance as follows. Consider a shared workspace $\mathcal{W}$ containing a human operator $H$, a collaborative robot $R$, and a set of objects $\mathcal{O} = \{o_1, o_2, \ldots, o_n\}$. The workspace is governed by a task specification $\mathcal{T}$ defined through a Standard Operating Procedure (SOP), which encodes a directed acyclic graph (DAG) $\mathcal{G} = (V, E)$ representing task dependencies, state variables $\mathcal{S}$ tracking task progress, constraints $\mathcal{C}$ on valid action sequences, and role assignments indicating which actions can be performed by human, robot, or either.
+
+At each timestep $t$, the system observes:
+\begin{equation}
+    \mathbf{x}_t = \{\mathbf{I}_t, \mathbf{p}^H_t, \mathbf{a}_t, \mathbf{s}_t\}
+\end{equation}
+where $\mathbf{I}_t$ represents visual observations, $\mathbf{p}^H_t$ is the human pose, $\mathbf{a}_t$ is any audio input, and $\mathbf{s}_t$ is the current task state.
+
+The objective is to learn a decision policy $\pi$ that maximizes the appropriateness of proactive interventions:
+\begin{equation}
+    \pi^* = \arg\max_\pi \mathbb{E}\left[\sum_{t} A_{score}(a_t, \mathbf{x}_t, \mathcal{T})\right]
+\end{equation}
+subject to safety constraints ensuring no collision with the human and adherence to SOP constraints.
+
+\subsection{Decision Types}
+
+The robot must decide among several action types at each decision point: WAIT} (continue observing without acting), EXECUTE\_ACTION} (perform a physical manipulation task), ASK\_HUMAN} (request clarification when uncertain), SPEAK} (communicate information proactively), COMPLETE\_TASK} (mark a task node as finished), or ABORT} (halt current action for safety).
+
+\subsection{The Appropriateness Score (A-Score)}
+
+To evaluate proactive interventions, we introduce the Appropriateness Score as a weighted sum of three components:
+
+\begin{equation}
+    A_{score} = w_t \cdot A_{time} + w_m \cdot A_{mod} + w_n \cdot A_{nec}
+\end{equation}
+
+where $w_t + w_m + w_n = 1$ are tunable weights. The components are defined as follows.
+
+Timeliness ($A_{time}$)} measures whether assistance was provided at the right moment, scored from 0 to 1 based on when intervention occurs relative to an ``optimal intervention window.'' This window is defined based on the human's action-completion phase or time since an error.
+
+Modality ($A_{mod}$)} evaluates whether the \textit{type} of assistance was correct, combining objective assessment (whether the action modality matches pre-defined rules for the task state) with subjective user feedback.
+
+Necessity ($A_{nec}$)} penalizes intrusive or unhelpful interventions, scoring high when correcting errors or assisting with verifiably difficult tasks, and low when interrupting correct, efficient work.
+
+% ============================================================================
+% SECTION 4: METHODOLOGY - AURA FRAMEWORK
+% ============================================================================
+\section{Framework Architecture}
+
+\subsection{System Overview}
+
+AURA (Agentic Understanding for Robotic Assistance) is designed as a modular, event-driven architecture centered around a decision-making ``Brain'' that coordinates multiple specialized monitors. The architecture follows three design principles: Separation of Concerns}, ensuring perception, reasoning, and action are handled by distinct, loosely-coupled components; Explainability}, requiring every decision to include explicit reasoning that can be inspected and validated; and SOP Grounding}, where domain knowledge from SOPs constrains and guides the LLM reasoning.
+
+Figure~\ref{fig:architecture} illustrates the high-level architecture comprising the Monitor Layer} (real-time perception and prediction modules), State Layer} (aggregated world state representation), Brain Layer} (LLM-based decision engine), Action Layer} (motion planning and execution), and Visualization Layer} (real-time feedback and debugging).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig1_gemini.png}
+    \caption{High-level architecture of the framework showing the flow from perception through decision-making to action execution.}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Monitor Layer}
+
+The monitor layer comprises six specialized modules that continuously process multimodal inputs.
+
+\subsubsection{Intent Monitor}
+
+The Intent Monitor predicts human actions by analyzing video frames against a configurable task graph. It employs a Vision-Language Model (Gemini) to identify the current human action from the task DAG, track state variables (e.g., objects grasped, steps completed), predict the next likely action with confidence scores, and provide natural language reasoning for predictions. The monitor maintains a temporal buffer of frames and queries the VLM at configurable intervals, enabling understanding of action dynamics beyond single-frame analysis. The output includes: \textbf{FIX THIS}
+
+\begin{equation}
+    \mathcal{I}_t = \{a_{current}, c_{current}, a_{next}, c_{next}, \mathbf{s}_{task}, r_{text}\}
+\end{equation}
+
+where $a$ represents actions, $c$ confidence scores, $\mathbf{s}_{task}$ the task state, and $r_{text}$ the reasoning explanation.
+
+\subsubsection{Motion Predictor}
+
+The Motion Predictor forecasts future human movement trajectories. Building on prior work in human motion prediction for HCDTs~\cite{Asad2024_intention}, \textbf{ADD Details of previous paper} it generates short-term trajectory predictions (0.5--2 seconds), predicted positions of objects being manipulated, and collision risk assessment for robot path planning. This enables the robot to proactively avoid the human's anticipated path and time its interventions appropriately. 
+
+\subsubsection{Perception Module}
+
+The Perception Module provides scene understanding through Object Detection and Tracking} (identifying and tracking objects of interest using open-vocabulary detection e.g., GroundingDINO, SAM2), Pose Estimation} (estimating 6-DOF poses of manipulable objects), and Scene Graph Construction} (building relational representations of object configurations). Each tracked object includes bounding box, segmentation mask, estimated pose, and semantic label. The module supports both automatic detection and query-based search for specific objects.
+
+\subsubsection{Sound Monitor}
+
+The Sound Monitor processes audio input to detect and interpret human speech by performing continuous speech-to-text transcription, intent classification (command, question, observation), relevance filtering based on task context, and forwarding significant utterances to the Brain. Integration with Gemini Live enables natural conversational interaction, with the system able to understand commands like ``hand me the wrench'' or respond to questions about task progress.
+
+\subsubsection{Affordance Monitor}
+
+The Affordance Monitor dynamically assesses what actions the robot can perform given the current robot configuration and capabilities, object states and positions, and environmental constraints. It queries motion primitives (move to pose, open/close gripper, follow trajectory) and learned skills to generate a list of currently feasible actions:
+
+% \begin{equation}
+%     \mathcal{A}_{feasible} = \{(a_i, o_j, p_{success}) \mid a_i \in \mathcal{A}_{robot}, o_j \in \mathcal{O}_{reachable}\}
+% \end{equation}
+
+\subsubsection{Performance Monitor}
+
+The Performance Monitor tracks execution status and detects failures, including action execution progress (initiated, in-progress, completed, failed), discrepancy between expected and actual outcomes, timeout detection for stalled actions, and error classification and recovery suggestions.
+
+\subsection{State Layer}
+
+The State Layer maintains a comprehensive world model by aggregating monitor outputs. The BrainState TypedDict includes:
+
+\begin{lstlisting}[language=Python, caption=Core state representation]
+class BrainState(TypedDict):
+    # Environment
+    tracked_objects: List[TrackedObject]
+    scene_graph: Optional[SceneGraph]
+    
+    # Human state
+    human_pose: Optional[HumanPose]
+    detected_intent: Optional[Intent]
+    predicted_motion: Optional[PredictedMotion]
+    
+    # Communication
+    utterance_history: List[Utterance]
+    
+    # Task state
+    task_graph: Optional[TaskGraph]
+    current_task_state: Dict[str, Any]
+    
+    # Robot state
+    current_affordances: List[Affordance]
+    action_queue: List[Action]
+    performance_status: PerformanceMetrics
+    
+    # Decision history
+    decision_history: List[Decision]
+    reasoning_trace: List[str]
+\end{lstlisting}
+
+Reducer functions handle concurrent updates from parallel monitor execution, ensuring consistent state even when multiple monitors report simultaneously.
+
+\subsection{Brain Layer: Decision Engine}
+
+The Brain is the central coordinator implementing the perception-reasoning-action loop. It employs a DecisionEngine that uses structured LLM prompting to produce explainable decisions.
+
+\subsubsection{Decision Process}
+
+The decision process operates as follows: First, State Summarization} aggregates monitor outputs into a prompt-friendly format. Second, Context Assembly} compiles SOP constraints, current affordances, and decision history. Third, LLM Reasoning} uses Gemini to process the context and determine the appropriate action. Fourth, Output Parsing} converts the structured JSON response into a Decision object. Finally, Validation} checks the decision against safety constraints and SOP rules.
+
+\subsubsection{Explainable Decisions}
+
+Each decision includes:
+
+\begin{lstlisting}[language=Python, caption=Decision structure with explainability]
+@dataclass
+class Decision:
+    type: DecisionType          # WAIT, EXECUTE, ASK, SPEAK, etc.
+    action: Optional[Action]    # Physical action to execute
+    message: Optional[str]      # Communication content
+    reasoning: str              # Natural language explanation
+    confidence: float           # 0.0 to 1.0
+    alternatives: List[str]     # Other options considered
+\end{lstlisting}
+
+The reasoning field provides human-readable justification, enabling operators to understand why the robot made a particular choice and building trust in the system.
+
+\subsubsection{Decision Principles}
+
+The system prompt encodes key decision principles: Safety First} (never take actions that could collide with human or cause harm), Human Priority} (if human is actively working, do not interfere unless asked), Proactive Help} (if human seems stuck or there are tasks robot can assist with, offer help), Communication} (when uncertain, ask for clarification rather than guess), and Efficiency} (complete tasks efficiently while respecting dependencies).
+
+\subsection{SOP Integration}
+
+Standard Operating Procedures are central to grounding the LLM's reasoning in domain-specific knowledge. SOPs are represented as JSON documents containing:
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    showstringspaces=false  % <--- This removes the ␣ symbol
+}
+
+\begin{lstlisting}[language=Python, caption={SOP structure for Manual Wet Layup}]
+{
+    "id": "manual_wet_layup",
+    "name": "Manual Wet Layup Procedure",
+    "task_graph": {
+        "nodes": [
+            {"id": "wear_ppe", "description": "Put on safety gloves", 
+             "role": "human", "dependencies": []},
+            {"id": "setup_scale", "description": "Place container on scale and tare", 
+             "role": "either", "dependencies": ["wear_ppe"]},
+            {"id": "dispense_resin", "description": "Pour resin to target weight", 
+             "role": "robot", "dependencies": ["setup_scale"]},
+            {"id": "dispense_hardener", "description": "Add hardener to correct ratio", 
+             "role": "robot", "dependencies": ["dispense_resin"]},
+            {"id": "mix_components", "description": "Stir mixture with stick until uniform", 
+             "role": "human", "dependencies": ["dispense_hardener"]},
+            {"id": "place_fiber", "description": "Position pre-cut fiberglass on mold", 
+             "role": "human", "dependencies": ["wear_ppe"]},
+            {"id": "apply_resin", "description": "Brush resin mixture onto fiber layer", 
+             "role": "either", "dependencies": ["place_fiber", "mix_components"]}
+        ],
+        "edges": [
+            ["wear_ppe", "setup_scale"],
+            ["setup_scale", "dispense_resin"],
+            ["dispense_resin", "dispense_hardener"],
+            ["dispense_hardener", "mix_components"],
+            ["mix_components", "apply_resin"],
+            ["wear_ppe", "place_fiber"],
+            ["place_fiber", "apply_resin"]
+        ]
+    },
+    "state_schema": {
+        "gloves_worn": "boolean",
+        "scale_tared": "boolean",
+        "resin_mixed": "boolean",
+        "layers_placed": "integer",
+        "current_layer_wetted": "boolean"
+    },
+    "constraints": [
+        "Gloves must be worn before handling chemicals",        
+        "Mixture must contain equal parts by volume of Resin and Hardener",
+        "Fiber-to-Resin ratio should be 1:1 by weight",
+        "Resin must be applied within 20 minutes (pot life)"
+    ]
+}
+\end{lstlisting}
+
+The SOP Parser converts this representation into a TaskGraph object that constrains the decision engine's action space, ensuring the robot only considers actions valid within the current task context.
+
+\subsection{Action Layer}
+
+The Action Layer translates high-level decisions into robot motion.
+
+\subsubsection{Motion Primitives}
+
+Basic actions available to the robot include \texttt{MOVE\_TO\_POSE} (move end-effector to specified 6-DOF pose), \texttt{FOLLOW\_TRAJECTORY} (execute a pre-planned path), \texttt{OPEN\_GRIPPER} / \texttt{CLOSE\_GRIPPER} (gripper control), and \texttt{WAIT} (hold position for specified duration).
+
+\subsubsection{Motion Planning Integration}
+
+For collision-free path planning, The framework integrates with cuRobo~\cite{Liu2023}, which provides GPU-accelerated motion planning. The planning pipeline receives a target pose from the decision engine, updates the collision model with current object positions, generates an optimal trajectory considering human predicted path, validates the trajectory against safety constraints, and executes it via the robot controller.
+
+% ============================================================================
+% SECTION 5: IMPLEMENTATION
+% ============================================================================
+\section{Implementation}
+
+\subsection{Software Architecture}
+
+The framework is implemented in Python with key dependencies including LangGraph} (state machine for orchestrating the perception-decision-action loop), Google Gemini} (VLM for intent prediction and decision reasoning), OpenCV/PIL} (image processing), NumPy} (numerical computation for trajectories and poses), ROS 2 Humble} (robot middleware for real robot deployment), and Isaac Sim} (physics simulation for testing and synthetic data).
+
+\subsection{Data Collection Interface}
+
+The Wizard-of-Oz data collection requires a specialized interface enabling the robot operator to issue commands while monitoring the task performer. We implement a Streamlit-based graphical interface that provides real-time video display from the workspace camera, a panel of pre-programmed assistance actions available for the current task, execution controls (start, pause, stop, emergency halt), and status indicators showing robot state and recording progress.
+
+The interface is designed for rapid response: upon button press, the selected action begins executing immediately while the command timestamp is logged. Pre-programmed actions are defined in YAML configuration files specifying joint trajectories recorded through kinesthetic teaching. This approach ensures repeatable robot behavior across sessions while allowing the operator to focus on timing decisions.
+
+Recordings are stored in HDF5 format with the following structure: video frames as compressed image sequences, robot joint states at 125 Hz, gripper states and commands, and operator action timestamps with action identifiers.
+
+For real-world data collection, we use a UR5 collaborative robot equipped with a Robotiq 2F-85 gripper. The perception system comprises a plain monocular camera recording the workspace and utilizes a GoPro Max2 camera recording 360 video as the robot wrist camera. This wide perspective enables objects to remain within the robot wrist camera's view for 
+
+\subsection{Visualization and Debugging}
+
+A real-time dashboard provides a live video feed with detected objects and human pose overlay, current task graph state with completed/pending nodes, decision history with expandable reasoning traces, performance metrics and timing information, and manual override controls for safety.
+
+% ============================================================================
+% SECTION 6: CASE STUDY - COMPOSITE LAYUP
+% ============================================================================
+\section{Case Study: Composite Layup Manufacturing}
+
+\subsection{Task Description}
+
+Composite layup is a manufacturing process for creating high-performance fiber-reinforced polymer parts, widely used in aerospace and automotive industries~\cite{Makris2023, Manyar2023}. The process involves preparing the mold surface, mixing resin and hardener in precise ratios, cutting and positioning fiber reinforcement plies, applying resin to each layer, removing air voids (debulking), and inspecting for defects (wrinkles, gaps, foreign objects). This task exemplifies scenarios where proactive assistance is valuable: the human requires dexterity for ply placement while the robot can assist with tool provision, inspection, and resin application.
+
+\subsection{SOP Specification}
+
+
+\subsection{Proactive Assistance Opportunities}
+
+Within this task, the framework can provide Tool Provision} (anticipating when operator needs roller, squeegee, or measuring cup), Quality Inspection} (using vision to detect wrinkles or misalignment before curing), Time Monitoring} (alerting when resin pot life is expiring), Documentation} (recording process parameters automatically), and Safety Alerts} (warning about PPE compliance or chemical handling).
+
+% ============================================================================
+% SECTION 7: EXPERIMENTAL DESIGN
+% ============================================================================
+\section{Experimental Design}
+
+\subsection{Overview: Wizard-of-Oz Data Collection}
+
+Evaluating proactive assistance algorithms requires ground truth data indicating when and how a robot should intervene. Since optimal intervention is a subjective judgment depending on task context and operator state, we employ a Wizard-of-Oz methodology where a human ``helper'' controls the robot to assist another human ``performer,'' with all decisions and sensor data recorded. This approach captures expert human judgment as ground truth, enabling offline comparison of algorithmic predictions against actual human decisions.
+
+The experimental design comprises two phases: a data collection phase that generates the benchmark dataset, and an evaluation phase that assesses algorithm performance against the recorded ground truth.
+
+\subsection{Phase 1: Ground Truth Data Collection}
+
+\subsubsection{Participant Roles}
+
+Each data collection session involves two participants. The Task Performer} executes the manufacturing task (composite layup) following the SOP, working naturally as if they were alone but accepting robot assistance when offered. The Robot Operator} observes the performer through a separate display and controls the robot through a graphical interface, issuing commands to execute pre-programmed assistance actions when they judge intervention is appropriate.
+
+The robot operator is trained on the SOP and instructed to provide assistance that is timely (neither too early nor too late), appropriate in modality (correct action for the situation), and necessary (genuinely helpful rather than intrusive). This training establishes shared understanding of appropriate proactive behavior.
+
+\subsubsection{Recording Infrastructure}
+
+The data collection system simultaneously records multiple synchronized streams. Workspace Video} captures an overhead RGB-D view of the entire workspace, providing third-person observation of both human and robot. Performer Camera} records 360 degree video from a GoPro mounted on the robot wrist. Robot State logs joint positions, velocities, and gripper state at high frequency throughout execution. Operator Commands timestamps each command issued by the robot operator, including the action type and target.
+
+All streams are synchronized using a common clock and stored in a structured format enabling efficient replay and annotation. The recording interface is implemented using ROS 2 for robot state capture, with custom Python components for video synchronization and HDF5-based storage.
+
+\subsubsection{Task Protocol}
+
+Each session follows a standardized protocol. The performer receives task instructions but not specific timing cues. The operator observes without direct communication with the performer. The task proceeds until completion or timeout, with all data continuously recorded. Multiple sessions are collected across different performer-operator pairs to capture variation in working styles and intervention preferences.
+
+\subsection{Phase 2: Offline Evaluation}
+
+\subsubsection{Algorithm Evaluation Pipeline}
+
+The recorded data serves as input to the framework operating in offline mode. For each recorded session, the system processes the video and sensor streams as if observing in real-time, generating intervention predictions at each timestep. These predictions are compared against the ground truth commands issued by the human operator.
+
+\subsubsection{Evaluation Metrics}
+
+The primary evaluation compares predicted interventions against ground truth using several metrics.
+
+Temporal Accuracy measures how closely the algorithm's intervention timing matches the human operator's decisions:
+\begin{equation}
+    A_{temporal} = 1 - \frac{|t_{predicted} - t_{ground\_truth}|}{\tau_{window}}
+\end{equation}
+where $\tau_{window}$ defines an acceptable timing tolerance (e.g., 2 seconds).
+
+Action Accuracy measures whether the predicted action type matches the ground truth:
+\begin{equation}
+    A_{action} = \mathbf{1}[a_{predicted} = a_{ground\_truth}]
+\end{equation}
+
+False Positive Rate counts interventions predicted by the algorithm that the human operator did not perform, indicating over-aggressive assistance.
+
+False Negative Rate counts ground truth interventions that the algorithm failed to predict, indicating missed opportunities for assistance.
+
+Combined A-Score integrates temporal and action accuracy with necessity assessment based on task state at intervention time.
+
+\subsubsection{Ablation Studies}
+
+The evaluation phase enables systematic ablation studies comparing the framework with SOP grounding versus unconstrained LLM reasoning, different VLM architectures (Gemini, GPT-4V, open-source alternatives), varying temporal context windows for intent prediction, and different monitor combinations (vision-only, vision plus audio, full multimodal).
+
+% \subsection{Hypotheses}
+
+% We test the following hypotheses: H1}, that VLM-based intent prediction will achieve temporal accuracy above 80\% compared to human operator ground truth; H2, that SOP grounding will improve action accuracy compared to unconstrained LLM reasoning; H3, that the Appropriateness Score will correlate with human subjective ratings of intervention quality; and H4}, that the benchmark dataset will enable differentiation between proactive assistance algorithms.
+
+\subsection{Dataset Release}
+
+Upon completion of data collection, the benchmark dataset will be released publicly to enable reproducible research in proactive HRC. The release will include raw synchronized sensor streams (video, robot state, operator commands), pre-processed features (human pose, object detections, task state annotations), evaluation scripts implementing the metrics described above, and baseline algorithm predictions for comparison.
+
+% ============================================================================
+% SECTION 8: RESULTS
+% ============================================================================
+\section{Results}
+
+\textit{[To be completed after experimental evaluation]}
+
+
+% ============================================================================
+% SECTION 9: DISCUSSION
+% ============================================================================
+\section{Discussion}
+
+\textit{[To be completed after experimental evaluation]}
+
+\subsection{Implications for Proactive HRC}
+
+The Wizard-of-Oz methodology addresses a fundamental challenge in proactive HRC research: obtaining ground truth for inherently subjective decisions. By capturing expert human judgment on when and how to assist, the approach enables quantitative comparison of algorithms that would otherwise require expensive and variable human subject studies for each evaluation.
+
+\subsection{Limitations}
+
+Several limitations merit discussion. The ground truth reflects decisions of individual human operators, whose judgment may vary based on experience, attention, and personal style. Inter-operator agreement provides one measure of consistency, but fundamentally proactive assistance may admit multiple valid strategies. Additionally, the offline evaluation assumes that algorithm behavior during live interaction would match offline predictions, which may not hold for systems that adapt their behavior based on human responses.
+
+\subsection{Generalization to Other Domains}
+
+While the experimental task focuses on composite layup manufacturing, the methodology generalizes to any collaborative scenario with defined assistance opportunities. The key requirements are pre-programmed robot actions that can be triggered on command, synchronized multimodal recording capability, and tasks where proactive assistance provides measurable value. Industrial applications including assembly, inspection, and packaging share these characteristics.
+
+% ============================================================================
+% SECTION 10: CONCLUSION
+% ============================================================================
+\section{Conclusion}
+
+\textit{[To be completed after experimental evaluation]}
+
+\subsection{Summary of Contributions}
+
+\subsection{Future Work}
+
+Future directions include integration with Vision-Language-Action models for end-to-end learned policies, extension to multi-robot collaborative scenarios, personalization of proactive behavior based on operator preferences, transfer learning across different manufacturing domains, and integration with digital twin platforms for predictive simulation.
+
+% ============================================================================
+% ACKNOWLEDGMENTS
+% ============================================================================
+\section*{Acknowledgments}
+
+\textit{[To be added]}
+
+% ============================================================================
+% REFERENCES
+% ============================================================================
+\bibliographystyle{ieeetr}
+\bibliography{draft_references}
+
+\end{document}

@@ -43,3 +43,27 @@ My project has a lot of possibly conflicting dependencies. I'll need sam3 and sa
 
 This is a large project that cannot be completed by an AI agent in one prompt. First modularize the tasks and create a plan for AI agents to work on specific chunks. We want to use LangGraph, ROS nodes, MCP servers, MQTT (if needed), Google A2A protocol
 Write the plans to the /home/mani/Repos/aura/genai_instructions folder. We want to create "aura" as the master Github Repo. Necessary models can be copied to third_party. Scripts outside the Repo can be used as reference to write new optimized code.
+
+Investigate how the Aura framework and implement this. Plan and ask before implementation:
+Formalizing the State: The Semantic Scene Graph (SSG)
+Instead of a flat list of variables, formalize your state into a Dynamic Spatio-Temporal Scene Graph. This becomes the "Shared Truth" that all nodes read from and write to.
+
+Nodes: Objects (for example bottle, hammer, cup), Agents (Human, Robot), and Regions (Table, Bin).
+
+Edges: Spatial relations (On, Near, Inside) and Semantic relations (OwnedBy, TargetedBy).
+
+Attributes: State (Dirty, Full, Empty), Affordances (Pickable, Foldable), and Predicted Action (WillMoveTo).
+
+Why this helps Explainability: When the Brain makes a decision, it can cite a specific edge in the graph. "I moved the hammer because edge [Human] --Target--> [Hammer] was predicted, but [Box] --Blocks--> [Hammer] was true."
+
+
+Consider two demo tasks, Let's consider an example of making tea. The objects of interest can include the stove, the pan, the water, the cups, the spoon, tea, milk, sugar containers. They would all essentially be on the same surface, except maybe the spoon can be in a drawer. We can perhaps find the camera-frame coordinates or world-frame cordinates or find masks and bbox for them for particular input images. From a decision making perspective, the SOP for making tea will be created and available in the state.json and dag.json files and the yaml files. Lets say the state contains booleans like water added to pot, water boiling, tea added to boiling water, milk added to cup. Let's say the robot affordance includes a learned skill for adding sugar to the cup if the cup and sugar are in place and reachable. So the system should have the necessary expressiveness to say that, water was on the pot, the cup was in position, the sugar was not added, the robot is capable of adding sugar, so the robot should add sugar. 
+
+The second illustrative task is robot assisted weighing of resin and hardner bottle. Here two bottles are placed on one table and a human with a weight machine is sitting on the other table. First The hardener bottle is picked, then the human weighs it. Then the resin bottle is picked then the user weighs it. Then the hardener and resin bottles are returned. The next action is taken after the robot returns to its home position.  The ground truth actions are recorded in the wizard of oz experiment. Along with the timings. The 3rd person video (video.mp4) and the robot gripper perspective 360 degree GoPro video (exp.mp4) are available in the demo_data folder. We don't want to hard-code specific examples, instead we want to rely on the intelligence of frontier AI models taking input from gesture, object detection and segementation models.
+Create the base Semantic Scene Graph code which is generic and not task specific. There is a separate task specific folder, that can essentially be deleted without consequence to the base framework, for the task specific implementation. 
+
+
+Write and execute tests for the bottle weighing task. Ideally, the system should be able to read the frames and audio from input videos. The perception module should identify important objects. The intention module should detect the current and expected future actions. The prediction module should predict future hand states. The sound module should check for any speech. Based on all monitors, the decision engine should invoke which robot skills to execute at what time. 
+
+Investigate the already implemented monitors. While modifying the existing monitors, ensure that they remain generic. Create new files for task specific monitors if needed
+create a ui dashboard to inspect the outputs of the monitors and brain as it processes the bottle weighing video and data

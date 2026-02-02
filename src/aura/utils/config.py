@@ -27,7 +27,7 @@ class PerceptionConfig(MonitorConfig):
     use_gemini_detection: bool = True
     max_objects: int = 10
     confidence_threshold: float = 0.5
-    gemini_model: str = "gemini-2.0-flash-exp"
+    gemini_model: str = "gemini-3-pro-preview"
     default_prompts: List[str] = Field(default_factory=lambda: ["person", "hand"])
     detection_interval_frames: int = 30
 
@@ -38,7 +38,7 @@ class IntentMonitorConfig(MonitorConfig):
     capture_duration: float = 2.0  # Buffer window in seconds
     prediction_interval: float = 3.0  # How often to query Gemini
     max_image_dimension: int = 512  # Max image dimension for Gemini
-    model: str = "gemini-2.0-flash-exp"  # Gemini model
+    model: str = "gemini-3-pro-preview"  # Gemini model
     timeout_sec: float = 30.0  # Longer timeout for Gemini API calls
     # Task graph configuration
     dag_file: Optional[str] = None  # Path to DAG JSON file
@@ -68,7 +68,7 @@ class MotionPredictorConfig(MonitorConfig):
 class SoundMonitorConfig(MonitorConfig):
     """Configuration for sound/speech monitor."""
     use_gemini_live: bool = True
-    gemini_model: str = "gemini-2.0-flash-exp"
+    gemini_model: str = "gemini-3-pro-preview"
     sample_rate: int = 16000
     chunk_size: int = 1024
     wake_word_enabled: bool = False
@@ -78,7 +78,7 @@ class SoundMonitorConfig(MonitorConfig):
 class AffordanceConfig(MonitorConfig):
     """Configuration for affordance detection."""
     use_llm: bool = True
-    model: str = "gemini-2.0-flash-exp"
+    model: str = "gemini-3-pro-preview"
     check_physical_constraints: bool = True
 
 
@@ -93,7 +93,7 @@ class MonitorsConfig(BaseModel):
 
 class BrainConfig(BaseModel):
     """Configuration for the brain/decision engine."""
-    decision_model: str = "gemini-2.0-flash-exp"
+    decision_model: str = "gemini-3-pro-preview"
     reasoning_depth: str = "standard"  # standard, deep, or quick
     enable_explainability: bool = True
     state_update_rate_hz: float = 10.0

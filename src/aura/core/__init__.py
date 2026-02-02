@@ -8,6 +8,9 @@ from .enums import (
     TaskState,
 )
 
+# Import scene_graph submodule for explicit access
+from . import scene_graph
+
 from .types import (
     # Geometry
     Pose2D,

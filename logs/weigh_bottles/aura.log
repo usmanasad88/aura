@@ -1,0 +1,171 @@
+2026-01-31 19:57:41,096 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 19:57:41,096 - __main__ - INFO - Loaded config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 19:57:41,096 - __main__ - INFO - Initializing task-specific monitors...
+2026-01-31 19:57:41,096 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 19:57:41,104 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 19:58:08,034 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 19:58:08,034 - __main__ - INFO - Loaded config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 19:58:08,034 - __main__ - INFO - Initializing task-specific monitors...
+2026-01-31 19:58:08,034 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 19:58:08,042 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 19:58:08,042 - aura.tasks.weigh_bottles.monitors - INFO - WeighBottlesPerceptionMonitor initialized
+2026-01-31 19:58:08,042 - aura.tasks.weigh_bottles.monitors - INFO - Target objects: ['resin_bottle', 'hardener_bottle', 'weigh_scale', 'mixing_cup', 'human_hand', 'table', 'person']
+2026-01-31 19:58:26,880 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 19:58:26,881 - __main__ - INFO - Loaded config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 19:58:26,881 - __main__ - INFO - Initializing task-specific monitors...
+2026-01-31 19:58:26,881 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 19:58:26,890 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 19:58:26,890 - aura.tasks.weigh_bottles.monitors - INFO - WeighBottlesPerceptionMonitor initialized
+2026-01-31 19:58:26,890 - aura.tasks.weigh_bottles.monitors - INFO - Target objects: ['resin_bottle', 'hardener_bottle', 'weigh_scale', 'mixing_cup', 'human_hand', 'table', 'person']
+2026-01-31 20:00:09,459 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 20:00:09,459 - __main__ - INFO - Loaded config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 20:00:09,459 - __main__ - INFO - Initializing task-specific monitors...
+2026-01-31 20:00:09,459 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 20:00:09,468 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 20:00:09,468 - aura.tasks.weigh_bottles.monitors - INFO - WeighBottlesPerceptionMonitor initialized
+2026-01-31 20:00:09,468 - aura.tasks.weigh_bottles.monitors - INFO - Target objects: ['resin_bottle', 'hardener_bottle', 'weigh_scale', 'mixing_cup', 'human_hand', 'table', 'person']
+2026-01-31 20:00:09,469 - aura.tasks.weigh_bottles.monitors - WARNING - Could not initialize GestureMonitor: MediaPipe is required for gesture recognition. Install with: uv add mediapipe
+2026-01-31 20:00:09,469 - __main__ - INFO - Monitors initialized successfully
+2026-01-31 20:00:09,485 - __main__ - INFO - Video: demo_data/weigh_bottles/video.mp4
+2026-01-31 20:00:09,485 - __main__ - INFO -   Resolution: 640x480, FPS: 30.0
+2026-01-31 20:00:09,485 - __main__ - INFO -   Duration: 197.8s, Frames: 5933
+2026-01-31 20:00:09,501 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-31 20:00:09,534 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-31 20:00:09,561 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-31 20:00:09,561 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-31 20:00:09,562 - httpcore.connection - DEBUG - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+2026-01-31 20:00:09,613 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7793a5517800>
+2026-01-31 20:00:09,613 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x7793a54ffb50> server_hostname='generativelanguage.googleapis.com' timeout=None
+2026-01-31 20:00:09,764 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7793a5517710>
+2026-01-31 20:00:09,764 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2026-01-31 20:00:09,764 - httpcore.http11 - DEBUG - send_request_headers.complete
+2026-01-31 20:00:09,764 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2026-01-31 20:00:09,764 - httpcore.http11 - DEBUG - send_request_body.complete
+2026-01-31 20:00:09,764 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2026-01-31 20:00:10,573 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 31 Jan 2026 15:00:10 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=774'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+2026-01-31 20:00:10,573 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 404 Not Found"
+2026-01-31 20:00:10,573 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2026-01-31 20:00:10,574 - httpcore.http11 - DEBUG - receive_response_body.complete
+2026-01-31 20:00:10,574 - httpcore.http11 - DEBUG - response_closed.started
+2026-01-31 20:00:10,574 - httpcore.http11 - DEBUG - response_closed.complete
+2026-01-31 20:00:10,574 - aura.monitors.perception_module - ERROR - Gemini query failed: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-2.0-flash-exp is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}, using defaults
+2026-01-31 20:00:10,574 - __main__ - ERROR - Perception error at frame 1: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,576 - __main__ - ERROR - Perception error at frame 2: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,577 - __main__ - ERROR - Perception error at frame 3: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,578 - __main__ - ERROR - Perception error at frame 4: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,579 - __main__ - ERROR - Perception error at frame 5: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,579 - __main__ - ERROR - Perception error at frame 6: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,580 - __main__ - ERROR - Perception error at frame 7: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,581 - __main__ - ERROR - Perception error at frame 8: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,582 - __main__ - ERROR - Perception error at frame 9: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,583 - __main__ - ERROR - Perception error at frame 10: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,584 - __main__ - ERROR - Perception error at frame 11: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,585 - __main__ - ERROR - Perception error at frame 12: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,586 - __main__ - ERROR - Perception error at frame 13: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,587 - __main__ - ERROR - Perception error at frame 14: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,588 - __main__ - ERROR - Perception error at frame 15: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,589 - __main__ - ERROR - Perception error at frame 16: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,590 - __main__ - ERROR - Perception error at frame 17: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,591 - __main__ - ERROR - Perception error at frame 18: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,592 - __main__ - ERROR - Perception error at frame 19: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,593 - __main__ - ERROR - Perception error at frame 20: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,594 - __main__ - ERROR - Perception error at frame 21: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,595 - __main__ - ERROR - Perception error at frame 22: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,596 - __main__ - ERROR - Perception error at frame 23: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,596 - __main__ - ERROR - Perception error at frame 24: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,597 - __main__ - ERROR - Perception error at frame 25: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,598 - __main__ - ERROR - Perception error at frame 26: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,599 - __main__ - ERROR - Perception error at frame 27: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,600 - __main__ - ERROR - Perception error at frame 28: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,601 - __main__ - ERROR - Perception error at frame 29: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,628 - httpcore.connection - DEBUG - close.started
+2026-01-31 20:00:10,628 - httpcore.connection - DEBUG - close.complete
+2026-01-31 20:00:10,602 - __main__ - ERROR - Perception error at frame 30: 'PerceptionOutput' object has no attribute 'tracked_objects'
+2026-01-31 20:00:10,631 - __main__ - INFO - Processed 31 frames in 1.1s (27.1 fps)
+2026-01-31 20:00:10,632 - __main__ - INFO - Results saved to /tmp/weigh_bottles_results.json
+2026-01-31 20:01:11,421 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 20:01:11,421 - __main__ - INFO - Loaded config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 20:01:11,422 - __main__ - INFO - Initializing task-specific monitors...
+2026-01-31 20:01:11,422 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 20:01:11,429 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 20:01:11,430 - aura.tasks.weigh_bottles.monitors - INFO - WeighBottlesPerceptionMonitor initialized
+2026-01-31 20:01:11,430 - aura.tasks.weigh_bottles.monitors - INFO - Target objects: ['resin_bottle', 'hardener_bottle', 'weigh_scale', 'mixing_cup', 'human_hand', 'table', 'person']
+2026-01-31 20:01:11,430 - aura.tasks.weigh_bottles.monitors - WARNING - Could not initialize GestureMonitor: MediaPipe is required for gesture recognition. Install with: uv add mediapipe
+2026-01-31 20:01:11,430 - __main__ - INFO - Monitors initialized successfully
+2026-01-31 20:01:11,432 - __main__ - INFO - Video: demo_data/weigh_bottles/video.mp4
+2026-01-31 20:01:11,432 - __main__ - INFO -   Resolution: 640x480, FPS: 30.0
+2026-01-31 20:01:11,432 - __main__ - INFO -   Duration: 197.8s, Frames: 5933
+2026-01-31 20:01:11,445 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-31 20:01:11,453 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-31 20:01:11,478 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-31 20:01:11,478 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-31 20:01:11,479 - httpcore.connection - DEBUG - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+2026-01-31 20:01:11,516 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fe3c5acd3a0>
+2026-01-31 20:01:11,516 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x7fe3c5ad5a50> server_hostname='generativelanguage.googleapis.com' timeout=None
+2026-01-31 20:01:11,663 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fe3c5bb89b0>
+2026-01-31 20:01:11,663 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2026-01-31 20:01:11,663 - httpcore.http11 - DEBUG - send_request_headers.complete
+2026-01-31 20:01:11,663 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2026-01-31 20:01:11,663 - httpcore.http11 - DEBUG - send_request_body.complete
+2026-01-31 20:01:11,664 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2026-01-31 20:01:12,462 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 31 Jan 2026 15:01:12 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=761'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+2026-01-31 20:01:12,463 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent "HTTP/1.1 404 Not Found"
+2026-01-31 20:01:12,463 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2026-01-31 20:01:12,463 - httpcore.http11 - DEBUG - receive_response_body.complete
+2026-01-31 20:01:12,463 - httpcore.http11 - DEBUG - response_closed.started
+2026-01-31 20:01:12,464 - httpcore.http11 - DEBUG - response_closed.complete
+2026-01-31 20:01:12,464 - aura.monitors.perception_module - ERROR - Gemini query failed: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-2.0-flash-exp is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}, using defaults
+2026-01-31 20:01:12,489 - __main__ - INFO - Processed 31 frames in 1.1s (29.3 fps)
+2026-01-31 20:01:12,491 - __main__ - INFO - Results saved to /tmp/weigh_bottles_results.json
+2026-01-31 20:01:12,513 - httpcore.connection - DEBUG - close.started
+2026-01-31 20:01:12,513 - httpcore.connection - DEBUG - close.complete
+2026-01-31 20:02:59,832 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 20:02:59,832 - __main__ - INFO - Loaded config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 20:02:59,832 - __main__ - INFO - Initializing task-specific monitors...
+2026-01-31 20:02:59,832 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/weigh_bottles.yaml
+2026-01-31 20:02:59,841 - aura.utils.config - INFO - Logging configured: level=DEBUG
+2026-01-31 20:02:59,841 - aura.tasks.weigh_bottles.monitors - INFO - WeighBottlesPerceptionMonitor initialized
+2026-01-31 20:02:59,841 - aura.tasks.weigh_bottles.monitors - INFO - Target objects: ['resin_bottle', 'hardener_bottle', 'weigh_scale', 'mixing_cup', 'human_hand', 'table', 'person']
+2026-01-31 20:02:59,841 - aura.tasks.weigh_bottles.monitors - WARNING - Could not initialize GestureMonitor: MediaPipe is required for gesture recognition. Install with: uv add mediapipe
+2026-01-31 20:02:59,841 - __main__ - INFO - Monitors initialized successfully
+2026-01-31 20:02:59,844 - __main__ - INFO - Video: demo_data/weigh_bottles/video.mp4
+2026-01-31 20:02:59,844 - __main__ - INFO -   Resolution: 640x480, FPS: 30.0
+2026-01-31 20:02:59,844 - __main__ - INFO -   Duration: 197.8s, Frames: 5933
+2026-01-31 20:02:59,858 - aura.monitors.perception_module - INFO - Running Gemini detection...
+2026-01-31 20:02:59,865 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-01-31 20:02:59,891 - aura.monitors.perception_module - INFO - 🔍 Querying Gemini to detect objects...
+2026-01-31 20:02:59,891 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-01-31 20:02:59,892 - httpcore.connection - DEBUG - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+2026-01-31 20:02:59,927 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x70a1fcffc8c0>
+2026-01-31 20:02:59,927 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x70a1fcf91750> server_hostname='generativelanguage.googleapis.com' timeout=None
+2026-01-31 20:03:00,074 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x70a1fcfd0da0>
+2026-01-31 20:03:00,075 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2026-01-31 20:03:00,075 - httpcore.http11 - DEBUG - send_request_headers.complete
+2026-01-31 20:03:00,075 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2026-01-31 20:03:00,075 - httpcore.http11 - DEBUG - send_request_body.complete
+2026-01-31 20:03:00,075 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2026-01-31 20:03:19,254 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 31 Jan 2026 15:03:19 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=19143'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+2026-01-31 20:03:19,255 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent "HTTP/1.1 200 OK"
+2026-01-31 20:03:19,255 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2026-01-31 20:03:19,258 - httpcore.http11 - DEBUG - receive_response_body.complete
+2026-01-31 20:03:19,258 - httpcore.http11 - DEBUG - response_closed.started
+2026-01-31 20:03:19,258 - httpcore.http11 - DEBUG - response_closed.complete
+2026-01-31 20:03:19,259 - aura.monitors.perception_module - DEBUG - Gemini response: ```json
+[
+  "person",
+  "plate",
+  "table",
+  "chair",
+  "door",
+  "ceiling light",
+  "window",
+  "partition",
+  "floor",
+  "wall"
+]
+```
+2026-01-31 20:03:19,259 - aura.monitors.perception_module - INFO - ✅ Detected objects: ['person', 'plate', 'table', 'chair', 'door', 'ceiling light', 'window', 'partition', 'floor', 'wall']
+2026-01-31 20:03:19,259 - httpcore.connection - DEBUG - close.started
+2026-01-31 20:03:19,259 - httpcore.connection - DEBUG - close.complete
+2026-01-31 20:03:19,294 - __main__ - INFO - Processed 31 frames in 19.5s (1.6 fps)
+2026-01-31 20:03:19,296 - __main__ - INFO - Results saved to /tmp/weigh_bottles_results.json
