@@ -1,0 +1,216 @@
+# AURA Configuration for Hand Layup Task
+# UR5 + Robotiq 2F-85 assisting with fiberglass hand layup process
+
+demo:
+  name: "hand_layup"
+  description: "Robot assists human with fiberglass hand layup by moving objects and monitoring process"
+  sop_file: "tasks/hand_layup/config/hand_layup.json"
+  demo_data_dir: "demo_data/layup_demo"
+
+# Data files for dummy demo
+data:
+  video_3rd_person: "demo_data/layup_demo/layup_dummy_demo_crop_1080.mp4"
+  reference_frame: "demo_data/layup_demo/layup_dummy_frame.jpg"
+
+# Brain / Decision Engine
+brain:
+  model: "gemini-3-pro-preview"
+  temperature: 0.3
+  max_tokens: 4096
+  reasoning_style: "chain_of_thought"
+  explanation_verbosity: "high"
+  
+  # Task-specific decision parameters
+  proactive_assistance: true
+  anticipation_horizon_seconds: 10
+  verbal_announcements: true
+  
+  # Wait for home position before next action
+  wait_for_home_position: true
+  
+  # Safety overrides
+  pause_on_human_proximity: true
+  minimum_clearance_m: 0.15
+  
+  # Housekeeping - proactively remove unused tools
+  housekeeping_enabled: true
+
+# Perception Pipeline  
+perception:
+  camera_3rd_person:
+    type: "webcam"
+    resolution: [1920, 1080]
+    fps: 30
+  
+  # Object detection for layup workspace
+  object_detection:
+    model: "sam3"
+    confidence_threshold: 0.3
+    use_sam3: true
+    classes:
+      - "fiberglass sheet"
+      - "metal mold"
+      - "resin bottle"
+      - "hardener bottle"
+      - "cup"
+      - "mixing stick"
+      - "weigh scale"
+      - "small brush"
+      - "medium brush"
+      - "roller"
+      - "person"
+      - "hand"
+      - "gloves"
+      - "table"
+      - "robot arm"
+    aliases:
+      fiberglass: "fiberglass sheet"
+      mold: "metal mold"
+      resin: "resin bottle"
+      hardener: "hardener bottle"
+      mixing_cup: "cup"
+      scale: "weigh scale"
+      brush_small: "small brush"
+      brush_medium: "medium brush"
+  
+  # Human pose for safety and intent
+  human_pose:
+    model: "rtmpose"
+    track_hands: true
+    track_gaze: true
+    
+  # Safety monitoring
+  safety:
+    gloves_detection: true
+    gloves_required_phases:
+      - "resin_preparation"
+      - "mixing"
+      - "layer_1_placement"
+      - "layer_1_resin"
+      - "layer_2_placement"
+      - "layer_2_resin"
+      - "layer_3_placement"
+      - "layer_3_resin"
+      - "layer_4_placement"
+      - "layer_4_resin"
+      - "consolidation"
+
+# Sound Monitor
+sound:
+  enabled: true
+  sample_rate: 16000
+  
+  wake_words: ["robot", "helper", "aura"]
+  command_phrases:
+    - "bring the {tool}"
+    - "move the {tool}"
+    - "I need the {tool}"
+    - "remove the {tool}"
+    - "clear the table"
+    - "pause"
+    - "continue"
+    - "emergency stop"
+  
+  tts:
+    enabled: true
+    voice: "en-US-Neural2-J"
+    announcements:
+      - "Delivering {object_name} to workplace"
+      - "Removing {object_name} from workplace"
+      - "Warning: gloves not detected"
+      - "Warning: mixture shelf life at {minutes} minutes"
+      - "Task complete. Good work!"
+
+# Motion Prediction
+motion:
+  enabled: true
+  model_type: "mediapipe"
+  update_rate_hz: 15.0
+  prediction_horizon_seconds: 2.0
+  
+  poses:
+    - "reaching_for_object"
+    - "pouring"
+    - "stirring"
+    - "placing_fiberglass"
+    - "brushing_resin"
+    - "rolling"
+    - "waiting"
+    - "inspecting"
+
+# Monitors Configuration
+monitors:
+  perception:
+    enabled: true
+    update_rate_hz: 5.0
+    use_sam3: false
+    use_gemini_detection: true
+    max_objects: 15
+  
+  motion:
+    enabled: true
+    update_rate_hz: 15.0
+    prediction_horizon_seconds: 2.0
+  
+  sound:
+    enabled: true
+    use_gemini_live: true
+    wake_word_enabled: true
+    wake_word: "robot"
+  
+  affordance:
+    enabled: true
+    update_rate_hz: 5.0
+    use_llm: true
+
+  safety:
+    enabled: true
+    gloves_check_interval_hz: 2.0
+    shelf_life_check_interval_hz: 0.5
+
+# Actions - Robot object-moving skills
+actions:
+  executor_type: "simulation"  # For offline analysis of dummy video
+  action_timeout_seconds: 30.0
+  verify_completion: true
+  
+  # Robot skills (not pre-programmed UR programs, but parameterized pick-place)
+  skills:
+    move_to_workplace:
+      description: "Pick object from storage and place on workplace table"
+      parameters: ["object_id"]
+      duration_seconds: 15.0
+    move_to_storage:
+      description: "Pick object from workplace and place on storage table (housekeeping)"
+      parameters: ["object_id"]
+      duration_seconds: 15.0
+
+# Communication
+communication:
+  speech_enabled: true
+  text_display_enabled: true
+  digital_twin_enabled: false
+
+# Interface
+interface:
+  interface_type: "offline_analysis"
+
+# Logging
+logging:
+  level: "DEBUG"
+  log_to_file: true
+  log_directory: "logs/hand_layup"
+
+# Evaluation metrics (A-Score components from paper)
+evaluation:
+  enabled: true
+  metrics:
+    timeliness:
+      enabled: true
+      optimal_window_seconds: 5.0
+    modality:
+      enabled: true
+      expected_modalities: ["deliver", "remove", "alert"]
+    necessity:
+      enabled: true
+      track_human_requests: true

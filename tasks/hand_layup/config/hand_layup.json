@@ -1,0 +1,296 @@
+{
+  "id": "hand_layup",
+  "name": "Fiberglass Hand Layup Assistance",
+  "description": "Human performs a 4-layer fiberglass hand layup on a metal mold. Robot assists by moving objects between storage and workplace: delivering required tools/materials proactively and performing housekeeping by removing items no longer needed. System monitors safety (gloves), process quality (resin/hardener ratio, shelf life), and task progress.",
+  "version": "1.0.0",
+
+  "role_instructions": {
+    "robot": "You are assisting a human operator performing a fiberglass hand layup. Your responsibilities are: (1) Proactively deliver objects from the storage table to the workplace when they will be needed next, (2) Remove objects from the workplace to storage when they are no longer needed (housekeeping), (3) Monitor the process and alert the human of safety or quality issues (missing gloves, incorrect ratio, shelf life approaching). You may ONLY pick and place objects. You do NOT perform any layup work. Always announce actions before executing. Prioritize human safety. Return to home position between actions.",
+    "human": "You are performing the fiberglass hand layup on the mold. Follow the standard operating procedure: prepare resin mixture, place fiberglass layers one at a time with resin application between each, then consolidate with roller. Wear gloves at all times when handling resin or wet fiberglass."
+  },
+
+  "materials": {
+    "fiberglass_sheet": {
+      "name": "Fiberglass Sheet",
+      "description": "Pre-cut fiberglass pieces for layup (4 pieces needed)",
+      "quantity": 4,
+      "location": "workplace"
+    },
+    "resin_bottle": {
+      "name": "Resin Bottle",
+      "description": "Epoxy or polyester resin container",
+      "location": "workplace"
+    },
+    "hardener_bottle": {
+      "name": "Hardener Bottle",
+      "description": "Catalyst/hardener for the resin",
+      "location": "workplace"
+    },
+    "cup": {
+      "name": "Mixing Cup",
+      "description": "Cup with mixing stick for resin/hardener mixture",
+      "location": "workplace"
+    }
+  },
+
+  "tools": [
+    {"id": "weigh_scale", "name": "Weigh Scale", "location": "workplace", "tare_capable": true},
+    {"id": "brush_small", "name": "Small Brush", "location": "workplace", "use": "Apply resin to layers 1-2"},
+    {"id": "brush_medium", "name": "Medium Brush", "location": "workplace", "use": "Apply resin to layers 3-4"},
+    {"id": "roller", "name": "Consolidation Roller", "location": "workplace", "use": "Consolidate layers after final resin application"},
+    {"id": "mixing_stick", "name": "Mixing Stick", "location": "workplace", "use": "Stir resin/hardener mixture (part of cup)"}
+  ],
+
+  "workstations": {
+    "workplace": {
+      "description": "Primary work table where the human performs the layup",
+      "pose": {"x": 0.4, "y": 0.0, "z": 0.8},
+      "objects": ["mold", "fiberglass_sheet", "resin_bottle", "hardener_bottle", "cup", "weigh_scale", "brush_small", "brush_medium", "roller"]
+    },
+    "storage": {
+      "description": "Secondary table for storing objects not currently needed",
+      "pose": {"x": 0.4, "y": 0.6, "z": 0.8},
+      "objects": []
+    },
+    "robot_home": {
+      "description": "Robot home/safe position between actions",
+      "pose": {"x": 0.0, "y": 0.0, "z": 0.5}
+    }
+  },
+
+  "nodes": {
+    "initialize": {
+      "id": "initialize",
+      "name": "Initialize Task",
+      "description": "All objects laid out on the workplace table. Robot at home. Human ready.",
+      "preconditions": [],
+      "postconditions": ["robot_at_home", "human_ready", "all_objects_on_workplace"],
+      "assignee": "robot",
+      "robot_actions": ["go_to_home", "announce_ready"]
+    },
+
+    "place_cup_on_scale": {
+      "id": "place_cup_on_scale",
+      "name": "Place Cup on Scale",
+      "description": "Human places the mixing cup on the weigh scale for resin preparation",
+      "preconditions": ["initialize"],
+      "postconditions": ["cup_on_scale"],
+      "assignee": "human",
+      "human_actions": ["pick_cup", "place_on_scale", "tare_scale"]
+    },
+
+    "add_resin": {
+      "id": "add_resin",
+      "name": "Add Resin to Cup",
+      "description": "Human pours resin from the bottle into the cup on the scale",
+      "preconditions": ["place_cup_on_scale"],
+      "postconditions": ["resin_added"],
+      "assignee": "human",
+      "human_actions": ["pick_resin_bottle", "pour_resin", "check_weight", "put_down_bottle"],
+      "monitoring": ["resin_weight"]
+    },
+
+    "add_hardener": {
+      "id": "add_hardener",
+      "name": "Add Hardener to Cup",
+      "description": "Human pours hardener from the bottle into the cup on the scale",
+      "preconditions": ["add_resin"],
+      "postconditions": ["hardener_added"],
+      "assignee": "human",
+      "human_actions": ["pick_hardener_bottle", "pour_hardener", "check_weight", "put_down_bottle"],
+      "monitoring": ["hardener_weight", "resin_hardener_ratio"]
+    },
+
+    "weigh_mixture": {
+      "id": "weigh_mixture",
+      "name": "Weigh Mixture",
+      "description": "Human verifies the final weight and ratio of the mixture",
+      "preconditions": ["add_hardener"],
+      "postconditions": ["mixture_weighed"],
+      "assignee": "human",
+      "human_actions": ["read_scale", "verify_ratio"]
+    },
+
+    "mix_resin_hardener": {
+      "id": "mix_resin_hardener",
+      "name": "Mix Resin and Hardener",
+      "description": "Human stirs the resin and hardener together thoroughly",
+      "preconditions": ["weigh_mixture"],
+      "postconditions": ["mixture_mixed", "shelf_life_started"],
+      "assignee": "human",
+      "human_actions": ["stir_mixture", "ensure_uniform"],
+      "robot_actions": ["start_shelf_life_timer"]
+    },
+
+    "place_layer_1": {
+      "id": "place_layer_1",
+      "name": "Place Layer 1 on Mold",
+      "description": "Human places the first fiberglass sheet on the mold",
+      "preconditions": ["mix_resin_hardener"],
+      "postconditions": ["layer_1_placed"],
+      "assignee": "human",
+      "human_actions": ["pick_fiberglass", "drape_on_mold", "smooth_sheet"],
+      "robot_housekeeping_opportunity": {
+        "remove": ["weigh_scale"],
+        "reason": "Scale is no longer needed"
+      }
+    },
+
+    "apply_resin_layer_1": {
+      "id": "apply_resin_layer_1",
+      "name": "Apply Resin to Layer 1",
+      "description": "Human uses small brush to apply resin mixture to the first layer",
+      "preconditions": ["place_layer_1"],
+      "postconditions": ["layer_1_resined"],
+      "assignee": "human",
+      "human_actions": ["dip_brush_in_cup", "brush_resin_on_layer", "ensure_saturation"]
+    },
+
+    "place_layer_2": {
+      "id": "place_layer_2",
+      "name": "Place Layer 2",
+      "description": "Human places the second fiberglass sheet on the wet first layer",
+      "preconditions": ["apply_resin_layer_1"],
+      "postconditions": ["layer_2_placed"],
+      "assignee": "human",
+      "human_actions": ["pick_fiberglass", "drape_on_layer_1", "smooth_sheet"]
+    },
+
+    "apply_resin_layer_2": {
+      "id": "apply_resin_layer_2",
+      "name": "Apply Resin to Layer 2",
+      "description": "Human uses brush to apply resin mixture to the second layer",
+      "preconditions": ["place_layer_2"],
+      "postconditions": ["layer_2_resined"],
+      "assignee": "human",
+      "human_actions": ["dip_brush_in_cup", "brush_resin_on_layer", "ensure_saturation"]
+    },
+
+    "place_layer_3": {
+      "id": "place_layer_3",
+      "name": "Place Layer 3",
+      "description": "Human places the third fiberglass sheet on the stack",
+      "preconditions": ["apply_resin_layer_2"],
+      "postconditions": ["layer_3_placed"],
+      "assignee": "human",
+      "human_actions": ["pick_fiberglass", "drape_on_layer_2", "smooth_sheet"]
+    },
+
+    "apply_resin_layer_3": {
+      "id": "apply_resin_layer_3",
+      "name": "Apply Resin to Layer 3",
+      "description": "Human uses brush to apply resin mixture to the third layer",
+      "preconditions": ["place_layer_3"],
+      "postconditions": ["layer_3_resined"],
+      "assignee": "human",
+      "human_actions": ["dip_brush_in_cup", "brush_resin_on_layer", "ensure_saturation"]
+    },
+
+    "place_layer_4": {
+      "id": "place_layer_4",
+      "name": "Place Layer 4",
+      "description": "Human places the fourth and final fiberglass sheet on the stack",
+      "preconditions": ["apply_resin_layer_3"],
+      "postconditions": ["layer_4_placed"],
+      "assignee": "human",
+      "human_actions": ["pick_fiberglass", "drape_on_layer_3", "smooth_sheet"]
+    },
+
+    "apply_resin_layer_4": {
+      "id": "apply_resin_layer_4",
+      "name": "Apply Resin to Layer 4",
+      "description": "Human uses brush to apply resin mixture to the fourth and final layer",
+      "preconditions": ["place_layer_4"],
+      "postconditions": ["layer_4_resined"],
+      "assignee": "human",
+      "human_actions": ["dip_brush_in_cup", "brush_resin_on_layer", "ensure_saturation"],
+      "robot_housekeeping_opportunity": {
+        "remove": ["resin_bottle", "hardener_bottle", "cup", "brush_small"],
+        "reason": "Resin application complete, these tools are no longer needed"
+      }
+    },
+
+    "consolidate_with_roller": {
+      "id": "consolidate_with_roller",
+      "name": "Consolidate with Roller",
+      "description": "Human uses roller to consolidate all layers, remove air and excess resin",
+      "preconditions": ["apply_resin_layer_4"],
+      "postconditions": ["consolidated"],
+      "assignee": "human",
+      "human_actions": ["roll_surface", "press_out_air", "ensure_uniform_thickness"]
+    },
+
+    "finalize": {
+      "id": "finalize",
+      "name": "Complete Task",
+      "description": "Layup complete. Robot performs final cleanup of remaining tools.",
+      "preconditions": ["consolidate_with_roller"],
+      "postconditions": ["task_complete"],
+      "assignee": "both",
+      "robot_actions": ["return_remaining_tools_to_storage", "announce_complete"]
+    }
+  },
+
+  "action_sequence": [
+    "initialize",
+    "place_cup_on_scale",
+    "add_resin",
+    "add_hardener",
+    "weigh_mixture",
+    "mix_resin_hardener",
+    "place_layer_1",
+    "apply_resin_layer_1",
+    "place_layer_2",
+    "apply_resin_layer_2",
+    "place_layer_3",
+    "apply_resin_layer_3",
+    "place_layer_4",
+    "apply_resin_layer_4",
+    "consolidate_with_roller",
+    "finalize"
+  ],
+
+  "robot_skills": {
+    "move_to_workplace": {
+      "description": "Move an object from storage to the workplace table",
+      "parameters": ["object_id"],
+      "preconditions": ["object at storage", "robot at home or storage"],
+      "postconditions": ["object at workplace"]
+    },
+    "move_to_storage": {
+      "description": "Move an object from the workplace to storage (housekeeping)",
+      "parameters": ["object_id"],
+      "preconditions": ["object at workplace", "object not currently in use by human"],
+      "postconditions": ["object at storage"]
+    }
+  },
+
+  "safety_constraints": {
+    "collision_avoidance": true,
+    "human_priority": true,
+    "speed_limit_near_human_mps": 0.15,
+    "pause_on_unexpected_contact": true,
+    "wait_for_home_before_next_action": true,
+    "emergency_stop_accessible": true,
+    "gloves_required_for_resin": true,
+    "shelf_life_monitoring": true
+  },
+
+  "quality_monitoring": {
+    "resin_hardener_ratio": {
+      "description": "Monitor the weight ratio of resin to hardener",
+      "acceptable_range": "100:30 to 100:50 by weight",
+      "alert_threshold": "ratio outside acceptable range"
+    },
+    "shelf_life": {
+      "description": "Monitor elapsed time since resin/hardener mixing",
+      "max_working_time_minutes": 30,
+      "warning_at_minutes": 20,
+      "critical_at_minutes": 28
+    },
+    "layer_coverage": {
+      "description": "Ensure each layer is fully saturated with resin before placing next",
+      "check_method": "visual_inspection_via_perception"
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "task_id": "hand_layup",
+  "experiment_date": "2026-02-07",
+  "collection_method": "dummy_video",
+  "description": "Dummy video of human pretending to perform hand layup process. Robot is NOT active. Used for initial framework testing.",
+  "total_duration_seconds": null,
+  "notes": "This is a dummy/pretend video. The human simulates the layup process without actual resin or curing. No robot is present. Timestamps are approximate estimates for framework testing.",
+  "events": [
+    {
+      "timestamp": 0.0,
+      "action": "recording_start",
+      "description": "Recording started, all objects visible on table",
+      "robot_action": null
+    },
+    {
+      "timestamp": 5.0,
+      "action": "place_cup_on_scale",
+      "description": "Human places the mixing cup on the weigh scale",
+      "robot_action": null
+    },
+    {
+      "timestamp": 13.0,
+      "action": "add_resin",
+      "description": "Human pours resin from the bottle into the cup",
+      "robot_action": null
+    },
+    {
+      "timestamp": 18.0,
+      "action": "add_hardener",
+      "description": "Human pours hardener from the bottle into the cup",
+      "robot_action": null
+    },
+    {
+      "timestamp": 20.0,
+      "action": "weigh_mixture",
+      "description": "Human checks the weight of the mixture on the scale",
+      "robot_action": null
+    },
+    {
+      "timestamp": 22.0,
+      "action": "mix_resin_hardener",
+      "description": "Human stirs the resin and hardener together",
+      "robot_action": null,
+      "shelf_life_starts": true
+    },
+    {
+      "timestamp": 27.0,
+      "action": "place_layer_1",
+      "description": "Human places the first fiberglass sheet on the mold",
+      "robot_action": "move_to_storage(weigh_scale)",
+      "robot_action_reason": "Scale no longer needed after mixing"
+    },
+    {
+      "timestamp": 30.0,
+      "action": "apply_resin_layer_1",
+      "description": "Human applies resin to the first layer with a brush",
+      "robot_action": null
+    },
+    {
+      "timestamp": 40.0,
+      "action": "place_layer_2",
+      "description": "Human places the second fiberglass sheet",
+      "robot_action": null
+    },
+    {
+      "timestamp": 44.0,
+      "action": "apply_resin_layer_2",
+      "description": "Human applies resin to the second layer",
+      "robot_action": null
+    },
+    {
+      "timestamp": 59.0,
+      "action": "place_layer_3",
+      "description": "Human places the third fiberglass sheet",
+      "robot_action": null
+    },
+    {
+      "timestamp": 65.0,
+      "action": "apply_resin_layer_3",
+      "description": "Human applies resin to the third layer",
+      "robot_action": null
+    },
+    {
+      "timestamp": 75.0,
+      "action": "place_layer_4",
+      "description": "Human places the fourth fiberglass sheet",
+      "robot_action": null
+    },
+    {
+      "timestamp": 78.0,
+      "action": "apply_resin_layer_4",
+      "description": "Human applies resin to the fourth layer",
+      "robot_action": "move_to_storage(resin_bottle, hardener_bottle, cup, brush_small)",
+      "robot_action_reason": "Resin application complete, tools no longer needed"
+    },
+    {
+      "timestamp": 87.3,
+      "action": "consolidate_with_roller",
+      "description": "Human uses roller to consolidate all layers",
+      "robot_action": null
+    },
+    {
+      "timestamp": 105.0,
+      "action": "cleanup",
+      "description": "Cleanup phase begins",
+      "robot_action": "move_to_storage(roller, brush_medium)"
+    },
+    {
+      "timestamp": 110.0,
+      "action": "task_complete",
+      "description": "Layup complete",
+      "robot_action": null
+    }
+  ]
+}

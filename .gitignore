@@ -14,8 +14,10 @@ wheels/
 
 # Demo data and media files
 demo_data/
+Latex/
 demo/
 demos/
 *.mp4
 *.avi
 *.mov
+tasks/hand_layup/logs/

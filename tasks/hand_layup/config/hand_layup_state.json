@@ -1,0 +1,230 @@
+{
+  "name": "Hand Layup Task State",
+  "description": "State schema for tracking progress in the fiberglass hand layup process",
+  "version": "1.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "The current high-level phase of the task",
+      "valid_values": [
+        "initialization",
+        "resin_preparation",
+        "mixing",
+        "layer_1_placement",
+        "layer_1_resin",
+        "layer_2_placement",
+        "layer_2_resin",
+        "layer_3_placement",
+        "layer_3_resin",
+        "layer_4_placement",
+        "layer_4_resin",
+        "consolidation",
+        "cleanup",
+        "complete"
+      ],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "The specific action currently being performed",
+      "valid_values": [
+        "idle",
+        "place_cup_on_scale",
+        "add_resin_to_cup",
+        "add_hardener_to_cup",
+        "weigh_mixture",
+        "mix_resin_hardener",
+        "place_layer_1",
+        "apply_resin_layer_1",
+        "place_layer_2",
+        "apply_resin_layer_2",
+        "place_layer_3",
+        "apply_resin_layer_3",
+        "place_layer_4",
+        "apply_resin_layer_4",
+        "use_roller",
+        "cleanup",
+        "task_complete"
+      ],
+      "default": "idle"
+    },
+    "robot_state": {
+      "type": "string",
+      "description": "Current state of the robot",
+      "valid_values": ["at_home", "moving_to_storage", "at_storage", "grasping", "moving_to_workplace", "at_workplace", "releasing", "moving_home"],
+      "default": "at_home"
+    },
+    "gripper_state": {
+      "type": "string",
+      "description": "State of the robot gripper",
+      "valid_values": ["empty", "holding_resin_bottle", "holding_hardener_bottle", "holding_cup", "holding_brush_small", "holding_brush_medium", "holding_roller"],
+      "default": "empty"
+    },
+    "cup_location": {
+      "type": "string",
+      "description": "Current location of the mixing cup",
+      "valid_values": ["storage", "workplace", "weigh_scale", "robot_gripper"],
+      "default": "storage"
+    },
+    "resin_bottle_location": {
+      "type": "string",
+      "description": "Current location of the resin bottle",
+      "valid_values": ["storage", "workplace", "robot_gripper"],
+      "default": "storage"
+    },
+    "hardener_bottle_location": {
+      "type": "string",
+      "description": "Current location of the hardener bottle",
+      "valid_values": ["storage", "workplace", "robot_gripper"],
+      "default": "storage"
+    },
+    "brush_small_location": {
+      "type": "string",
+      "description": "Current location of the small brush",
+      "valid_values": ["storage", "workplace", "robot_gripper", "in_use"],
+      "default": "storage"
+    },
+    "brush_medium_location": {
+      "type": "string",
+      "description": "Current location of the medium brush",
+      "valid_values": ["storage", "workplace", "robot_gripper", "in_use"],
+      "default": "storage"
+    },
+    "roller_location": {
+      "type": "string",
+      "description": "Current location of the roller",
+      "valid_values": ["storage", "workplace", "robot_gripper", "in_use"],
+      "default": "storage"
+    },
+    "weigh_scale_location": {
+      "type": "string",
+      "description": "Location of the weigh scale",
+      "valid_values": ["workplace"],
+      "default": "workplace"
+    },
+    "mold_location": {
+      "type": "string",
+      "description": "Location of the metal mold",
+      "valid_values": ["workplace"],
+      "default": "workplace"
+    },
+    "resin_added": {
+      "type": "boolean",
+      "description": "Whether resin has been added to the cup",
+      "default": false
+    },
+    "hardener_added": {
+      "type": "boolean",
+      "description": "Whether hardener has been added to the cup",
+      "default": false
+    },
+    "mixture_weighed": {
+      "type": "boolean",
+      "description": "Whether the resin/hardener mixture has been weighed",
+      "default": false
+    },
+    "mixture_mixed": {
+      "type": "boolean",
+      "description": "Whether the mixture has been properly mixed",
+      "default": false
+    },
+    "mixture_shelf_life_start": {
+      "type": "number",
+      "description": "Timestamp (seconds) when the resin/hardener were mixed. Shelf life begins.",
+      "default": null
+    },
+    "mixture_shelf_life_max_seconds": {
+      "type": "number",
+      "description": "Maximum allowed shelf life of the mixture in seconds (e.g. 30 minutes = 1800s)",
+      "default": 1800
+    },
+    "layers_placed": {
+      "type": "integer",
+      "description": "Number of fiberglass layers placed on the mold (max 4)",
+      "min": 0,
+      "max": 4,
+      "default": 0
+    },
+    "layers_resined": {
+      "type": "integer",
+      "description": "Number of layers that have had resin applied (max 4)",
+      "min": 0,
+      "max": 4,
+      "default": 0
+    },
+    "consolidated": {
+      "type": "boolean",
+      "description": "Whether roller consolidation has been performed",
+      "default": false
+    },
+    "human_wearing_gloves": {
+      "type": "boolean",
+      "description": "Whether the human operator is wearing protective gloves",
+      "default": false
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": [
+        "idle",
+        "preparing_resin",
+        "mixing",
+        "placing_fiberglass",
+        "applying_resin",
+        "rolling",
+        "inspecting",
+        "waiting_for_robot",
+        "done"
+      ],
+      "default": "idle"
+    },
+    "action_confidence": {
+      "type": "number",
+      "description": "Confidence level (0-1) in the current action detection",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "The predicted next action based on task graph",
+      "default": "place_cup_on_scale"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "elapsed_time_seconds": {
+      "type": "number",
+      "description": "Time elapsed since task start",
+      "default": 0.0
+    },
+    "safety_alerts": {
+      "type": "array",
+      "description": "Active safety alerts (no gloves, shelf life exceeded, etc.)",
+      "default": []
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "current_phase": {"type": "string"},
+      "current_action": {"type": "string"},
+      "robot_state": {"type": "string"},
+      "gripper_state": {"type": "string"},
+      "human_state": {"type": "string"},
+      "layers_placed": {"type": "integer"},
+      "layers_resined": {"type": "integer"},
+      "consolidated": {"type": "boolean"},
+      "human_wearing_gloves": {"type": "boolean"},
+      "safety_alerts": {"type": "array"},
+      "predicted_next_action": {"type": "string"},
+      "prediction_confidence": {"type": "number"},
+      "reasoning": {"type": "string"}
+    },
+    "required": ["current_phase", "current_action", "robot_state", "human_state", "layers_placed", "predicted_next_action", "reasoning"]
+  }
+}

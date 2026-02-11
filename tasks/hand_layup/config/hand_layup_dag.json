@@ -1,0 +1,169 @@
+{
+  "name": "Hand Layup Task DAG",
+  "description": "Directed acyclic graph for fiberglass hand layup process. Human performs layup while robot moves objects between storage and workplace as needed.",
+  "version": "1.0",
+  "nodes": {
+    "idle": {
+      "description": "System initialized, waiting for task to begin",
+      "visual_cues": ["operator at workplace", "objects on storage table", "mold visible"],
+      "next_possible": ["place_cup_on_scale"]
+    },
+    "place_cup_on_scale": {
+      "description": "Human places the mixing cup on the weigh scale",
+      "visual_cues": ["hand reaching for cup", "cup moving toward scale", "scale on table"],
+      "next_possible": ["add_resin_to_cup"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["cup", "weigh_scale"]
+    },
+    "add_resin_to_cup": {
+      "description": "Human adds resin from the bottle into the cup on the scale",
+      "visual_cues": ["human pouring from resin bottle", "liquid in cup", "scale reading changing"],
+      "next_possible": ["add_hardener_to_cup"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["resin_bottle", "cup", "weigh_scale"]
+    },
+    "add_hardener_to_cup": {
+      "description": "Human adds hardener from the bottle into the cup on the scale",
+      "visual_cues": ["human pouring from hardener bottle", "second liquid in cup", "scale reading changing"],
+      "next_possible": ["weigh_mixture"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["hardener_bottle", "cup", "weigh_scale"]
+    },
+    "weigh_mixture": {
+      "description": "Human checks the weight of the resin/hardener mixture on the scale",
+      "visual_cues": ["human looking at scale", "cup on scale", "reading weight"],
+      "next_possible": ["mix_resin_hardener"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["cup", "weigh_scale"],
+      "monitoring": {
+        "resin_hardener_ratio": "Check ratio is within acceptable range (typically 100:30 to 100:50 by weight)"
+      }
+    },
+    "mix_resin_hardener": {
+      "description": "Human stirs the resin and hardener together with the mixing stick",
+      "visual_cues": ["human stirring cup", "mixing stick in cup", "circular motion"],
+      "next_possible": ["place_layer_1"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["cup"],
+      "events": {
+        "shelf_life_starts": "Mixture shelf life timer begins upon mixing completion"
+      }
+    },
+    "place_layer_1": {
+      "description": "Human places the first fiberglass sheet on the mold",
+      "visual_cues": ["human handling fiberglass sheet", "sheet draped on mold", "smoothing sheet"],
+      "next_possible": ["apply_resin_layer_1"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"],
+      "robot_housekeeping": {
+        "can_remove": ["weigh_scale"],
+        "reason": "Scale no longer needed after mixing"
+      }
+    },
+    "apply_resin_layer_1": {
+      "description": "Human applies mixed resin to the first fiberglass layer with a brush",
+      "visual_cues": ["human brushing resin onto fiberglass", "brush in hand", "wet fiberglass"],
+      "next_possible": ["place_layer_2"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_small", "cup", "mold"]
+    },
+    "place_layer_2": {
+      "description": "Human places the second fiberglass sheet on top of the first resin-coated layer",
+      "visual_cues": ["human placing second sheet", "layering on mold", "fiberglass on wet surface"],
+      "next_possible": ["apply_resin_layer_2"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
+    },
+    "apply_resin_layer_2": {
+      "description": "Human applies resin to the second fiberglass layer with a brush",
+      "visual_cues": ["brushing resin on second layer", "saturating fiberglass", "wet layup"],
+      "next_possible": ["place_layer_3"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_small", "cup", "mold"]
+    },
+    "place_layer_3": {
+      "description": "Human places the third fiberglass sheet on the stack",
+      "visual_cues": ["human placing third sheet", "multiple layers visible", "aligning edges"],
+      "next_possible": ["apply_resin_layer_3"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
+    },
+    "apply_resin_layer_3": {
+      "description": "Human applies resin to the third layer with a brush",
+      "visual_cues": ["brushing resin", "fiberglass becoming translucent", "wet layup"],
+      "next_possible": ["place_layer_4"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_medium", "cup", "mold"]
+    },
+    "place_layer_4": {
+      "description": "Human places the fourth and final fiberglass sheet on the stack",
+      "visual_cues": ["human placing final sheet", "thick layup stack", "final alignment"],
+      "next_possible": ["apply_resin_layer_4"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
+    },
+    "apply_resin_layer_4": {
+      "description": "Human applies resin to the fourth and final layer with a brush",
+      "visual_cues": ["brushing resin on final layer", "fully saturated layup", "complete coverage"],
+      "next_possible": ["consolidate_with_roller"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_medium", "cup", "mold"]
+    },
+    "consolidate_with_roller": {
+      "description": "Human uses roller to consolidate all layers, remove air bubbles and excess resin",
+      "visual_cues": ["roller on fiberglass", "pressing down", "rolling motion", "resin squeezing out"],
+      "next_possible": ["cleanup"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["roller", "mold"],
+      "robot_housekeeping": {
+        "can_remove": ["cup", "brush_small", "brush_medium", "resin_bottle", "hardener_bottle"],
+        "reason": "Brushes, bottles, and cup no longer needed after final resin application"
+      }
+    },
+    "cleanup": {
+      "description": "Human and robot clean up the workspace. Robot returns all remaining objects to storage.",
+      "visual_cues": ["workspace being cleared", "objects being moved", "mold with cured layup"],
+      "next_possible": ["task_complete"],
+      "assignee": "both",
+      "robot_housekeeping": {
+        "can_remove": ["roller", "cup", "brush_small", "brush_medium"],
+        "reason": "Final cleanup of all tools"
+      }
+    },
+    "task_complete": {
+      "description": "Task finished, layup complete, workspace clean",
+      "visual_cues": ["mold with completed layup", "clean workspace", "tools stored"],
+      "next_possible": []
+    }
+  },
+  "start_node": "idle",
+  "end_nodes": ["task_complete"],
+  "transition_rules": {
+    "sequential_layup": "Layers must be placed and resined in order: 1, 2, 3, 4",
+    "resin_before_next_layer": "Each layer must have resin applied before the next layer is placed",
+    "mixing_before_application": "Resin/hardener must be mixed before any application",
+    "weighing_before_mixing": "Mixture must be weighed before mixing to verify ratio",
+    "roller_after_all_layers": "Roller consolidation happens only after all 4 layers are placed and resined",
+    "gloves_required": "Human must wear gloves during all resin handling operations",
+    "shelf_life_limit": "Mixed resin must be used within the shelf life window (typically 30 min)"
+  },
+  "safety_rules": {
+    "gloves_required": "Human must wear protective gloves when handling resin, hardener, or wet fiberglass",
+    "ventilation": "Work area should be well ventilated during resin application",
+    "shelf_life": "Mixed resin/hardener has limited working time. Alert if approaching limit.",
+    "ratio_check": "Resin to hardener ratio must be within manufacturer specifications"
+  },
+  "robot_role": {
+    "description": "The robot assists by moving objects between storage and workplace. It does NOT perform layup actions.",
+    "capabilities": [
+      "Move object from storage to workplace",
+      "Move object from workplace to storage (housekeeping)"
+    ],
+    "constraints": [
+      "Only move objects when human is not actively using them",
+      "Announce actions before executing",
+      "Return to home position between actions",
+      "Do not move the mold"
+    ]
+  }
+}
