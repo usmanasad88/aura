@@ -31,6 +31,11 @@ SEND_SAMPLE_RATE = 16000
 RECEIVE_SAMPLE_RATE = 24000
 CHUNK_SIZE = 1024
 
+# Voice Activity Detection (VAD) settings
+VAD_ENERGY_THRESHOLD = 300    # RMS energy below this = silence (tune for your mic)
+VAD_SILENCE_CHUNKS = 15       # Send up to N silent chunks after speech stops (fade-out)
+VAD_MIN_SPEECH_CHUNKS = 2     # Require N consecutive loud chunks before treating as speech
+
 
 @dataclass
 class SoundConfig(MonitorConfig):
@@ -59,10 +64,17 @@ def _get_gemini_client():
     """Get or create Gemini client."""
     global _gemini_client
     if _gemini_client is None:
+        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "No Gemini API key found. Set GEMINI_API_KEY or GOOGLE_API_KEY:\n"
+                "  export GEMINI_API_KEY='your-key-here'\n"
+                "Or add it to ~/.bashrc so it persists across terminals."
+            )
         from google import genai
         _gemini_client = genai.Client(
             http_options={"api_version": "v1beta"},
-            api_key=os.environ.get("GEMINI_API_KEY"),
+            api_key=api_key,
         )
     return _gemini_client
 
@@ -293,6 +305,10 @@ class SoundMonitor(BaseMonitor):
             
             target_rate = SEND_SAMPLE_RATE # 16000
             
+            speech_chunks = 0   # consecutive chunks above threshold
+            silence_after = 0   # silent chunks since last speech
+            is_speaking = False
+            
             while True:
                 data = await asyncio.to_thread(
                     self._audio_stream_in.read, CHUNK_SIZE, **kwargs
@@ -304,7 +320,26 @@ class SoundMonitor(BaseMonitor):
                         self._resample, data, capture_rate, target_rate
                     )
                 
-                await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
+                # --- Voice Activity Detection (energy gating) ---
+                audio_array = np.frombuffer(data, dtype=np.int16)
+                rms = np.sqrt(np.mean(audio_array.astype(np.float32) ** 2))
+                
+                if rms >= VAD_ENERGY_THRESHOLD:
+                    speech_chunks += 1
+                    silence_after = 0
+                    if speech_chunks >= VAD_MIN_SPEECH_CHUNKS:
+                        is_speaking = True
+                else:
+                    speech_chunks = 0
+                    if is_speaking:
+                        silence_after += 1
+                        if silence_after > VAD_SILENCE_CHUNKS:
+                            is_speaking = False
+                            silence_after = 0
+                
+                # Only send audio when speech is detected (or trailing silence)
+                if is_speaking or silence_after > 0:
+                    await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
                 
         except asyncio.CancelledError:
             pass
@@ -341,6 +376,9 @@ class SoundMonitor(BaseMonitor):
         self._arecord_proc = proc
         
         chunk_bytes = CHUNK_SIZE * 2  # 16-bit = 2 bytes per sample
+        speech_chunks = 0
+        silence_after = 0
+        is_speaking = False
         try:
             while True:
                 data = await proc.stdout.read(chunk_bytes)
@@ -353,7 +391,24 @@ class SoundMonitor(BaseMonitor):
                         self._resample, data, capture_rate, target_rate
                     )
                 
-                await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
+                # VAD gating
+                audio_array = np.frombuffer(data, dtype=np.int16)
+                rms = np.sqrt(np.mean(audio_array.astype(np.float32) ** 2))
+                if rms >= VAD_ENERGY_THRESHOLD:
+                    speech_chunks += 1
+                    silence_after = 0
+                    if speech_chunks >= VAD_MIN_SPEECH_CHUNKS:
+                        is_speaking = True
+                else:
+                    speech_chunks = 0
+                    if is_speaking:
+                        silence_after += 1
+                        if silence_after > VAD_SILENCE_CHUNKS:
+                            is_speaking = False
+                            silence_after = 0
+                
+                if is_speaking or silence_after > 0:
+                    await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
         except asyncio.CancelledError:
             proc.terminate()
             await proc.wait()
@@ -386,12 +441,33 @@ class SoundMonitor(BaseMonitor):
         self._arecord_proc = proc  # reuse same attr for cleanup
         
         chunk_bytes = CHUNK_SIZE * 2  # 16-bit = 2 bytes per sample
+        speech_chunks = 0
+        silence_after = 0
+        is_speaking = False
         try:
             while True:
                 data = await proc.stdout.read(chunk_bytes)
                 if not data:
                     break
-                await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
+                
+                # VAD gating
+                audio_array = np.frombuffer(data, dtype=np.int16)
+                rms = np.sqrt(np.mean(audio_array.astype(np.float32) ** 2))
+                if rms >= VAD_ENERGY_THRESHOLD:
+                    speech_chunks += 1
+                    silence_after = 0
+                    if speech_chunks >= VAD_MIN_SPEECH_CHUNKS:
+                        is_speaking = True
+                else:
+                    speech_chunks = 0
+                    if is_speaking:
+                        silence_after += 1
+                        if silence_after > VAD_SILENCE_CHUNKS:
+                            is_speaking = False
+                            silence_after = 0
+                
+                if is_speaking or silence_after > 0:
+                    await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
         except asyncio.CancelledError:
             proc.terminate()
             await proc.wait()
@@ -475,6 +551,9 @@ class SoundMonitor(BaseMonitor):
     async def _receive_audio(self):
         """Background task to receive responses from Gemini."""
         audio_chunks = 0
+        # Repetition detection: track last N text responses
+        _recent_texts: deque = deque(maxlen=5)
+        _repeat_count = 0
         try:
             while True:
                 async for response in self._session.receive():
@@ -504,6 +583,17 @@ class SoundMonitor(BaseMonitor):
                                     # Model thinking — log at debug, don't surface
                                     logger.debug(f"Model thinking (not spoken): {text_msg[:120]}...")
                                 else:
+                                    # --- Repetition detection ---
+                                    normalised = text_msg.strip().lower()
+                                    if _recent_texts and normalised == _recent_texts[-1]:
+                                        _repeat_count += 1
+                                        if _repeat_count >= 2:
+                                            logger.warning(f"Suppressing repeated response ({_repeat_count}x): {text_msg[:80]}")
+                                            continue
+                                    else:
+                                        _repeat_count = 0
+                                    _recent_texts.append(normalised)
+
                                     logger.info(f"Received text: {text_msg}")
                                     # Create utterance
                                     utterance = Utterance(

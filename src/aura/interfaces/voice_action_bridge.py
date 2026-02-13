@@ -174,12 +174,10 @@ class VoiceActionBridge:
         self.tool_handlers["execute_robot_command"] = self._handle_execute
         self.tool_handlers["get_available_commands"] = self._handle_get_commands
 
-        # Also register per-command handlers for backwards compat
-        for cmd in commands:
-            func_name = f"robot_{cmd.category}__{cmd.name}".replace(".", "_").replace(" ", "_").replace("-", "_")
-            self.tool_declarations.append(cmd.to_tool_description())
-            # Capture cmd in closure
-            self.tool_handlers[func_name] = self._make_handler(cmd)
+        # NOTE: We intentionally do NOT register per-command tools.
+        # Having dozens of overlapping tools confuses the model — it may
+        # describe the action in speech instead of calling a tool.
+        # Two generic tools (execute + list) are cleaner and more reliable.
 
         logger.info(
             f"VoiceActionBridge: {len(self.tool_declarations)} tools, "
@@ -289,22 +287,31 @@ class VoiceActionBridge:
         commands_summary = self.client.get_commands_summary()
         full_instruction = (
             f"{system_instruction}\n\n"
-            "You have access to tools to control the robot. "
-            "When the human gives a clear, unambiguous robot command "
-            "(e.g. 'go home', 'open the gripper', 'run pick and place'), "
-            "execute it IMMEDIATELY by calling the appropriate tool — "
-            "do NOT ask for confirmation. "
-            "Only ask for clarification when the request is ambiguous or "
-            "could match multiple commands. "
-            "If you're unsure which command to use, call "
-            "get_available_commands to see what's available.\n"
-            "IMPORTANT: Always respond by speaking concisely and naturally. "
-            "Never output markdown, headers, or reasoning text. "
-            "Keep responses to 1-2 spoken sentences. "
-            "When saving positions, note that spaces in names are "
-            "converted to underscores (e.g. 'position 1' becomes 'position_1'). "
-            "When moving to a saved position, use the underscore form of the name.\n\n"
-            f"{commands_summary}"
+            "CRITICAL RULES — follow these without exception:\n\n"
+            "1. ALWAYS USE TOOL CALLS for robot actions. When the human asks the\n"
+            "   robot to do something (move, go home, open gripper, run a program,\n"
+            "   etc.), you MUST call execute_robot_command. NEVER just say 'I'm\n"
+            "   moving to home' without also issuing the tool call. Talking about\n"
+            "   an action is NOT the same as doing it.\n\n"
+            "2. Do NOT ask for confirmation. Execute clear commands immediately.\n"
+            "   Only ask for clarification when the request is genuinely ambiguous\n"
+            "   (e.g. it could match multiple different commands).\n\n"
+            "3. IGNORE background noise. If you hear sounds that are not clearly\n"
+            "   human speech directed at you (coughs, bumps, music, murmuring,\n"
+            "   unintelligible noise), do NOT respond. Stay silent. Only respond\n"
+            "   when you hear a clear, directed utterance.\n\n"
+            "4. Do NOT repeat yourself. If you already confirmed an action or\n"
+            "   answered a question, do not say the same thing again. If the\n"
+            "   human hasn't said anything new, stay silent.\n\n"
+            "5. Keep responses to 1-2 SHORT spoken sentences. Never output\n"
+            "   markdown, headers, bullet points, or reasoning text. Speak\n"
+            "   naturally and concisely.\n\n"
+            "6. When saving positions, spaces in names become underscores\n"
+            "   (e.g. 'position 1' → 'position_1'). Use the underscore form\n"
+            "   when moving to a saved position.\n\n"
+            "7. If you're unsure which command to use, call get_available_commands\n"
+            "   first to see what's available, then call execute_robot_command.\n\n"
+            f"Available commands:\n{commands_summary}"
         )
 
         return SoundConfig(
