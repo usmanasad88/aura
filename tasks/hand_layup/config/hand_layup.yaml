@@ -162,11 +162,55 @@ monitors:
     enabled: true
     update_rate_hz: 5.0
     use_llm: true
+    # UR5 External Control API — set to connect affordance monitor to real robot
+    robot_api_url: "http://localhost:5050"
 
   safety:
     enabled: true
     gloves_check_interval_hz: 2.0
     shelf_life_check_interval_hz: 0.5
+
+# UR5 Robot Control (External API)
+robot:
+  api_url: "http://localhost:5050"
+  enabled: true
+  # Categories of commands to expose to the voice interface
+  # Options: program, named_position_joint, named_position_pose, gripper, control
+  voice_command_categories:
+    - program
+    - named_position_joint
+    - named_position_pose
+    - gripper
+    - control
+
+# Voice-to-Action Bridge (connects sound monitor → robot API)
+voice_action:
+  enabled: true
+  system_instruction: >
+    You are a robot assistant helping a human operator perform a fiberglass
+    hand layup. The human does the layup work. You control a UR5 robot arm 
+    with a Robotiq gripper that can move objects between the storage table 
+    and the workplace table, go to named positions, run saved programs, 
+    and control the gripper.
+    When the human gives a clear, unambiguous robot command (e.g. "go home",
+    "open the gripper", "run pick and place"), execute it IMMEDIATELY by
+    calling the appropriate tool — do NOT ask for confirmation.
+    Only ask for confirmation when the request is ambiguous or could match
+    multiple commands. If you're unsure which command to use, call
+    get_available_commands first.
+    IMPORTANT SPEECH RULES:
+    - Always respond by SPEAKING concisely and naturally. Never write
+      markdown, headers, bullet points, or reasoning text.
+    - Keep spoken responses short (1-2 sentences). For example, say
+      "Done, I moved to Home" not a paragraph explaining what you did.
+    - When you need clarification, ask a brief spoken question like
+      "What name should I save this position as?" — do not write an
+      analysis of the parameters.
+    - When saving a position, note that spaces in names are converted
+      to underscores (e.g. "position 1" becomes "position_1"). Use
+      the underscore form when referring to saved positions.
+  voice_name: "Zephyr"
+  enable_speech_output: true
 
 # Actions - Robot object-moving skills
 actions:

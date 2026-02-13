@@ -106,9 +106,15 @@ class SoundMonitor(BaseMonitor):
         # Device indices
         self._input_device_index = None
         self._output_device_index = None
+        self._alsa_input_card = None  # For USB devices PyAudio misses
+        self._pulse_input_source = None  # PulseAudio source name
 
     def _find_device_by_name(self, name_pattern: str, is_input: bool = True) -> Optional[int]:
-        """Find audio device index by name pattern."""
+        """Find audio device index by name pattern.
+        
+        Also checks ALSA cards via /proc/asound/cards for USB devices
+        that PyAudio's enumeration may miss.
+        """
         count = self._pya.get_device_count()
         logger.info(f"Scanning {count} audio devices for pattern '{name_pattern}'...")
         
@@ -124,21 +130,68 @@ class SoundMonitor(BaseMonitor):
             except Exception:
                 continue
                 
-        if not candidates:
-            # Fallback for debugging
-            logger.warning(f"No device found matching '{name_pattern}'. Available:")
-            for i in range(count):
-                try: 
-                     info = self._pya.get_device_info_by_index(i)
-                     logger.warning(f"  {i}: {info.get('name')}")
-                except Exception:
-                    pass
-            return None
-            
-        # Return first match
-        idx, name = candidates[0]
-        logger.info(f"Selected device '{name}' (index {idx})")
-        return idx
+        if candidates:
+            idx, name = candidates[0]
+            logger.info(f"Selected device '{name}' (index {idx})")
+            return idx
+
+        # PyAudio didn't find it — check PulseAudio sources
+        pulse_source = self._find_pulse_source_by_name(name_pattern)
+        if pulse_source is not None:
+            logger.info(f"Device '{name_pattern}' found as PulseAudio source: {pulse_source}")
+            self._pulse_input_source = pulse_source
+            return None  # Signal to use PulseAudio directly
+
+        # Also check ALSA cards directly
+        alsa_card = self._find_alsa_card_by_name(name_pattern)
+        if alsa_card is not None:
+            logger.info(f"Device '{name_pattern}' found as ALSA card {alsa_card} (not in PyAudio)")
+            self._alsa_input_card = alsa_card
+            return None  # Signal to use ALSA card directly
+        
+        # Fallback for debugging
+        logger.warning(f"No device found matching '{name_pattern}'. Available:")
+        for i in range(count):
+            try: 
+                 info = self._pya.get_device_info_by_index(i)
+                 logger.warning(f"  {i}: {info.get('name')}")
+            except Exception:
+                pass
+        return None
+
+    def _find_pulse_source_by_name(self, name_pattern: str) -> Optional[str]:
+        """Search PulseAudio sources for a device matching name_pattern."""
+        import subprocess
+        try:
+            result = subprocess.run(
+                ["pactl", "list", "sources", "short"],
+                capture_output=True, text=True, timeout=3
+            )
+            for line in result.stdout.strip().split("\n"):
+                if name_pattern.lower().replace("0x", "") in line.lower().replace("0x", ""):
+                    parts = line.split("\t")
+                    if len(parts) >= 2:
+                        return parts[1]  # source name
+        except Exception:
+            pass
+        return None
+
+    def _find_alsa_card_by_name(self, name_pattern: str) -> Optional[int]:
+        """Search /proc/asound/cards for a device matching name_pattern."""
+        try:
+            with open("/proc/asound/cards") as f:
+                for line in f:
+                    line = line.strip()
+                    # Lines look like: " 1 [U0x46d0x81b    ]: USB-Audio - USB Device 0x46d:0x81b"
+                    if name_pattern.lower() in line.lower():
+                        parts = line.split()
+                        if parts and parts[0].isdigit():
+                            card_num = int(parts[0])
+                            logger.info(f"Found ALSA card {card_num} matching '{name_pattern}': {line}")
+                            return card_num
+        except Exception:
+            pass
+        return None
 
     def _resample(self, data: bytes, input_rate: int, output_rate: int) -> bytes:
         """Resample PCM audio data."""
@@ -198,10 +251,11 @@ class SoundMonitor(BaseMonitor):
         try:
             # Resolve input device
             input_idx = None
+            self._alsa_input_card = None
             if self.config.input_device_name:
                 input_idx = self._find_device_by_name(self.config.input_device_name, is_input=True)
             
-            if input_idx is None:
+            if input_idx is None and self._alsa_input_card is None and self._pulse_input_source is None:
                 # Fallback to default
                 mic_info = self._pya.get_default_input_device_info()
                 input_idx = mic_info["index"]
@@ -210,6 +264,18 @@ class SoundMonitor(BaseMonitor):
             
             # Use configured sample rate (e.g. 48000 if HW requires, or 16000 default)
             capture_rate = self.config.input_sample_rate
+
+            # If we have a PulseAudio source, use parec
+            if self._pulse_input_source is not None:
+                logger.info(f"Capturing from PulseAudio source: {self._pulse_input_source}")
+                await self._listen_audio_pulse(self._pulse_input_source)
+                return
+            
+            # If we have a direct ALSA card (USB device not in PyAudio), open via subprocess
+            if self._alsa_input_card is not None:
+                logger.info(f"Opening ALSA card hw:{self._alsa_input_card},0 at {capture_rate}Hz via arecord")
+                await self._listen_audio_alsa(self._alsa_input_card, capture_rate)
+                return
             
             logger.info(f"Opening input stream on device {input_idx} at {capture_rate}Hz")
 
@@ -247,6 +313,92 @@ class SoundMonitor(BaseMonitor):
             if self._audio_stream_in:
                 self._audio_stream_in.stop_stream()
                 self._audio_stream_in.close()
+
+    async def _listen_audio_alsa(self, card: int, capture_rate: int):
+        """Capture audio from an ALSA card directly via arecord subprocess.
+        
+        Used for USB devices that PyAudio doesn't enumerate.
+        """
+        target_rate = SEND_SAMPLE_RATE  # 16000
+        
+        cmd = [
+            "arecord",
+            "-D", f"hw:{card},0",
+            "-f", "S16_LE",
+            "-c", "1",
+            "-r", str(capture_rate),
+            "-t", "raw",
+            "--buffer-size", str(CHUNK_SIZE * 4),
+            "-"
+        ]
+        logger.info(f"arecord command: {' '.join(cmd)}")
+        
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        self._arecord_proc = proc
+        
+        chunk_bytes = CHUNK_SIZE * 2  # 16-bit = 2 bytes per sample
+        try:
+            while True:
+                data = await proc.stdout.read(chunk_bytes)
+                if not data:
+                    break
+                
+                # Resample if needed
+                if capture_rate != target_rate:
+                    data = await asyncio.to_thread(
+                        self._resample, data, capture_rate, target_rate
+                    )
+                
+                await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
+        except asyncio.CancelledError:
+            proc.terminate()
+            await proc.wait()
+        except Exception as e:
+            logger.error(f"Error in listen_audio_alsa: {e}")
+            proc.terminate()
+            await proc.wait()
+
+    async def _listen_audio_pulse(self, source_name: str):
+        """Capture audio from a PulseAudio source via parec.
+        
+        PulseAudio handles resampling, so we request 16000Hz directly.
+        """
+        target_rate = SEND_SAMPLE_RATE  # 16000
+        
+        cmd = [
+            "parec",
+            "--format=s16le",
+            "--channels=1",
+            f"--rate={target_rate}",
+            f"--device={source_name}",
+        ]
+        logger.info(f"parec command: {' '.join(cmd)}")
+        
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        self._arecord_proc = proc  # reuse same attr for cleanup
+        
+        chunk_bytes = CHUNK_SIZE * 2  # 16-bit = 2 bytes per sample
+        try:
+            while True:
+                data = await proc.stdout.read(chunk_bytes)
+                if not data:
+                    break
+                await self._out_queue.put({"data": data, "mime_type": "audio/pcm"})
+        except asyncio.CancelledError:
+            proc.terminate()
+            await proc.wait()
+        except Exception as e:
+            logger.error(f"Error in listen_audio_pulse: {e}")
+            proc.terminate()
+            await proc.wait()
     
     async def _send_realtime(self):
         """Background task to send audio/data to Gemini."""
@@ -276,8 +428,6 @@ class SoundMonitor(BaseMonitor):
             
             if name in self._tool_handlers:
                 try:
-                    # Execute handler (sync or async?)
-                    # If async, we should await it. If sync, just run.
                     handler = self._tool_handlers[name]
                     if asyncio.iscoroutinefunction(handler):
                         result = await handler(**args)
@@ -295,12 +445,36 @@ class SoundMonitor(BaseMonitor):
                 )
             )
         
-        # NOTE: Live session expects a LIST of FunctionResponse, or a ToolResponse?
-        # The docs say: session.send(input=[types.FunctionResponse(...)])
-        return tool_responses
+        return types.LiveClientToolResponse(function_responses=tool_responses)
+
+    def _is_thinking_text(self, text: str) -> bool:
+        """Detect if text is model internal reasoning rather than spoken output.
+
+        The native-audio model sometimes emits markdown-formatted thinking
+        text (with **headers**, bullet points, multi-paragraph analysis)
+        instead of concise spoken responses.  These should be logged but
+        NOT surfaced as robot speech.
+        """
+        # Starts with markdown bold header
+        if text.strip().startswith("**"):
+            return True
+        # Multi-paragraph reasoning (3+ newlines)
+        if text.count("\n\n") >= 2:
+            return True
+        # Contains obvious reasoning markers
+        reasoning_markers = [
+            "I'm evaluating", "I'm considering", "I've determined",
+            "I've identified", "I've examined", "My next step",
+            "I'm currently focused", "I'll need to",
+        ]
+        for marker in reasoning_markers:
+            if marker in text:
+                return True
+        return False
 
     async def _receive_audio(self):
         """Background task to receive responses from Gemini."""
+        audio_chunks = 0
         try:
             while True:
                 async for response in self._session.receive():
@@ -316,31 +490,45 @@ class SoundMonitor(BaseMonitor):
                         for part in model_turn.parts:
                             # Handle Audio
                             if part.inline_data:
+                                audio_chunks += 1
+                                if audio_chunks == 1:
+                                    logger.info("Receiving audio from Gemini...")
+                                elif audio_chunks % 50 == 0:
+                                    logger.debug(f"Audio chunks received: {audio_chunks}")
                                 self._audio_in_queue.put_nowait(part.inline_data.data)
                             
                             # Handle Text
                             if part.text:
                                 text_msg = part.text
-                                logger.info(f"Received text: {text_msg}")
-                                # Create utterance
-                                utterance = Utterance(
-                                    text=text_msg,
-                                    speaker="robot",
-                                    timestamp=datetime.now(),
-                                    is_command=False
-                                )
-                                self._recent_utterances.append(utterance)
-                                
-                                # Callback
-                                if self._on_response:
-                                    self._on_response(text_msg)
+                                if self._is_thinking_text(text_msg):
+                                    # Model thinking — log at debug, don't surface
+                                    logger.debug(f"Model thinking (not spoken): {text_msg[:120]}...")
+                                else:
+                                    logger.info(f"Received text: {text_msg}")
+                                    # Create utterance
+                                    utterance = Utterance(
+                                        text=text_msg,
+                                        speaker="robot",
+                                        timestamp=datetime.now(),
+                                        is_command=False
+                                    )
+                                    self._recent_utterances.append(utterance)
+                                    
+                                    # Callback
+                                    if self._on_response:
+                                        self._on_response(text_msg)
                             
                             # Handle Executable Code (if any)
                             if part.executable_code:
                                 pass
-                                
-                    # Also handle turn_complete to flush audio if needed? 
-                    # The example clears queue on interruption, but here we just stream.
+
+                    # Log when a turn completes (helps diagnose audio gaps)
+                    if response.server_content and response.server_content.turn_complete:
+                        if audio_chunks > 0:
+                            logger.info(f"Turn complete — {audio_chunks} audio chunks delivered")
+                        else:
+                            logger.warning("Turn complete — NO audio chunks received (text-only response)")
+                        audio_chunks = 0
                     
         except asyncio.CancelledError:
             pass
@@ -468,6 +656,14 @@ class SoundMonitor(BaseMonitor):
             self._audio_stream_in.stop_stream()
             self._audio_stream_in.close()
             self._audio_stream_in = None
+        
+        # Kill arecord if used
+        if hasattr(self, '_arecord_proc') and self._arecord_proc:
+            try:
+                self._arecord_proc.terminate()
+            except Exception:
+                pass
+            self._arecord_proc = None
             
         if self._audio_stream_out:
             self._audio_stream_out.stop_stream()
