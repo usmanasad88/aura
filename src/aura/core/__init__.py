@@ -44,6 +44,9 @@ from .types import (
     SoundOutput,
     AffordanceOutput,
     PerformanceOutput,
+    # Pose tracking
+    ObjectPose6D,
+    PoseTrackingOutput,
 )
 
 __all__ = [
@@ -78,4 +81,7 @@ __all__ = [
     "SoundOutput",
     "AffordanceOutput",
     "PerformanceOutput",
+    # Pose tracking
+    "ObjectPose6D",
+    "PoseTrackingOutput",
 ]

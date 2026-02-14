@@ -82,6 +82,36 @@ class AffordanceConfig(MonitorConfig):
     check_physical_constraints: bool = True
 
 
+class PoseTrackingConfig(MonitorConfig):
+    """Configuration for 6DOF pose tracking using Any6D + DA3."""
+    # Depth model
+    da3_model: str = "da3nested-giant-large"
+    da3_batch_size: int = 8
+    depth_scale: float = 1.0
+    use_da3_intrinsics: bool = True
+    # Pose estimation
+    est_refine_iter: int = 5
+    track_refine_iter: int = 2
+    max_pose_resolution: int = 480
+    # Rendering
+    overlay_alpha: float = 0.6
+    render_axes: bool = True
+    render_overlay: bool = True
+    # Intrinsics
+    intrinsic_file: Optional[str] = None
+    fov_deg: float = 60.0  # fallback FOV if no intrinsics
+    # Mesh-to-track mapping: {track_name_prefix: glb_path}
+    mesh_map: Dict[str, str] = Field(default_factory=dict)
+    # SAM3 mask directory (pre-generated)
+    sam3_mask_dir: Optional[str] = None
+    # Debug
+    debug_level: int = 0
+    save_dir: str = "results/pose_tracking"
+    # Any6D third-party root
+    any6d_root: str = "third_party/any6d"
+    timeout_seconds: float = 60.0  # pose tracking can be slow
+
+
 class MonitorsConfig(BaseModel):
     """Configuration for all monitors."""
     perception: PerceptionConfig = Field(default_factory=PerceptionConfig)
@@ -89,6 +119,7 @@ class MonitorsConfig(BaseModel):
     intent: IntentMonitorConfig = Field(default_factory=IntentMonitorConfig)
     sound: SoundMonitorConfig = Field(default_factory=SoundMonitorConfig)
     affordance: AffordanceConfig = Field(default_factory=AffordanceConfig)
+    pose_tracking: PoseTrackingConfig = Field(default_factory=PoseTrackingConfig)
 
 
 class BrainConfig(BaseModel):

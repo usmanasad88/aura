@@ -43,6 +43,7 @@ class MonitorType(Enum):
     SOUND = auto()
     AFFORDANCE = auto()
     PERFORMANCE = auto()
+    POSE_TRACKING = auto()
 
 
 class TaskState(Enum):

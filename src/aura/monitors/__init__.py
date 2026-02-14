@@ -28,6 +28,7 @@ from .performance_monitor import (
     PerformanceStatus,
     FailureType,
 )
+from .pose_tracking_monitor import PoseTrackingMonitor
 
 __all__ = [
     # Base
@@ -62,4 +63,6 @@ __all__ = [
     "PerformanceCheckResult",
     "PerformanceStatus",
     "FailureType",
+    # Pose Tracking
+    "PoseTrackingMonitor",
 ]

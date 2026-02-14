@@ -347,3 +347,25 @@ class PerformanceOutput(MonitorOutput):
     action_status: Optional[ActionStatus] = None
     progress: float = 0.0  # 0-1
     should_abort: bool = False
+
+
+@dataclass
+class ObjectPose6D:
+    """6DOF pose for a single tracked object."""
+    object_name: str
+    pose_4x4: np.ndarray  # (4, 4) rigid transform, camera frame
+    confidence: float = 1.0
+    mesh_path: Optional[str] = None
+    bbox: Optional[BoundingBox] = None
+    mask: Optional[np.ndarray] = None  # (H, W) bool
+
+
+@dataclass
+class PoseTrackingOutput(MonitorOutput):
+    """Output from 6DOF pose tracking monitor."""
+    monitor_type: MonitorType = field(default=MonitorType.POSE_TRACKING)
+    object_poses: List[ObjectPose6D] = field(default_factory=list)
+    depth_map: Optional[np.ndarray] = None  # (H, W) metric depth in metres
+    intrinsics: Optional[np.ndarray] = None  # (3, 3) camera matrix
+    frame_index: int = 0
+    overlay_rgb: Optional[np.ndarray] = None  # (H, W, 3) rendered overlay

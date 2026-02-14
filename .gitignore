@@ -21,3 +21,4 @@ demos/
 *.avi
 *.mov
 tasks/hand_layup/logs/
+results/

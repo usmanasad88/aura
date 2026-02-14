@@ -37,6 +37,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+pose-tracking = [
+    "nvdiffrast",
+    "open3d>=0.18.0",
+    "trimesh>=4.2.0",
+    "pytorch-lightning>=2.1.0",
+    "imageio[ffmpeg]>=2.34.0",
+    "roma>=1.4.0",
+    "depth-anything-3",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
@@ -67,3 +76,5 @@ explicit = true
 
 [tool.uv.sources]
 sam3 = { path = "third_party/sam3", editable = true }
+depth-anything-3 = { path = "../Depth-Anything-3", editable = true }
+nvdiffrast = { git = "https://github.com/NVlabs/nvdiffrast.git" }
