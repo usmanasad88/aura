@@ -232,7 +232,17 @@ class HandLayupIntentMonitor:
         temperature: float = 0.3,
         log_dir: Optional[str] = None,
         enable_logging: bool = True,
+        realtime: bool = False,
     ):
+        self.realtime = realtime
+
+        # Override defaults for realtime / low-latency mode
+        if realtime:
+            if model == "gemini-3-pro-preview":  # not explicitly overridden
+                model = "gemini-2.5-flash"
+            max_frames = min(max_frames, 3)
+            max_image_dimension = min(max_image_dimension, 480)
+
         self.model = model
         self.max_frames = max_frames
         self.max_image_dimension = max_image_dimension
@@ -348,6 +358,50 @@ Here are the frames:
 """
         return prompt
 
+    def _build_realtime_prompt(
+        self,
+        num_frames: int,
+        previous_state: Optional[Dict[str, Any]],
+        timestamp: float,
+        frame_num: int,
+    ) -> str:
+        """Build a compact prompt optimised for low-latency realtime use.
+
+        Omits the full DAG and state schema to keep token count small,
+        while preserving the RCWPS rolling-state pattern.
+        """
+        prev_state_str = json.dumps(previous_state, indent=2) if previous_state else "{}"
+
+        prompt = f"""\
+Monitor a fiberglass hand layup task from {num_frames} live frames. Update task state.
+
+Steps (in order): idle, place_cup_on_scale, add_resin_to_cup, add_hardener_to_cup, \
+weigh_mixture, mix_resin_hardener, place_layer_1, apply_resin_layer_1, place_layer_2, \
+apply_resin_layer_2, place_layer_3, apply_resin_layer_3, place_layer_4, \
+apply_resin_layer_4, consolidate_with_roller, cleanup, task_complete.
+
+Phases: initialization, resin_preparation, mixing, layer_1_placement, layer_1_resin, \
+layer_2_placement, layer_2_resin, layer_3_placement, layer_3_resin, layer_4_placement, \
+layer_4_resin, consolidation, cleanup, complete.
+
+Human states: idle, preparing_resin, mixing, placing_fiberglass, applying_resin, \
+rolling, inspecting, waiting_for_robot, done.
+
+Previous state:
+{prev_state_str}
+
+Frame {frame_num} | {timestamp:.1f}s
+
+Respond ONLY with JSON (no fences):
+{{"current_phase":"<phase>","current_action":"<action>","human_state":"<state>",\
+"layers_placed":<int>,"layers_resined":<int>,"mixture_mixed":<bool>,\
+"consolidated":<bool>,"human_wearing_gloves":<bool>,\
+"steps_completed":[...],"steps_in_progress":[...],"steps_pending":[...],\
+"predicted_next_action":"<step>","prediction_confidence":<float>,\
+"reasoning":"<brief>"}}
+"""
+        return prompt
+
     # ------------------------------------------------------------------
     # Image helpers
     # ------------------------------------------------------------------
@@ -393,7 +447,8 @@ Here are the frames:
             IntentResult with updated state and action tracking.
         """
         pil_frames = self._prepare_frames(frames)
-        prompt_text = self._build_prompt(
+        build_fn = self._build_realtime_prompt if self.realtime else self._build_prompt
+        prompt_text = build_fn(
             num_frames=len(pil_frames),
             previous_state=self.previous_state,
             timestamp=timestamp,
