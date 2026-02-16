@@ -130,7 +130,7 @@ class MotionPredictor(BaseMonitor):
         self.last_hand_pose: Optional[HumanPose] = None
         self.last_predicted_motion: Optional[PredictedMotion] = None
     
-    def _init_hand_landmarker(self) -> Optional[vision.HandLandmarker]:
+    def _init_hand_landmarker(self) -> Optional["vision.HandLandmarker"]:
         """Initialize MediaPipe HandLandmarker with model download if needed."""
         try:
             # Create model directory
@@ -159,7 +159,7 @@ class MotionPredictor(BaseMonitor):
             logger.warning(f"Failed to initialize HandLandmarker: {e}")
             return None
     
-    def _init_gesture_recognizer(self) -> Optional[vision.GestureRecognizer]:
+    def _init_gesture_recognizer(self) -> Optional["vision.GestureRecognizer"]:
         """Initialize MediaPipe GestureRecognizer with model download if needed."""
         try:
             # Create model directory

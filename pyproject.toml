@@ -45,6 +45,12 @@ pose-tracking = [
     "imageio[ffmpeg]>=2.34.0",
     "roma>=1.4.0",
     "depth-anything-3",
+    "pytorch3d",
+    "transformations>=2024.5.24",
+    "kornia>=0.7.0",
+    "pyrender>=0.1.45",
+    "h5py>=3.10.0",
+    "warp-lang>=1.0.0",
 ]
 dev = [
     "pytest>=8.0.0",
@@ -74,7 +80,11 @@ name = "pytorch-cu126"
 url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 
+[tool.uv]
+no-build-isolation-package = ["pytorch3d"]
+
 [tool.uv.sources]
 sam3 = { path = "third_party/sam3", editable = true }
 depth-anything-3 = { path = "../Depth-Anything-3", editable = true }
 nvdiffrast = { git = "https://github.com/NVlabs/nvdiffrast.git" }
+pytorch3d = { git = "https://github.com/facebookresearch/pytorch3d.git" }

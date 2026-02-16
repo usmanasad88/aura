@@ -104,6 +104,9 @@ class PoseTrackingConfig(MonitorConfig):
     mesh_map: Dict[str, str] = Field(default_factory=dict)
     # SAM3 mask directory (pre-generated)
     sam3_mask_dir: Optional[str] = None
+    # SAM3 live segmentation settings
+    sam3_confidence: float = 0.3
+    sam3_prompts: Optional[List[str]] = None  # auto-derived from mesh_map keys if None
     # Debug
     debug_level: int = 0
     save_dir: str = "results/pose_tracking"

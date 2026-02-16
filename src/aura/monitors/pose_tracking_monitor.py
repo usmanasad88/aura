@@ -62,8 +62,16 @@ _da3_available: Optional[bool] = None
 
 def _ensure_any6d_on_path(any6d_root: str) -> None:
     """Add the Any6D third-party root to ``sys.path`` so that
-    ``foundationpose`` and ``estimater`` can be imported."""
+    ``foundationpose`` and ``estimater`` can be imported.
+
+    Also adds ``<any6d_root>/foundationpose`` so that the compiled
+    ``mycpp`` C++ extension (``mycpp.build.mycpp``) is importable.
+    """
     root = str(Path(any6d_root).resolve())
+    fp_dir = str(Path(any6d_root, "foundationpose").resolve())
+    # foundationpose/ goes after root so that root's estimater.py wins
+    if fp_dir not in sys.path:
+        sys.path.append(fp_dir)
     if root not in sys.path:
         sys.path.insert(0, root)
 
@@ -110,6 +118,136 @@ def _try_import_da3():
         logger.warning("Depth Anything 3 not available: %s", exc)
         _da3_available = False
     return _da3_available
+
+
+def generate_masks_sam3(
+    rgb: np.ndarray,
+    prompts: List[str],
+    confidence: float = 0.3,
+) -> Dict[str, np.ndarray]:
+    """Run SAM3 text-prompted segmentation on a single RGB frame.
+
+    Runs in a **subprocess** to avoid CUDA context conflicts between
+    SAM3/transformers and Open3D/nvdiffrast used later in the pipeline.
+
+    Parameters
+    ----------
+    rgb : np.ndarray
+        (H, W, 3) RGB image.
+    prompts : list[str]
+        Text prompts for objects to find (e.g. ``["bottle", "scale"]``).
+    confidence : float
+        Minimum confidence for SAM3 detections.
+
+    Returns
+    -------
+    dict[str, np.ndarray]
+        Mapping from prompt name to boolean mask (H, W).
+        Only prompts with at least one detection are included.
+    """
+    import json
+    import tempfile
+    import subprocess
+
+    # Serialise inputs to a temp directory
+    with tempfile.TemporaryDirectory(prefix="sam3_masks_") as tmpdir:
+        input_path = os.path.join(tmpdir, "rgb.npy")
+        np.save(input_path, rgb)
+
+        # Build the worker script inline
+        worker = os.path.join(tmpdir, "sam3_worker.py")
+        with open(worker, "w") as f:
+            f.write(_SAM3_WORKER_SCRIPT)
+
+        cmd = [
+            sys.executable, worker,
+            "--input", input_path,
+            "--output_dir", tmpdir,
+            "--prompts", json.dumps(prompts),
+            "--confidence", str(confidence),
+        ]
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=120,
+        )
+        if result.returncode != 0:
+            logger.error("SAM3 subprocess failed:\n%s", result.stderr[-2000:])
+            return {}
+
+        # Load results
+        masks_out: Dict[str, np.ndarray] = {}
+        manifest_path = os.path.join(tmpdir, "manifest.json")
+        if not os.path.exists(manifest_path):
+            logger.error("SAM3 subprocess produced no manifest")
+            return {}
+
+        with open(manifest_path) as mf:
+            manifest = json.load(mf)
+
+        for entry in manifest:
+            name = entry["name"]
+            mask = np.load(os.path.join(tmpdir, entry["file"]))
+            masks_out[name] = mask
+            logger.info(
+                "SAM3: '%s' → score=%.3f, pixels=%d",
+                name, entry["score"], mask.sum(),
+            )
+
+    return masks_out
+
+
+_SAM3_WORKER_SCRIPT = r'''#!/usr/bin/env python
+"""SAM3 mask generation worker — runs in a separate process."""
+import argparse, json, os, sys
+import numpy as np
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--input", required=True)
+    p.add_argument("--output_dir", required=True)
+    p.add_argument("--prompts", required=True)
+    p.add_argument("--confidence", type=float, default=0.3)
+    args = p.parse_args()
+
+    import torch
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
+    torch.autocast("cuda", dtype=torch.bfloat16).__enter__()
+
+    from PIL import Image
+    from sam3 import build_sam3_image_model
+    from sam3.model.sam3_image_processor import Sam3Processor
+
+    rgb = np.load(args.input)
+    prompts = json.loads(args.prompts)
+
+    model = build_sam3_image_model()
+    processor = Sam3Processor(model, confidence_threshold=args.confidence)
+    pil_image = Image.fromarray(rgb)
+    state = processor.set_image(pil_image)
+
+    manifest = []
+    for prompt in prompts:
+        processor.reset_all_prompts(state)
+        state = processor.set_text_prompt(prompt=prompt, state=state)
+        scores = state["scores"]
+        if len(scores) == 0:
+            continue
+        det_masks = state["masks"][:, 0].cpu().float().numpy()
+        det_scores = scores.cpu().float().numpy()
+        best = det_scores.argmax()
+        mask = (det_masks[best] > 0.5).astype(bool)
+        if mask.sum() < 100:
+            continue
+        fname = f"mask_{prompt}.npy"
+        np.save(os.path.join(args.output_dir, fname), mask)
+        manifest.append({"name": prompt, "file": fname, "score": float(det_scores[best])})
+
+    with open(os.path.join(args.output_dir, "manifest.json"), "w") as f:
+        json.dump(manifest, f)
+
+if __name__ == "__main__":
+    main()
+'''
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -739,18 +877,25 @@ class PoseTrackingMonitor(BaseMonitor):
         output_path: str = "results/pose_tracked.mp4",
         skip_frames: int = 1,
     ) -> str:
-        """Run the full pipeline on a video file – mirrors
-        ``run_bottle_video.py``'s main loop.
+        """Run the full pipeline on a video file.
+
+        1. Extract frames (honouring *skip_frames*).
+        2. On the **first frame**, run SAM3 text-prompted segmentation to
+           obtain object masks for initial registration.
+        3. Initialise heavy models (DA3 + Any6D).
+        4. Batch-compute DA3 metric depth for all frames.
+        5. Register 6DOF poses on frame 0, then track on frames 1..N.
+        6. Write an output video with 3D mesh overlays.
 
         Returns the path to the output video.
         """
         import imageio
         import torch
+        from pytorch_lightning import seed_everything
 
-        if not self._initialised:
-            self.initialise()
-
-        # Video info
+        seed_everything(0)
+        cfg = self.config
+        # ── Video info ──────────────────────────────────────────────────
         cap = cv2.VideoCapture(video_path)
         fps = cap.get(cv2.CAP_PROP_FPS)
         total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -762,15 +907,10 @@ class PoseTrackingMonitor(BaseMonitor):
 
         logger.info(
             "Processing video: %s  %d×%d @ %.1ffps, %d frames (skip=%d)",
-            video_path,
-            W,
-            H,
-            fps,
-            total,
-            skip_frames,
+            video_path, W, H, fps, total, skip_frames,
         )
 
-        # Extract frames
+        # ── Extract frames ──────────────────────────────────────────────
         frames_bgr: List[np.ndarray] = []
         cap = cv2.VideoCapture(video_path)
         idx = 0
@@ -784,24 +924,63 @@ class PoseTrackingMonitor(BaseMonitor):
         cap.release()
         N = len(frames_bgr)
         logger.info("Extracted %d frames", N)
-
-        # Batch depth
         frames_rgb = [cv2.cvtColor(f, cv2.COLOR_BGR2RGB) for f in frames_bgr]
+
+        # ── SAM3 masks ────────────────────────────────────────────────
+        # If pre-generated SAM3 masks exist on disk, use those (matches
+        # the original run_bottle_video.py workflow).  Otherwise fall back
+        # to live SAM3 generation on the first frame only.
+        use_pregenerated_masks = (
+            cfg.sam3_mask_dir
+            and os.path.isdir(cfg.sam3_mask_dir)
+        )
+        first_masks: Dict[str, np.ndarray] = {}
+
+        if use_pregenerated_masks:
+            logger.info("Using pre-generated SAM3 masks from: %s", cfg.sam3_mask_dir)
+            for entry in sorted(os.listdir(cfg.sam3_mask_dir)):
+                entry_path = os.path.join(cfg.sam3_mask_dir, entry)
+                if not os.path.isdir(entry_path):
+                    continue
+                m = load_sam3_mask(cfg.sam3_mask_dir, entry, 0)
+                if m is not None and m.sum() > 100:
+                    first_masks[entry] = m
+                    logger.info("  %s: mask loaded (%d pixels)", entry, m.sum())
+        else:
+            # Run SAM3 *before* initialise() because the Any6D imports
+            # pollute sys.path and shadow the ``sam3`` package.
+            prompts = cfg.sam3_prompts or list(cfg.mesh_map.keys())
+            logger.info("Generating SAM3 masks for first frame: prompts=%s", prompts)
+            first_masks = generate_masks_sam3(
+                frames_rgb[0], prompts, confidence=cfg.sam3_confidence,
+            )
+
+        if not first_masks:
+            logger.warning(
+                "SAM3 found no objects on the first frame – "
+                "output video will have no overlays."
+            )
+
+        # ── Initialise heavy models (DA3 + Any6D) ──────────────────────
+        if not self._initialised:
+            self.initialise(frame_hw=(H, W))
+
+        # ── Batch depth (DA3) ───────────────────────────────────────────
         all_depths: List[np.ndarray] = []
-        bs = self.config.da3_batch_size
+        bs = cfg.da3_batch_size
         K = self._K
         if K is None:
-            if self.config.intrinsic_file:
-                K = load_intrinsics_yaml(self.config.intrinsic_file, W, H)
+            if cfg.intrinsic_file:
+                K = load_intrinsics_yaml(cfg.intrinsic_file, W, H)
             if K is None:
-                K = estimate_intrinsics(W, H, self.config.fov_deg)
+                K = estimate_intrinsics(W, H, cfg.fov_deg)
             self._K = K
 
         for start in range(0, N, bs):
             batch = frames_rgb[start: start + bs]
-            depths, pred = compute_da3_depth(self._da3_model, batch, intrinsic=K)
+            depths, pred = compute_da3_depth(self._da3_model, batch)
             if (
-                self.config.use_da3_intrinsics
+                cfg.use_da3_intrinsics
                 and start == 0
                 and pred.intrinsics is not None
             ):
@@ -813,28 +992,35 @@ class PoseTrackingMonitor(BaseMonitor):
                 K = K_da3
             for d in depths:
                 all_depths.append(
-                    resize_depth_to_frame(d, H, W) * self.config.depth_scale
+                    resize_depth_to_frame(d, H, W) * cfg.depth_scale
                 )
             logger.info(
                 "  DA3 batch %d/%d done", start // bs + 1, (N + bs - 1) // bs
             )
 
-        # Free DA3 memory
+        # Free DA3 memory before pose estimation
         del self._da3_model
         self._da3_model = None
         torch.cuda.empty_cache()
 
-        # Process frames
+        # ── Process frames ──────────────────────────────────────────────
         os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
         out_fps = fps / skip_frames
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         writer = cv2.VideoWriter(output_path, fourcc, out_fps, (W, H))
 
-        import asyncio
-
         for i in range(N):
+            if i == 0:
+                # First frame: register with SAM3 masks
+                masks_i = first_masks
+            else:
+                # Subsequent frames: let _process_frame auto-load
+                # per-frame SAM3 masks from sam3_mask_dir (if available)
+                # or fall back to pure tracking.
+                masks_i = None
+
             output = self._process_frame(
-                frames_bgr[i], i, depth=all_depths[i]
+                frames_bgr[i], i, masks=masks_i, depth=all_depths[i],
             )
             vis = self.visualize(frames_bgr[i], output)
             writer.write(vis)
@@ -843,7 +1029,7 @@ class PoseTrackingMonitor(BaseMonitor):
                 logger.info("  Frame %d/%d", i + 1, N)
             if i < 5 or i % 50 == 0:
                 debug_path = os.path.join(
-                    self.config.save_dir, f"overlay_{i:05d}.png"
+                    cfg.save_dir, f"overlay_{i:05d}.png"
                 )
                 if output.overlay_rgb is not None:
                     imageio.imwrite(debug_path, output.overlay_rgb)
