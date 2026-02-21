@@ -629,3 +629,149 @@ Respond ONLY with JSON (no fences):
 
     def get_log_dir(self) -> Optional[Path]:
         return self.prompt_logger.get_session_dir()
+
+
+# ============================================================================
+# Intent Log Replayer
+# ============================================================================
+
+class IntentLogReplayer:
+    """Replays saved intent monitor logs without calling Gemini.
+
+    Loads all ``call_NNNN/`` directories from a session, parses each
+    ``response_parsed.json`` and ``meta.json``, and serves them back
+    as ``IntentResult`` objects in order.
+
+    This is useful for testing the decision engine and voice pipeline
+    against a previously recorded session.
+
+    Usage::
+
+        replayer = IntentLogReplayer(
+            "/path/to/logs/intent_monitor/session_20260221_124316"
+        )
+        for result in replayer:
+            engine.update(result)
+
+    Or call ``predict()`` repeatedly (same signature as
+    ``HandLayupIntentMonitor.predict``) — it ignores the frame data
+    and returns the next logged result::
+
+        replayer = IntentLogReplayer(session_dir)
+        result = replayer.predict(frames=[], timestamp=0)
+    """
+
+    def __init__(self, session_dir: str | Path):
+        self.session_dir = Path(session_dir)
+        if not self.session_dir.is_dir():
+            raise FileNotFoundError(f"Session directory not found: {self.session_dir}")
+
+        self._results: List[IntentResult] = []
+        self._index: int = 0
+        self._load()
+
+    def _load(self) -> None:
+        """Load all call directories and parse into IntentResult objects."""
+        call_dirs = sorted(
+            d for d in self.session_dir.iterdir()
+            if d.is_dir() and d.name.startswith("call_")
+        )
+
+        for call_dir in call_dirs:
+            meta_path = call_dir / "meta.json"
+            parsed_path = call_dir / "response_parsed.json"
+
+            if not parsed_path.exists():
+                logger.warning("Skipping %s — no response_parsed.json", call_dir.name)
+                continue
+
+            with open(meta_path) as f:
+                meta = json.load(f)
+            with open(parsed_path) as f:
+                parsed = json.load(f)
+
+            result = IntentResult(
+                timestamp=meta.get("timestamp_sec", 0.0),
+                frame_num=meta.get("frame_num", 0),
+            )
+
+            result.state = parsed
+            result.current_phase = parsed.get("current_phase", "initialization")
+            result.current_action = parsed.get("current_action", "idle")
+            result.human_state = parsed.get("human_state", "idle")
+            result.layers_placed = int(parsed.get("layers_placed", 0))
+            result.layers_resined = int(parsed.get("layers_resined", 0))
+            result.mixture_mixed = bool(parsed.get("mixture_mixed", False))
+            result.consolidated = bool(parsed.get("consolidated", False))
+            gloves = parsed.get("human_wearing_gloves", False)
+            result.human_wearing_gloves = gloves if isinstance(gloves, bool) else False
+            result.steps_completed = parsed.get("steps_completed", [])
+            result.steps_in_progress = parsed.get("steps_in_progress", [])
+            result.steps_pending = parsed.get("steps_pending", [])
+            result.predicted_next_action = parsed.get("predicted_next_action", "unknown")
+            result.prediction_confidence = float(parsed.get("prediction_confidence", 0.0))
+            result.reasoning = parsed.get("reasoning", "")
+            result.generation_time_sec = meta.get("generation_time_sec", 0.0)
+            result.raw_response = ""
+
+            self._results.append(result)
+
+        logger.info(
+            "IntentLogReplayer loaded %d results from %s",
+            len(self._results), self.session_dir,
+        )
+
+    # ------------------------------------------------------------------
+    # Public API (mirrors HandLayupIntentMonitor)
+    # ------------------------------------------------------------------
+
+    def predict(
+        self,
+        frames: Optional[list] = None,
+        timestamp: float = 0.0,
+        frame_num: int = 0,
+    ) -> IntentResult:
+        """Return the next logged IntentResult.
+
+        Args are accepted for API compatibility but ignored — the result
+        comes from the saved log.  Returns a default ``IntentResult``
+        once all logged results have been consumed.
+        """
+        if self._index < len(self._results):
+            result = self._results[self._index]
+            self._index += 1
+            return result
+
+        logger.info("IntentLogReplayer exhausted — returning default result")
+        return IntentResult(timestamp=timestamp, frame_num=frame_num)
+
+    def get_log_dir(self) -> Optional[Path]:
+        return self.session_dir
+
+    @property
+    def total(self) -> int:
+        """Total number of logged results."""
+        return len(self._results)
+
+    @property
+    def remaining(self) -> int:
+        """Results not yet consumed."""
+        return max(0, len(self._results) - self._index)
+
+    def reset(self) -> None:
+        """Reset the replay index back to the first result."""
+        self._index = 0
+
+    def __iter__(self):
+        self._index = 0
+        return self
+
+    def __next__(self) -> IntentResult:
+        if self._index >= len(self._results):
+            raise StopIteration
+        result = self._results[self._index]
+        self._index += 1
+        return result
+
+    def __len__(self) -> int:
+        return len(self._results)

@@ -27,7 +27,12 @@
       "visual_cues": ["human pouring from hardener bottle", "second liquid in cup", "scale reading changing"],
       "next_possible": ["weigh_mixture"],
       "assignee": "human",
-      "objects_needed_on_workplace": ["hardener_bottle", "cup", "weigh_scale"]
+      "objects_needed_on_workplace": ["hardener_bottle", "cup", "weigh_scale"],
+      "robot_return_to_storage": {
+        "objects": ["resin_bottle"],
+        "assignee": "robot",
+        "reason": "Resin bottle no longer needed after resin has been added to cup"
+      }
     },
     "weigh_mixture": {
       "description": "Human checks the weight of the resin/hardener mixture on the scale",
@@ -37,6 +42,11 @@
       "objects_needed_on_workplace": ["cup", "weigh_scale"],
       "monitoring": {
         "resin_hardener_ratio": "Check ratio is within acceptable range (typically 100:30 to 100:50 by weight)"
+      },
+      "robot_return_to_storage": {
+        "objects": ["hardener_bottle"],
+        "assignee": "robot",
+        "reason": "Hardener bottle no longer needed after hardener has been added to cup"
       }
     },
     "mix_resin_hardener": {
@@ -54,11 +64,7 @@
       "visual_cues": ["human handling fiberglass sheet", "sheet draped on mold", "smoothing sheet"],
       "next_possible": ["apply_resin_layer_1"],
       "assignee": "human",
-      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"],
-      "robot_housekeeping": {
-        "can_remove": ["weigh_scale"],
-        "reason": "Scale no longer needed after mixing"
-      }
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
     },
     "apply_resin_layer_1": {
       "description": "Human applies mixed resin to the first fiberglass layer with a brush",
@@ -114,20 +120,17 @@
       "visual_cues": ["roller on fiberglass", "pressing down", "rolling motion", "resin squeezing out"],
       "next_possible": ["cleanup"],
       "assignee": "human",
-      "objects_needed_on_workplace": ["roller", "mold"],
-      "robot_housekeeping": {
-        "can_remove": ["cup", "brush_small", "brush_medium", "resin_bottle", "hardener_bottle"],
-        "reason": "Brushes, bottles, and cup no longer needed after final resin application"
-      }
+      "objects_needed_on_workplace": ["roller", "mold"]
     },
     "cleanup": {
-      "description": "Human and robot clean up the workspace. Robot returns all remaining objects to storage.",
+      "description": "Robot returns all remaining tools to storage",
       "visual_cues": ["workspace being cleared", "objects being moved", "mold with cured layup"],
       "next_possible": ["task_complete"],
-      "assignee": "both",
-      "robot_housekeeping": {
-        "can_remove": ["roller", "cup", "brush_small", "brush_medium"],
-        "reason": "Final cleanup of all tools"
+      "assignee": "robot",
+      "robot_return_to_storage": {
+        "objects": ["roller"],
+        "assignee": "robot",
+        "reason": "Final cleanup — return roller to storage"
       }
     },
     "task_complete": {
@@ -154,10 +157,10 @@
     "ratio_check": "Resin to hardener ratio must be within manufacturer specifications"
   },
   "robot_role": {
-    "description": "The robot assists by moving objects between storage and workplace. It does NOT perform layup actions.",
+    "description": "The robot assists by moving objects between storage and workplace. It does NOT perform layup actions. It is responsible for returning the resin bottle, hardener bottle, and roller to storage when no longer needed.",
     "capabilities": [
       "Move object from storage to workplace",
-      "Move object from workplace to storage (housekeeping)"
+      "Move resin bottle, hardener bottle, or roller from workplace to storage when no longer needed"
     ],
     "constraints": [
       "Only move objects when human is not actively using them",

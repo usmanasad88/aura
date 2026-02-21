@@ -26,6 +26,7 @@ from .monitors import (
     IntentResult,
     PromptLogger,
 )
+from .decision_engine import HandLayupDecisionEngine, RobotAction, VoiceMessage
 
 __all__ = [
     "HandLayupAffordanceMonitor",
@@ -37,4 +38,7 @@ __all__ = [
     "HandLayupIntentMonitor",
     "IntentResult",
     "PromptLogger",
+    "HandLayupDecisionEngine",
+    "RobotAction",
+    "VoiceMessage",
 ]

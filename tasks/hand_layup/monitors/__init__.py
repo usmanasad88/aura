@@ -20,6 +20,7 @@ from .performance_monitor import (
 from .intent_monitor import (
     HandLayupIntentMonitor,
     IntentResult,
+    IntentLogReplayer,
     PromptLogger,
 )
 
@@ -38,5 +39,6 @@ __all__ = [
     # Intent monitoring (RCWPS)
     "HandLayupIntentMonitor",
     "IntentResult",
+    "IntentLogReplayer",
     "PromptLogger",
 ]
