@@ -1,0 +1,183 @@
+{
+  "video_path": "/home/mani/Repos/aura/demo_data/layup_demo/layup_dummy_demo_crop_1080.mp4",
+  "model": "gemini-3-pro-preview",
+  "start_time": "2026-02-07T23:10:00.380667",
+  "end_time": "2026-02-07T23:12:29.584311",
+  "total_frames_processed": 3,
+  "total_duration_sec": 149.203644,
+  "prompt_log_dir": "/home/mani/Repos/aura/tasks/hand_layup/logs/intent_monitor/session_20260207_231000",
+  "safety_alerts_total": 2,
+  "task_complete": false,
+  "final_task_state": {
+    "current_phase": "resin_preparation",
+    "current_action": "add_resin_to_cup",
+    "layers_placed": 0,
+    "layers_resined": 0,
+    "mixture_mixed": false,
+    "consolidated": false,
+    "steps_completed": [
+      "idle",
+      "place_cup_on_scale"
+    ]
+  },
+  "robot_instructions": [],
+  "errors": [],
+  "frame_analyses": [
+    {
+      "frame_num": 0,
+      "timestamp_sec": 0.0,
+      "detected_objects": [],
+      "object_count": 0,
+      "gloves_detected": false,
+      "current_action": "idle",
+      "current_action_confidence": 0.0,
+      "predicted_next_action": "place_cup_on_scale",
+      "predicted_next_confidence": 0.95,
+      "intent_reasoning": "The operator is interacting with the weigh scale (likely turning it on) while the cup sits nearby on the table, indicating the task is starting.",
+      "steps_completed": [],
+      "steps_in_progress": [
+        "idle"
+      ],
+      "steps_pending": [
+        "place_cup_on_scale",
+        "add_resin_to_cup",
+        "add_hardener_to_cup",
+        "weigh_mixture",
+        "mix_resin_hardener",
+        "place_layer_1",
+        "apply_resin_layer_1",
+        "place_layer_2",
+        "apply_resin_layer_2",
+        "place_layer_3",
+        "apply_resin_layer_3",
+        "place_layer_4",
+        "apply_resin_layer_4",
+        "consolidate_with_roller",
+        "cleanup",
+        "task_complete"
+      ],
+      "current_phase": "initialization",
+      "layers_placed": 0,
+      "layers_resined": 0,
+      "mixture_mixed": false,
+      "consolidated": false,
+      "human_state": "idle",
+      "available_skills": [],
+      "housekeeping_suggestions": [],
+      "robot_instruction": null,
+      "robot_instruction_reasoning": "",
+      "safety_alerts": [],
+      "shelf_life_elapsed_min": null,
+      "gt_action": "recording_start",
+      "gt_robot_action": null,
+      "gemini_time_sec": 22.61993908882141,
+      "process_time_ms": 90858.7749004364
+    },
+    {
+      "frame_num": 300,
+      "timestamp_sec": 10.010001101665296,
+      "detected_objects": [],
+      "object_count": 0,
+      "gloves_detected": false,
+      "current_action": "place_cup_on_scale",
+      "current_action_confidence": 0.0,
+      "predicted_next_action": "add_resin_to_cup",
+      "predicted_next_confidence": 0.95,
+      "intent_reasoning": "The operator has moved the mixing cup from the table onto the weigh scale, indicating the start of the resin preparation phase.",
+      "steps_completed": [
+        "idle"
+      ],
+      "steps_in_progress": [
+        "place_cup_on_scale"
+      ],
+      "steps_pending": [
+        "add_resin_to_cup",
+        "add_hardener_to_cup",
+        "weigh_mixture",
+        "mix_resin_hardener",
+        "place_layer_1",
+        "apply_resin_layer_1",
+        "place_layer_2",
+        "apply_resin_layer_2",
+        "place_layer_3",
+        "apply_resin_layer_3",
+        "place_layer_4",
+        "apply_resin_layer_4",
+        "consolidate_with_roller",
+        "cleanup",
+        "task_complete"
+      ],
+      "current_phase": "resin_preparation",
+      "layers_placed": 0,
+      "layers_resined": 0,
+      "mixture_mixed": false,
+      "consolidated": false,
+      "human_state": "preparing_resin",
+      "available_skills": [],
+      "housekeeping_suggestions": [],
+      "robot_instruction": null,
+      "robot_instruction_reasoning": "",
+      "safety_alerts": [
+        "WARNING: Gloves not detected during resin handling"
+      ],
+      "shelf_life_elapsed_min": null,
+      "gt_action": "place_cup_on_scale",
+      "gt_robot_action": null,
+      "gemini_time_sec": 21.597676515579224,
+      "process_time_ms": 21671.743154525757
+    },
+    {
+      "frame_num": 600,
+      "timestamp_sec": 20.02000220333059,
+      "detected_objects": [],
+      "object_count": 0,
+      "gloves_detected": false,
+      "current_action": "add_resin_to_cup",
+      "current_action_confidence": 0.0,
+      "predicted_next_action": "add_hardener_to_cup",
+      "predicted_next_confidence": 0.95,
+      "intent_reasoning": "The operator has successfully placed the cup on the scale and is now actively pouring resin from a bottle into the cup.",
+      "steps_completed": [
+        "idle",
+        "place_cup_on_scale"
+      ],
+      "steps_in_progress": [
+        "add_resin_to_cup"
+      ],
+      "steps_pending": [
+        "add_hardener_to_cup",
+        "weigh_mixture",
+        "mix_resin_hardener",
+        "place_layer_1",
+        "apply_resin_layer_1",
+        "place_layer_2",
+        "apply_resin_layer_2",
+        "place_layer_3",
+        "apply_resin_layer_3",
+        "place_layer_4",
+        "apply_resin_layer_4",
+        "consolidate_with_roller",
+        "cleanup",
+        "task_complete"
+      ],
+      "current_phase": "resin_preparation",
+      "layers_placed": 0,
+      "layers_resined": 0,
+      "mixture_mixed": false,
+      "consolidated": false,
+      "human_state": "preparing_resin",
+      "available_skills": [],
+      "housekeeping_suggestions": [],
+      "robot_instruction": null,
+      "robot_instruction_reasoning": "",
+      "safety_alerts": [
+        "WARNING: Gloves not detected during resin handling"
+      ],
+      "shelf_life_elapsed_min": null,
+      "gt_action": "add_resin",
+      "gt_robot_action": null,
+      "gemini_time_sec": 35.97290754318237,
+      "process_time_ms": 36066.44606590271
+    }
+  ]
+}

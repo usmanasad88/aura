@@ -1,0 +1,1127 @@
+{
+  "video_path": "demo_data/weigh_bottles/exp.mp4",
+  "config_path": "/home/mani/Repos/aura/tasks/weigh_bottles/config/weigh_bottles.json",
+  "total_frames_processed": 69,
+  "timestamp": "2026-02-01T16:19:55.663745",
+  "affordance_summary": {
+    "total_programs": 4,
+    "completed": 2,
+    "current": "return_hardener_bottle.prog",
+    "remaining": 1,
+    "programs": {
+      "pick_hardener_bottle.prog": {
+        "name": "pick_hardener_bottle.prog",
+        "status": "COMPLETED",
+        "elapsed_time": 23.16308
+      },
+      "pick_resin_bottle.prog": {
+        "name": "pick_resin_bottle.prog",
+        "status": "COMPLETED",
+        "elapsed_time": 26.413925
+      },
+      "return_hardener_bottle.prog": {
+        "name": "return_hardener_bottle.prog",
+        "status": "RUNNING",
+        "elapsed_time": 19.066072
+      },
+      "return_resin_bottle.prog": {
+        "name": "return_resin_bottle.prog",
+        "status": "BLOCKED",
+        "elapsed_time": 0
+      }
+    }
+  },
+  "performance_summary": {
+    "total_checks": 0,
+    "failure_count": 0,
+    "failure_types": {},
+    "last_failure": null
+  },
+  "results": [
+    {
+      "frame_number": 0,
+      "timestamp_sec": 0.0,
+      "current_program": null,
+      "available_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog",
+        "return_hardener_bottle.prog",
+        "return_resin_bottle.prog"
+      ],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": null,
+      "ground_truth_event": null,
+      "process_time_sec": 0.009145
+    },
+    {
+      "frame_number": 60,
+      "timestamp_sec": 2.0020000662978665,
+      "current_program": null,
+      "available_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog",
+        "return_hardener_bottle.prog",
+        "return_resin_bottle.prog"
+      ],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": null,
+      "ground_truth_event": null,
+      "process_time_sec": 5e-05
+    },
+    {
+      "frame_number": 120,
+      "timestamp_sec": 4.004000132595733,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 8.5e-05
+    },
+    {
+      "frame_number": 180,
+      "timestamp_sec": 6.0060001988936005,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 240,
+      "timestamp_sec": 8.008000265191466,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 300,
+      "timestamp_sec": 10.010000331489334,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.2e-05
+    },
+    {
+      "frame_number": 360,
+      "timestamp_sec": 12.012000397787201,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 420,
+      "timestamp_sec": 14.014000464085067,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 480,
+      "timestamp_sec": 16.016000530382932,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 540,
+      "timestamp_sec": 18.0180005966808,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 600,
+      "timestamp_sec": 20.020000662978667,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.8e-05
+    },
+    {
+      "frame_number": 660,
+      "timestamp_sec": 22.022000729276535,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.3e-05
+    },
+    {
+      "frame_number": 720,
+      "timestamp_sec": 24.024000795574402,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 4.1e-05
+    },
+    {
+      "frame_number": 780,
+      "timestamp_sec": 26.02600086187227,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 2.8e-05
+    },
+    {
+      "frame_number": 840,
+      "timestamp_sec": 28.028000928170133,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 900,
+      "timestamp_sec": 30.030000994468,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 960,
+      "timestamp_sec": 32.032001060765865,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 1020,
+      "timestamp_sec": 34.03400112706373,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 4.2e-05
+    },
+    {
+      "frame_number": 1080,
+      "timestamp_sec": 36.0360011933616,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 1140,
+      "timestamp_sec": 38.03800125965947,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 1200,
+      "timestamp_sec": 40.040001325957334,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 1260,
+      "timestamp_sec": 42.0420013922552,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 1320,
+      "timestamp_sec": 44.04400145855307,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 1380,
+      "timestamp_sec": 46.04600152485094,
+      "current_program": "pick_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 4.1e-05
+    },
+    {
+      "frame_number": 1440,
+      "timestamp_sec": 48.048001591148804,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 9.4e-05
+    },
+    {
+      "frame_number": 1500,
+      "timestamp_sec": 50.05000165744667,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.8e-05
+    },
+    {
+      "frame_number": 1560,
+      "timestamp_sec": 52.05200172374454,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 1620,
+      "timestamp_sec": 54.0540017900424,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 1680,
+      "timestamp_sec": 56.056001856340266,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 1740,
+      "timestamp_sec": 58.058001922638134,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 2.9e-05
+    },
+    {
+      "frame_number": 1800,
+      "timestamp_sec": 60.060001988936,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.2e-05
+    },
+    {
+      "frame_number": 1860,
+      "timestamp_sec": 62.06200205523387,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 1920,
+      "timestamp_sec": 64.06400212153173,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.8e-05
+    },
+    {
+      "frame_number": 1980,
+      "timestamp_sec": 66.0660021878296,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 2.9e-05
+    },
+    {
+      "frame_number": 2040,
+      "timestamp_sec": 68.06800225412746,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 4.1e-05
+    },
+    {
+      "frame_number": 2100,
+      "timestamp_sec": 70.07000232042533,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 2160,
+      "timestamp_sec": 72.0720023867232,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 2220,
+      "timestamp_sec": 74.07400245302107,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 2280,
+      "timestamp_sec": 76.07600251931893,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 2340,
+      "timestamp_sec": 78.0780025856168,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 2400,
+      "timestamp_sec": 80.08000265191467,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 2460,
+      "timestamp_sec": 82.08200271821254,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3e-05
+    },
+    {
+      "frame_number": 2520,
+      "timestamp_sec": 84.0840027845104,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 2580,
+      "timestamp_sec": 86.08600285080827,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 2640,
+      "timestamp_sec": 88.08800291710614,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 2700,
+      "timestamp_sec": 90.090002983404,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 4e-05
+    },
+    {
+      "frame_number": 2760,
+      "timestamp_sec": 92.09200304970187,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 2820,
+      "timestamp_sec": 94.09400311599974,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 2880,
+      "timestamp_sec": 96.09600318229761,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3e-05
+    },
+    {
+      "frame_number": 2940,
+      "timestamp_sec": 98.09800324859548,
+      "current_program": "pick_resin_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "pick_resin_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 3000,
+      "timestamp_sec": 100.10000331489334,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 9.2e-05
+    },
+    {
+      "frame_number": 3060,
+      "timestamp_sec": 102.10200338119121,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 3120,
+      "timestamp_sec": 104.10400344748908,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 3180,
+      "timestamp_sec": 106.10600351378693,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.6e-05
+    },
+    {
+      "frame_number": 3240,
+      "timestamp_sec": 108.1080035800848,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 3300,
+      "timestamp_sec": 110.11000364638267,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 2.9e-05
+    },
+    {
+      "frame_number": 3360,
+      "timestamp_sec": 112.11200371268053,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 3420,
+      "timestamp_sec": 114.1140037789784,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.4e-05
+    },
+    {
+      "frame_number": 3480,
+      "timestamp_sec": 116.11600384527627,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 5.8e-05
+    },
+    {
+      "frame_number": 3540,
+      "timestamp_sec": 118.11800391157414,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 3600,
+      "timestamp_sec": 120.120003977872,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.8e-05
+    },
+    {
+      "frame_number": 3660,
+      "timestamp_sec": 122.12200404416987,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 3720,
+      "timestamp_sec": 124.12400411046774,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.5e-05
+    },
+    {
+      "frame_number": 3780,
+      "timestamp_sec": 126.1260041767656,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.7e-05
+    },
+    {
+      "frame_number": 3840,
+      "timestamp_sec": 128.12800424306346,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 3900,
+      "timestamp_sec": 130.13000430936134,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 3960,
+      "timestamp_sec": 132.1320043756592,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.8e-05
+    },
+    {
+      "frame_number": 4020,
+      "timestamp_sec": 134.13400444195707,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    },
+    {
+      "frame_number": 4080,
+      "timestamp_sec": 136.13600450825493,
+      "current_program": "return_hardener_bottle.prog",
+      "available_programs": [],
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_resin_bottle.prog"
+      ],
+      "performance_status": null,
+      "failure_type": null,
+      "performance_confidence": 0.0,
+      "performance_reasoning": "",
+      "ground_truth_program": "return_hardener_bottle.prog",
+      "ground_truth_event": "execute",
+      "process_time_sec": 3.9e-05
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "video_path": "demo_data/weigh_bottles/video.mp4",
+  "start_time": "2026-02-01T19:00:49.652012",
+  "end_time": "2026-02-01T19:03:02.931842",
+  "total_frames_processed": 5,
+  "total_duration_sec": 133.27983,
+  "correct_decisions": 4,
+  "total_decisions": 4,
+  "decision_accuracy": 1.0,
+  "completed_programs": [
+    "pick_hardener_bottle.prog",
+    "pick_hardener_bottle.prog",
+    "pick_hardener_bottle.prog",
+    "pick_hardener_bottle.prog"
+  ],
+  "task_complete": false,
+  "final_task_state": {
+    "current_phase": "hardener_delivery",
+    "current_action": "idle",
+    "robot_state": "at_home",
+    "gripper_state": "empty",
+    "hardener_location": "human_hands",
+    "resin_location": "storage_table",
+    "hardener_weighed": false,
+    "resin_weighed": false,
+    "hardener_returned": false,
+    "resin_returned": false
+  },
+  "errors": [],
+  "frame_analyses": [
+    {
+      "frame_num": 0,
+      "timestamp_sec": 0.0,
+      "detected_objects": [],
+      "object_count": 0,
+      "current_action": "idle",
+      "current_action_confidence": 0.95,
+      "predicted_next_action": "pick_hardener",
+      "predicted_next_confidence": 0.9,
+      "intent_reasoning": "The robot arm is visible in the background in a retracted, high position consistent with the 'home' state. The human operator is standing at the station but not currently exchanging any objects. No bottles are being manipulated. This suggests the system is in the initialization phase, waiting to begin the sequence.",
+      "available_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "current_program": null,
+      "completed_programs": [],
+      "performance_status": "OK",
+      "failure_type": "NONE",
+      "performance_reasoning": "",
+      "decision_action": "pick_hardener_bottle.prog",
+      "decision_confidence": 0.7,
+      "decision_reasoning": "Next available: pick_hardener_bottle.prog",
+      "gt_action": "recording_start",
+      "gt_program": null,
+      "ssg_node_count": 0,
+      "ssg_edge_count": 0,
+      "process_time_ms": 42611.956999999995
+    },
+    {
+      "frame_num": 300,
+      "timestamp_sec": 10.0,
+      "detected_objects": [],
+      "object_count": 0,
+      "current_action": "pick_hardener",
+      "current_action_confidence": 0.92,
+      "predicted_next_action": "grasp_hardener",
+      "predicted_next_confidence": 0.95,
+      "intent_reasoning": "The robot arm is extended and moving towards the bottle located on the storage table to the right. The gripper is currently empty and open, positioning itself to grab the object. The human operator is seated at the table with the scale, waiting for the robot to deliver the bottle. This visual configuration matches the 'pick_hardener' action.",
+      "available_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "current_program": null,
+      "completed_programs": [],
+      "performance_status": "OK",
+      "failure_type": "NONE",
+      "performance_reasoning": "",
+      "decision_action": "pick_hardener_bottle.prog",
+      "decision_confidence": 0.95,
+      "decision_reasoning": "Ground truth: execute pick_hardener_bottle.prog",
+      "gt_action": "pick_hardener",
+      "gt_program": "pick_hardener_bottle.prog",
+      "ssg_node_count": 0,
+      "ssg_edge_count": 0,
+      "process_time_ms": 21416.324
+    },
+    {
+      "frame_num": 600,
+      "timestamp_sec": 20.0,
+      "detected_objects": [],
+      "object_count": 0,
+      "current_action": "pick_hardener",
+      "current_action_confidence": 0.92,
+      "predicted_next_action": "grasp_hardener",
+      "predicted_next_confidence": 0.95,
+      "intent_reasoning": "The robot is currently positioned at the storage table (right side) and is aligning its empty gripper with the dark bottle (hardener). The human is seated at the weighing station (left side) and is passively waiting. This visual configuration corresponds to the 'pick_hardener' action, where the robot approaches the bottle to grasp it. The immediate next logical step in the task graph is 'grasp_hardener'.",
+      "available_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "current_program": null,
+      "completed_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": "OK",
+      "failure_type": "NONE",
+      "performance_reasoning": "",
+      "decision_action": "pick_hardener_bottle.prog",
+      "decision_confidence": 0.95,
+      "decision_reasoning": "Ground truth: execute pick_hardener_bottle.prog",
+      "gt_action": "pick_hardener",
+      "gt_program": "pick_hardener_bottle.prog",
+      "ssg_node_count": 0,
+      "ssg_edge_count": 0,
+      "process_time_ms": 24381.315000000002
+    },
+    {
+      "frame_num": 900,
+      "timestamp_sec": 30.0,
+      "detected_objects": [],
+      "object_count": 0,
+      "current_action": "handover_hardener",
+      "current_action_confidence": 0.95,
+      "predicted_next_action": "return_home_1",
+      "predicted_next_confidence": 0.9,
+      "intent_reasoning": "The robot is holding the black bottle (hardener) and is positioned directly in front of the human operator at the weighing station. In the final frame, the human is clearly reaching out his hand to grasp the bottle from the robot's gripper. This specific interaction\u2014the robot presenting the bottle and the human reaching to take it\u2014identifies the action as 'handover_hardener'. According to the task graph, once the handover is complete, the robot will retract to its home position ('return_home_1').",
+      "available_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "current_program": null,
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": "OK",
+      "failure_type": "NONE",
+      "performance_reasoning": "",
+      "decision_action": "pick_hardener_bottle.prog",
+      "decision_confidence": 0.95,
+      "decision_reasoning": "Ground truth: execute pick_hardener_bottle.prog",
+      "gt_action": "pick_hardener",
+      "gt_program": "pick_hardener_bottle.prog",
+      "ssg_node_count": 0,
+      "ssg_edge_count": 0,
+      "process_time_ms": 21336.725000000002
+    },
+    {
+      "frame_num": 1200,
+      "timestamp_sec": 40.0,
+      "detected_objects": [],
+      "object_count": 0,
+      "current_action": "return_home_1",
+      "current_action_confidence": 0.95,
+      "predicted_next_action": "human_weighing_hardener",
+      "predicted_next_confidence": 0.9,
+      "intent_reasoning": "In the sequence, the robot is first seen delivering a red-capped bottle (hardener) to the human (Frame 2). In the final frame (Frame 3), the robot has released the bottle onto the table in front of the human and is retracting with an empty gripper. This visual evidence corresponds to the 'return_home_1' action, which follows the handover. The bottle is now with the human, and the next logical step in the workflow is for the human to place it on the scale.",
+      "available_programs": [
+        "pick_hardener_bottle.prog"
+      ],
+      "current_program": null,
+      "completed_programs": [
+        "pick_hardener_bottle.prog",
+        "pick_hardener_bottle.prog",
+        "pick_hardener_bottle.prog"
+      ],
+      "performance_status": "OK",
+      "failure_type": "NONE",
+      "performance_reasoning": "",
+      "decision_action": "pick_hardener_bottle.prog",
+      "decision_confidence": 0.95,
+      "decision_reasoning": "Ground truth: execute pick_hardener_bottle.prog",
+      "gt_action": "pick_hardener",
+      "gt_program": "pick_hardener_bottle.prog",
+      "ssg_node_count": 0,
+      "ssg_edge_count": 0,
+      "process_time_ms": 23489.523999999998
+    }
+  ]
+}
