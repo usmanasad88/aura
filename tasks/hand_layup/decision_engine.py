@@ -19,7 +19,8 @@ Usage::
 import json
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set
 
@@ -151,6 +152,10 @@ class HandLayupDecisionEngine:
         self._shelf_life_warned: bool = False
         self._mixture_start_time: Optional[float] = None
 
+        # Logging — linked to the intent monitor's session directory
+        self._log_dir: Optional[Path] = None
+        self._update_counter: int = 0
+
         logger.info(
             "HandLayupDecisionEngine loaded DAG with %d nodes, "
             "%d return-to-storage triggers: %s",
@@ -163,6 +168,131 @@ class HandLayupDecisionEngine:
             len(self._available_programs),
             sorted(self._available_programs),
         )
+
+    # ------------------------------------------------------------------
+    # Logging
+    # ------------------------------------------------------------------
+
+    def set_log_dir(self, log_dir: Path | str) -> None:
+        """Link this engine to an intent monitor session directory.
+
+        When set, each ``update()`` call writes a ``decision.json`` into the
+        corresponding ``call_NNNN/`` directory, and ``save_summary()`` writes
+        a ``decision_summary.json`` at the session level.
+        """
+        self._log_dir = Path(log_dir)
+        logger.info("Decision engine logging to: %s", self._log_dir)
+
+    def _log_update(
+        self,
+        intent_result,
+        actions: List[RobotAction],
+        voice_messages_this_update: List[VoiceMessage],
+    ) -> None:
+        """Write a decision.json into the matching call_NNNN directory."""
+        if self._log_dir is None:
+            return
+
+        call_dir = self._log_dir / f"call_{self._update_counter:04d}"
+        if not call_dir.is_dir():
+            # If the intent monitor didn't create this dir (e.g. replay mode),
+            # create it ourselves.
+            call_dir.mkdir(parents=True, exist_ok=True)
+
+        decision = {
+            "update_number": self._update_counter,
+            "timestamp_sec": round(intent_result.timestamp, 3),
+            "frame_num": intent_result.frame_num,
+            "logged_at": datetime.now().isoformat(),
+            "completed_steps": sorted(self.completed_steps),
+            "object_locations": dict(sorted(self.object_locations.items())),
+            "robot_actions": [
+                {
+                    "action_type": a.action_type,
+                    "object_name": a.object_name,
+                    "program": self._resolve_program(a),
+                    "trigger_step": a.trigger_step,
+                    "reason": a.reason,
+                    "executed": a.executed,
+                    "success": a.success,
+                    "timestamp": round(a.timestamp, 3),
+                }
+                for a in actions
+            ],
+            "voice_messages": [
+                {
+                    "text": m.text,
+                    "priority": m.priority,
+                    "timestamp": round(m.timestamp, 3),
+                }
+                for m in voice_messages_this_update
+            ],
+            "pending_actions": [
+                {
+                    "action_type": a.action_type,
+                    "object_name": a.object_name,
+                    "program": self._resolve_program(a),
+                }
+                for a in self._pending_actions
+            ],
+            "dry_run": self.dry_run,
+        }
+
+        try:
+            with open(call_dir / "decision.json", "w") as f:
+                json.dump(decision, f, indent=2, default=str)
+        except Exception as e:
+            logger.warning("Failed to write decision log: %s", e)
+
+    def save_summary(self) -> Optional[Path]:
+        """Write a decision_summary.json at the session level.
+
+        Call this at the end of a run.  Returns the path written, or None.
+        """
+        if self._log_dir is None:
+            return None
+
+        summary_path = self._log_dir / "decision_summary.json"
+        summary = {
+            "total_updates": self._update_counter,
+            "completed_steps": sorted(self.completed_steps),
+            "total_robot_actions": len(self.executed_actions),
+            "total_voice_messages": len(self.voice_log),
+            "object_locations": dict(sorted(self.object_locations.items())),
+            "robot_actions": [
+                {
+                    "action_type": a.action_type,
+                    "object_name": a.object_name,
+                    "program": self._resolve_program(a),
+                    "trigger_step": a.trigger_step,
+                    "reason": a.reason,
+                    "executed": a.executed,
+                    "success": a.success,
+                    "timestamp": round(a.timestamp, 3),
+                }
+                for a in self.executed_actions
+            ],
+            "voice_messages": [
+                {
+                    "text": m.text,
+                    "priority": m.priority,
+                    "timestamp": round(m.timestamp, 3),
+                }
+                for m in self.voice_log
+            ],
+            "pending_actions_remaining": len(self._pending_actions),
+            "dry_run": self.dry_run,
+            "saved_at": datetime.now().isoformat(),
+        }
+
+        try:
+            with open(summary_path, "w") as f:
+                json.dump(summary, f, indent=2, default=str)
+            logger.info("Decision summary saved to: %s", summary_path)
+            return summary_path
+        except Exception as e:
+            logger.warning("Failed to write decision summary: %s", e)
+            return None
 
     # ------------------------------------------------------------------
     # DAG helpers
@@ -292,6 +422,8 @@ class HandLayupDecisionEngine:
         """
         actions: List[RobotAction] = []
         timestamp = intent_result.timestamp
+        voice_start_idx = len(self.voice_log)
+        self._update_counter += 1
 
         # --- 0. Initial delivery: bring objects from storage to workplace ---
         if not self._initial_delivery_queued:
@@ -346,6 +478,10 @@ class HandLayupDecisionEngine:
                     current, predicted,
                     intent_result.prediction_confidence * 100,
                 )
+
+        # --- 8. Log this update ---
+        voice_this_update = self.voice_log[voice_start_idx:]
+        self._log_update(intent_result, actions, voice_this_update)
 
         return actions
 

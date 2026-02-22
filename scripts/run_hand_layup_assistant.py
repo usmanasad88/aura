@@ -184,6 +184,12 @@ async def run_replay(
         on_voice=voice_callback,
         dry_run=dry_run,
     )
+
+    # Link decision engine logging to the replay session dir
+    replay_log_dir = replayer.get_log_dir()
+    if replay_log_dir:
+        engine.set_log_dir(replay_log_dir)
+
     print(f"Decision engine: dry_run={dry_run}")
     print(f"  Programs discovered: {len(engine._available_programs)}")
 
@@ -217,6 +223,10 @@ async def run_replay(
     # ── Summary ───────────────────────────────────────────────────────
     print(f"\nReplayed {predict_count}/{replayer.total} predictions.")
     print(engine.get_summary())
+    engine.save_summary()
+
+    if replay_log_dir:
+        print(f"\nLogs saved to: {replay_log_dir}")
 
 
 # ── Live video loop ──────────────────────────────────────────────────────
@@ -337,6 +347,12 @@ async def run_live(
         on_voice=voice_callback,
         dry_run=dry_run,
     )
+
+    # Link decision engine logging to the intent monitor's session dir
+    intent_log_dir = intent_monitor.get_log_dir()
+    if intent_log_dir:
+        engine.set_log_dir(intent_log_dir)
+
     print(f"Decision engine: dry_run={dry_run}")
     print(f"  Programs discovered: {len(engine._available_programs)}")
 
@@ -398,10 +414,10 @@ async def run_live(
     # ── Summary ───────────────────────────────────────────────────────
     print(f"\nProcessed {frames_read} frames, {predict_count} predictions.")
     print(engine.get_summary())
+    engine.save_summary()
 
-    log_dir = intent_monitor.get_log_dir()
-    if log_dir:
-        print(f"\nIntent logs saved to: {log_dir}")
+    if intent_log_dir:
+        print(f"\nLogs saved to: {intent_log_dir}")
 
 
 # ── CLI ──────────────────────────────────────────────────────────────────
