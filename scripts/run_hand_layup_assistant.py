@@ -81,7 +81,7 @@ def _print_intent(result, frame_count: int, replayed: bool = False) -> None:
 def _print_actions(actions) -> None:
     """Print robot actions that were triggered."""
     for a in actions:
-        status = "OK" if a.success else "FAIL"
+        status = "OK" if a.success else "PEND" if not a.executed else "FAIL"
         print(
             f"  >> ROBOT [{status}] {a.action_type} "
             f"{a.object_name} (trigger: {a.trigger_step})"
@@ -185,6 +185,7 @@ async def run_replay(
         dry_run=dry_run,
     )
     print(f"Decision engine: dry_run={dry_run}")
+    print(f"  Programs discovered: {len(engine._available_programs)}")
 
     # ── Replay loop ───────────────────────────────────────────────────
     print("\n" + "=" * 60)
@@ -221,7 +222,7 @@ async def run_replay(
 # ── Live video loop ──────────────────────────────────────────────────────
 
 async def run_live(
-    video_path: str,
+    video_path: str | None,
     robot_url: str,
     speed: float,
     predict_interval: float,
@@ -232,20 +233,28 @@ async def run_live(
     output_device: str | None,
     sample_rate: int,
     voice_name: str,
+    webcam: int | str | None = None,
 ):
-    """Run live intent analysis on a video with the decision engine."""
-    from aura.sources.realtime_video import RealtimeVideoSource
+    """Run live intent analysis on a video or webcam with the decision engine."""
     from tasks.hand_layup.monitors.intent_monitor import HandLayupIntentMonitor
     from tasks.hand_layup.decision_engine import HandLayupDecisionEngine
 
     # ── Video source ──────────────────────────────────────────────────
-    source = RealtimeVideoSource(path=video_path, speed=speed)
-    source.open()
-    print(
-        f"Video: {video_path}\n"
-        f"  {source.resolution[0]}x{source.resolution[1]} @ "
-        f"{source.fps:.1f} fps | {source.duration:.1f}s | speed={speed}x"
-    )
+    if webcam is not None:
+        from aura.sources.webcam import WebcamSource
+        source = WebcamSource(device=webcam)
+        source.open()
+        w, h = source.resolution
+        print(f"Webcam: device={webcam}  {w}x{h} @ {source.fps:.1f} fps")
+    else:
+        from aura.sources.realtime_video import RealtimeVideoSource
+        source = RealtimeVideoSource(path=video_path, speed=speed)
+        source.open()
+        print(
+            f"Video: {video_path}\n"
+            f"  {source.resolution[0]}x{source.resolution[1]} @ "
+            f"{source.fps:.1f} fps | {source.duration:.1f}s | speed={speed}x"
+        )
 
     # ── Intent monitor ────────────────────────────────────────────────
     intent_monitor = HandLayupIntentMonitor(
@@ -329,6 +338,7 @@ async def run_live(
         dry_run=dry_run,
     )
     print(f"Decision engine: dry_run={dry_run}")
+    print(f"  Programs discovered: {len(engine._available_programs)}")
 
     # ── Main loop ─────────────────────────────────────────────────────
     print("\n" + "=" * 60)
@@ -345,7 +355,7 @@ async def run_live(
         while True:
             frame = source.read()
             if frame is None:
-                print("\nVideo ended.")
+                print("\nSource ended.")
                 break
 
             frames_read += 1
@@ -407,6 +417,11 @@ def main():
         help="Path to video file (required for live mode, ignored in replay mode)",
     )
     parser.add_argument(
+        "--webcam", default=None, nargs="?", const=0, metavar="DEVICE",
+        help="Use webcam as video source. Optionally specify device index or "
+             "path (default: 0). Example: --webcam or --webcam 2 or --webcam /dev/video0",
+    )
+    parser.add_argument(
         "--replay-logs", default=None, metavar="SESSION_DIR",
         help="Path to a saved intent-monitor session directory. "
              "Replays logged predictions without calling Gemini.",
@@ -450,6 +465,14 @@ def main():
 
     args = parser.parse_args()
 
+    # Parse webcam device — could be an int or a path string
+    webcam_device = None
+    if args.webcam is not None:
+        try:
+            webcam_device = int(args.webcam)
+        except (ValueError, TypeError):
+            webcam_device = args.webcam  # keep as string (e.g. /dev/video0)
+
     if args.replay_logs:
         # Replay mode — no video or Gemini needed
         asyncio.run(run_replay(
@@ -462,8 +485,8 @@ def main():
             sample_rate=args.rate,
             voice_name=args.voice_name,
         ))
-    elif args.video:
-        # Live mode — real-time video + Gemini intent analysis
+    elif args.video or webcam_device is not None:
+        # Live mode — video file or webcam + Gemini intent analysis
         asyncio.run(run_live(
             video_path=args.video,
             robot_url=args.robot_url,
@@ -476,9 +499,10 @@ def main():
             output_device=args.output_device,
             sample_rate=args.rate,
             voice_name=args.voice_name,
+            webcam=webcam_device,
         ))
     else:
-        parser.error("Either --video or --replay-logs is required.")
+        parser.error("One of --video, --webcam, or --replay-logs is required.")
 
 
 if __name__ == "__main__":
