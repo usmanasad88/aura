@@ -244,13 +244,22 @@ async def run_live(
     sample_rate: int,
     voice_name: str,
     webcam: int | str | None = None,
+    gopro: bool = False,
+    gopro_ip: str = "172.29.170.51",
+    gopro_fps: float = 0.3,
+    gopro_lens: str = "front",
 ):
     """Run live intent analysis on a video or webcam with the decision engine."""
     from tasks.hand_layup.monitors.intent_monitor import HandLayupIntentMonitor
     from tasks.hand_layup.decision_engine import HandLayupDecisionEngine
 
     # ── Video source ──────────────────────────────────────────────────
-    if webcam is not None:
+    if gopro:
+        from aura.sources.gopro_source import GoProSource
+        source = GoProSource(camera_ip=gopro_ip, fps=gopro_fps, lens=gopro_lens)
+        source.open()
+        print(f"GoPro: camera={gopro_ip}  lens={gopro_lens}  target_fps={gopro_fps:.2f}")
+    elif webcam is not None:
         from aura.sources.webcam import WebcamSource
         source = WebcamSource(device=webcam)
         source.open()
@@ -438,6 +447,23 @@ def main():
              "path (default: 0). Example: --webcam or --webcam 2 or --webcam /dev/video0",
     )
     parser.add_argument(
+        "--gopro", action="store_true", default=False,
+        help="Use GoPro camera as video source (USB webcam stream).",
+    )
+    parser.add_argument(
+        "--gopro-ip", default="172.29.170.51", metavar="IP",
+        help="GoPro camera IP address (default: 172.29.170.51).",
+    )
+    parser.add_argument(
+        "--gopro-fps", type=float, default=0.3, metavar="FPS",
+        help="Frame capture rate from GoPro (default: 0.3). "
+             "Each frame triggers a native shutter + download (~4-6s), so values above 0.5 are impractical.",
+    )
+    parser.add_argument(
+        "--gopro-lens", choices=["front", "back"], default="front",
+        help="Which GoPro fisheye lens to use (default: front).",
+    )
+    parser.add_argument(
         "--replay-logs", default=None, metavar="SESSION_DIR",
         help="Path to a saved intent-monitor session directory. "
              "Replays logged predictions without calling Gemini.",
@@ -501,8 +527,8 @@ def main():
             sample_rate=args.rate,
             voice_name=args.voice_name,
         ))
-    elif args.video or webcam_device is not None:
-        # Live mode — video file or webcam + Gemini intent analysis
+    elif args.video or webcam_device is not None or args.gopro:
+        # Live mode — video file, webcam, or GoPro + Gemini intent analysis
         asyncio.run(run_live(
             video_path=args.video,
             robot_url=args.robot_url,
@@ -516,9 +542,13 @@ def main():
             sample_rate=args.rate,
             voice_name=args.voice_name,
             webcam=webcam_device,
+            gopro=args.gopro,
+            gopro_ip=args.gopro_ip,
+            gopro_fps=args.gopro_fps,
+            gopro_lens=args.gopro_lens,
         ))
     else:
-        parser.error("One of --video, --webcam, or --replay-logs is required.")
+        parser.error("One of --video, --webcam, --gopro, or --replay-logs is required.")
 
 
 if __name__ == "__main__":

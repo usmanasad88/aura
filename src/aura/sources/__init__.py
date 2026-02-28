@@ -18,6 +18,7 @@ from aura.sources.webcam import WebcamSource
 from aura.sources.video_file import VideoFileSource
 from aura.sources.screen_capture import ScreenCaptureSource
 from aura.sources.realtime_video import RealtimeVideoSource
+from aura.sources.gopro_source import GoProSource
 
 __all__ = [
     "Frame",
@@ -26,4 +27,5 @@ __all__ = [
     "VideoFileSource",
     "ScreenCaptureSource",
     "RealtimeVideoSource",
+    "GoProSource",
 ]
