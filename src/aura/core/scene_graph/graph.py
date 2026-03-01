@@ -317,6 +317,41 @@ class SemanticSceneGraph:
         logger.info(f"Initialized task state with {len(self._task_state)} variables")
     
     # =========================================================================
+    # Bulk Monitor Updates
+    # =========================================================================
+
+    def update_from_intent_result(self, intent_result: Dict[str, Any]) -> None:
+        """Sync flat task state from an RCWPS IntentResult dict.
+
+        Copies ``state`` entries into ``_task_state``, updates object
+        locations for any ``*_location`` keys, updates the human agent
+        node, and records completed steps via spatial edges.
+
+        Args:
+            intent_result: Serialised ``IntentResult`` (as dict) —
+                expects ``state``, ``steps_completed``, ``current_action``,
+                ``predicted_next_action``, ``current_phase``.
+        """
+        state = intent_result.get("state", {})
+        for key, value in state.items():
+            self._task_state[key] = value
+
+        # Mirror object location state vars back to SSG edges
+        for key, value in state.items():
+            if key.endswith("_location") and isinstance(value, str):
+                obj_id = key.removesuffix("_location")
+                if obj_id in self._nodes and value in self._nodes:
+                    self.set_location(obj_id, value)
+
+        # Update human agent state
+        human = self._nodes.get("human")
+        if human and hasattr(human, "current_action"):
+            human.current_action = state.get("current_action", human.current_action)
+            human.state = state.get("human_state", getattr(human, "state", "IDLE"))
+
+        self.last_updated = datetime.now()
+
+    # =========================================================================
     # Snapshot and History
     # =========================================================================
     

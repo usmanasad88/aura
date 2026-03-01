@@ -41,5 +41,14 @@
             "warning_interval_minutes": 20,
             "warning_message": "Warning: mixture has been mixed for {elapsed} minutes. Shelf life limit is 30 minutes."
         }
-    ]
+    ],
+    "workflow_config": {
+        "active_monitors": ["intent", "gesture"],
+        "decision_mode": "hybrid",
+        "graph_topology": "sense_decide_act",
+        "predict_interval_sec": 3.0,
+        "gesture_hold_frames": 3,
+        "resume_gestures": ["Thumb_Up"],
+        "stop_gestures": ["Open_Palm", "Pointing_Up"]
+    }
 }

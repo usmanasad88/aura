@@ -7,7 +7,7 @@ the task DAG and rules to decide when the robot should move objects and issue vo
 Usage:
     uv run python scripts/run_aura_assistant.py \
         --task hand_layup \
-        --video demo_data/layup_demo/layup_dummy_demo_crop_1080.mp4 \
+        --video demo_data/layup_demo/layup_gesture_demo.mp4 \
         --dry-run
 """
 

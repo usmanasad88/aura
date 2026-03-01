@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run AURA Assistant (hand_layup)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_aura_assistant.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task", "hand_layup",
+        "--video", "demo_data/layup_demo/layup_gesture_demo.mp4",
+        "--dry-run"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    }
+  ]
+}

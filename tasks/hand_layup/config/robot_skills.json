@@ -1,0 +1,61 @@
+{
+  "name": "Hand Layup Robot Skills",
+  "description": "Robot skills available for hand layup task — limited to object logistics",
+  "version": "1.0",
+  "skills": [
+    {
+      "id": "deliver_to_workplace",
+      "name": "Deliver Object to Workplace",
+      "description": "Pick up a movable object from the storage table and place it on the workplace in front of the human",
+      "category": "manipulation",
+      "parameters": [
+        {"name": "object_id", "type": "object_id", "required": true},
+        {"name": "from_region", "type": "region_id", "required": false, "default": "storage_area"},
+        {"name": "to_region", "type": "region_id", "required": false, "default": "workplace"}
+      ],
+      "preconditions": {
+        "object.at_region": "storage_area",
+        "object.is_graspable": true
+      },
+      "effects": {
+        "object.location": "workplace"
+      },
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_to_storage",
+      "name": "Return Object to Storage",
+      "description": "Pick up a movable object from the workplace and return it to the storage table",
+      "category": "manipulation",
+      "parameters": [
+        {"name": "object_id", "type": "object_id", "required": true},
+        {"name": "from_region", "type": "region_id", "required": false, "default": "workplace"},
+        {"name": "to_region", "type": "region_id", "required": false, "default": "storage_area"}
+      ],
+      "preconditions": {
+        "object.at_region": "workplace",
+        "object.is_graspable": true
+      },
+      "effects": {
+        "object.location": "storage_area"
+      },
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "wait",
+      "name": "Wait",
+      "description": "Wait for a specified duration or until the human signals readiness",
+      "category": "utility",
+      "parameters": [
+        {"name": "duration_sec", "type": "number", "required": false, "default": 5.0},
+        {"name": "condition", "type": "string", "required": false}
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    }
+  ]
+}
