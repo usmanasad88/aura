@@ -1,0 +1,10 @@
+{
+  "call_number": 2,
+  "model": "gemini-2.5-flash",
+  "generation_time_sec": 10.115,
+  "frame_num": 249,
+  "timestamp_sec": 25.265,
+  "num_frames_attached": 3,
+  "response_length_chars": 1576,
+  "logged_at": "2026-03-01T14:46:48.617381"
+}

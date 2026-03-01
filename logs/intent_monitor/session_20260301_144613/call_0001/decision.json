@@ -1,0 +1,50 @@
+{
+  "update_number": 1,
+  "timestamp_sec": 10.36,
+  "frame_num": 248,
+  "completed_steps": [],
+  "object_locations": {
+    "brush_medium": "workplace",
+    "brush_small": "workplace",
+    "cup": "workplace",
+    "hardener_bottle": "workplace",
+    "resin_bottle": "workplace",
+    "roller": "workplace",
+    "weigh_scale": "workplace"
+  },
+  "robot_actions": [
+    {
+      "action_type": "deliver_to_workplace",
+      "object_name": "hardener_bottle",
+      "program": "move_hardener_from_storage_to_workplace.prog",
+      "success": true
+    },
+    {
+      "action_type": "deliver_to_workplace",
+      "object_name": "resin_bottle",
+      "program": "move_resin_from_storage_to_workplace.prog",
+      "success": true
+    },
+    {
+      "action_type": "deliver_to_workplace",
+      "object_name": "roller",
+      "program": "move_roller_from_storage_to_workplace.prog",
+      "success": true
+    }
+  ],
+  "voice_messages": [
+    {
+      "text": "Delivering hardener bottle from storage to workplace",
+      "priority": "normal"
+    },
+    {
+      "text": "Delivering resin bottle from storage to workplace",
+      "priority": "normal"
+    },
+    {
+      "text": "Delivering roller from storage to workplace",
+      "priority": "normal"
+    }
+  ],
+  "dry_run": true
+}

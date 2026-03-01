@@ -1,0 +1,487 @@
+You are a robot assistant helping with a fiberglass hand layup task. You receive status updates about the task and announce them to the human. Keep announcements short and clear (1-2 sentences).
+Your goal is to update the state variables based on the provided task graph, state schema, and the visual information from the images.
+
+## Task Graph Definition
+```json
+{
+  "name": "Hand Layup Task DAG",
+  "description": "Directed acyclic graph for fiberglass hand layup process. Human performs layup while robot moves objects between storage and workplace as needed.",
+  "version": "1.0",
+  "nodes": {
+    "idle": {
+      "description": "System initialized, waiting for task to begin",
+      "visual_cues": ["operator at workplace", "objects on storage table", "mold visible"],
+      "next_possible": ["place_cup_on_scale"]
+    },
+    "place_cup_on_scale": {
+      "description": "Human places the mixing cup on the weigh scale",
+      "visual_cues": ["hand reaching for cup", "cup moving toward scale", "scale on table"],
+      "next_possible": ["add_resin_to_cup"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["cup", "weigh_scale"]
+    },
+    "add_resin_to_cup": {
+      "description": "Human adds resin from the bottle into the cup on the scale",
+      "visual_cues": ["human pouring from resin bottle", "liquid in cup", "scale reading changing"],
+      "next_possible": ["add_hardener_to_cup"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["resin_bottle", "cup", "weigh_scale"]
+    },
+    "add_hardener_to_cup": {
+      "description": "Human adds hardener from the bottle into the cup on the scale",
+      "visual_cues": ["human pouring from hardener bottle", "second liquid in cup", "scale reading changing"],
+      "next_possible": ["weigh_mixture"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["hardener_bottle", "cup", "weigh_scale"],
+      "robot_return_to_storage": {
+        "objects": ["resin_bottle"],
+        "assignee": "robot",
+        "reason": "Resin bottle no longer needed after resin has been added to cup"
+      }
+    },
+    "weigh_mixture": {
+      "description": "Human checks the weight of the resin/hardener mixture on the scale",
+      "visual_cues": ["human looking at scale", "cup on scale", "reading weight"],
+      "next_possible": ["mix_resin_hardener"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["cup", "weigh_scale"],
+      "monitoring": {
+        "resin_hardener_ratio": "Check ratio is within acceptable range (typically 100:30 to 100:50 by weight)"
+      },
+      "robot_return_to_storage": {
+        "objects": ["hardener_bottle"],
+        "assignee": "robot",
+        "reason": "Hardener bottle no longer needed after hardener has been added to cup"
+      }
+    },
+    "mix_resin_hardener": {
+      "description": "Human stirs the resin and hardener together with the mixing stick",
+      "visual_cues": ["human stirring cup", "mixing stick in cup", "circular motion"],
+      "next_possible": ["place_layer_1"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["cup"],
+      "events": {
+        "shelf_life_starts": "Mixture shelf life timer begins upon mixing completion"
+      }
+    },
+    "place_layer_1": {
+      "description": "Human places the first fiberglass sheet on the mold",
+      "visual_cues": ["human handling fiberglass sheet", "sheet draped on mold", "smoothing sheet"],
+      "next_possible": ["apply_resin_layer_1"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
+    },
+    "apply_resin_layer_1": {
+      "description": "Human applies mixed resin to the first fiberglass layer with a brush",
+      "visual_cues": ["human brushing resin onto fiberglass", "brush in hand", "wet fiberglass"],
+      "next_possible": ["place_layer_2"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_small", "cup", "mold"]
+    },
+    "place_layer_2": {
+      "description": "Human places the second fiberglass sheet on top of the first resin-coated layer",
+      "visual_cues": ["human placing second sheet", "layering on mold", "fiberglass on wet surface"],
+      "next_possible": ["apply_resin_layer_2"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
+    },
+    "apply_resin_layer_2": {
+      "description": "Human applies resin to the second fiberglass layer with a brush",
+      "visual_cues": ["brushing resin on second layer", "saturating fiberglass", "wet layup"],
+      "next_possible": ["place_layer_3"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_small", "cup", "mold"]
+    },
+    "place_layer_3": {
+      "description": "Human places the third fiberglass sheet on the stack",
+      "visual_cues": ["human placing third sheet", "multiple layers visible", "aligning edges"],
+      "next_possible": ["apply_resin_layer_3"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
+    },
+    "apply_resin_layer_3": {
+      "description": "Human applies resin to the third layer with a brush",
+      "visual_cues": ["brushing resin", "fiberglass becoming translucent", "wet layup"],
+      "next_possible": ["place_layer_4"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_medium", "cup", "mold"]
+    },
+    "place_layer_4": {
+      "description": "Human places the fourth and final fiberglass sheet on the stack",
+      "visual_cues": ["human placing final sheet", "thick layup stack", "final alignment"],
+      "next_possible": ["apply_resin_layer_4"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["fiberglass_sheet", "mold"]
+    },
+    "apply_resin_layer_4": {
+      "description": "Human applies resin to the fourth and final layer with a brush",
+      "visual_cues": ["brushing resin on final layer", "fully saturated layup", "complete coverage"],
+      "next_possible": ["consolidate_with_roller"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["brush_medium", "cup", "mold"]
+    },
+    "consolidate_with_roller": {
+      "description": "Human uses roller to consolidate all layers, remove air bubbles and excess resin",
+      "visual_cues": ["roller on fiberglass", "pressing down", "rolling motion", "resin squeezing out"],
+      "next_possible": ["cleanup"],
+      "assignee": "human",
+      "objects_needed_on_workplace": ["roller", "mold"]
+    },
+    "cleanup": {
+      "description": "Robot returns all remaining tools to storage",
+      "visual_cues": ["workspace being cleared", "objects being moved", "mold with cured layup"],
+      "next_possible": ["task_complete"],
+      "assignee": "robot",
+      "robot_return_to_storage": {
+        "objects": ["roller"],
+        "assignee": "robot",
+        "reason": "Final cleanup — return roller to storage"
+      }
+    },
+    "task_complete": {
+      "description": "Task finished, layup complete, workspace clean",
+      "visual_cues": ["mold with completed layup", "clean workspace", "tools stored"],
+      "next_possible": []
+    }
+  },
+  "start_node": "idle",
+  "end_nodes": ["task_complete"],
+  "transition_rules": {
+    "sequential_layup": "Layers must be placed and resined in order: 1, 2, 3, 4",
+    "resin_before_next_layer": "Each layer must have resin applied before the next layer is placed",
+    "mixing_before_application": "Resin/hardener must be mixed before any application",
+    "weighing_before_mixing": "Mixture must be weighed before mixing to verify ratio",
+    "roller_after_all_layers": "Roller consolidation happens only after all 4 layers are placed and resined",
+    "gloves_required": "Human must wear gloves during all resin handling operations",
+    "shelf_life_limit": "Mixed resin must be used within the shelf life window (typically 30 min)"
+  },
+  "safety_rules": {
+    "gloves_required": "Human must wear protective gloves when handling resin, hardener, or wet fiberglass",
+    "ventilation": "Work area should be well ventilated during resin application",
+    "shelf_life": "Mixed resin/hardener has limited working time. Alert if approaching limit.",
+    "ratio_check": "Resin to hardener ratio must be within manufacturer specifications"
+  },
+  "robot_role": {
+    "description": "The robot assists by moving objects between storage and workplace. It does NOT perform layup actions. It is responsible for returning the resin bottle, hardener bottle, and roller to storage when no longer needed.",
+    "capabilities": [
+      "Move object from storage to workplace",
+      "Move resin bottle, hardener bottle, or roller from workplace to storage when no longer needed"
+    ],
+    "constraints": [
+      "Only move objects when human is not actively using them",
+      "Announce actions before executing",
+      "Return to home position between actions",
+      "Do not move the mold"
+    ]
+  }
+}
+
+```
+
+## State Variables Schema
+```json
+{
+  "name": "Hand Layup Task State",
+  "description": "State schema for tracking progress in the fiberglass hand layup process",
+  "version": "1.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "The current high-level phase of the task",
+      "valid_values": [
+        "initialization",
+        "resin_preparation",
+        "mixing",
+        "layer_1_placement",
+        "layer_1_resin",
+        "layer_2_placement",
+        "layer_2_resin",
+        "layer_3_placement",
+        "layer_3_resin",
+        "layer_4_placement",
+        "layer_4_resin",
+        "consolidation",
+        "cleanup",
+        "complete"
+      ],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "The specific action currently being performed",
+      "valid_values": [
+        "idle",
+        "place_cup_on_scale",
+        "add_resin_to_cup",
+        "add_hardener_to_cup",
+        "weigh_mixture",
+        "mix_resin_hardener",
+        "place_layer_1",
+        "apply_resin_layer_1",
+        "place_layer_2",
+        "apply_resin_layer_2",
+        "place_layer_3",
+        "apply_resin_layer_3",
+        "place_layer_4",
+        "apply_resin_layer_4",
+        "use_roller",
+        "cleanup",
+        "task_complete"
+      ],
+      "default": "idle"
+    },
+    "robot_state": {
+      "type": "string",
+      "description": "Current state of the robot",
+      "valid_values": ["at_home", "moving_to_storage", "at_storage", "grasping", "moving_to_workplace", "at_workplace", "releasing", "moving_home"],
+      "default": "at_home"
+    },
+    "gripper_state": {
+      "type": "string",
+      "description": "State of the robot gripper",
+      "valid_values": ["empty", "holding_resin_bottle", "holding_hardener_bottle", "holding_cup", "holding_brush_small", "holding_brush_medium", "holding_roller"],
+      "default": "empty"
+    },
+    "cup_location": {
+      "type": "string",
+      "description": "Current location of the mixing cup",
+      "valid_values": ["storage", "workplace", "weigh_scale", "robot_gripper"],
+      "default": "storage"
+    },
+    "resin_bottle_location": {
+      "type": "string",
+      "description": "Current location of the resin bottle",
+      "valid_values": ["storage", "workplace", "robot_gripper"],
+      "default": "storage"
+    },
+    "hardener_bottle_location": {
+      "type": "string",
+      "description": "Current location of the hardener bottle",
+      "valid_values": ["storage", "workplace", "robot_gripper"],
+      "default": "storage"
+    },
+    "brush_small_location": {
+      "type": "string",
+      "description": "Current location of the small brush",
+      "valid_values": ["storage", "workplace", "robot_gripper", "in_use"],
+      "default": "storage"
+    },
+    "brush_medium_location": {
+      "type": "string",
+      "description": "Current location of the medium brush",
+      "valid_values": ["storage", "workplace", "robot_gripper", "in_use"],
+      "default": "storage"
+    },
+    "roller_location": {
+      "type": "string",
+      "description": "Current location of the roller",
+      "valid_values": ["storage", "workplace", "robot_gripper", "in_use"],
+      "default": "storage"
+    },
+    "weigh_scale_location": {
+      "type": "string",
+      "description": "Location of the weigh scale",
+      "valid_values": ["workplace"],
+      "default": "workplace"
+    },
+    "mold_location": {
+      "type": "string",
+      "description": "Location of the metal mold",
+      "valid_values": ["workplace"],
+      "default": "workplace"
+    },
+    "resin_added": {
+      "type": "boolean",
+      "description": "Whether resin has been added to the cup",
+      "default": false
+    },
+    "hardener_added": {
+      "type": "boolean",
+      "description": "Whether hardener has been added to the cup",
+      "default": false
+    },
+    "mixture_weighed": {
+      "type": "boolean",
+      "description": "Whether the resin/hardener mixture has been weighed",
+      "default": false
+    },
+    "mixture_mixed": {
+      "type": "boolean",
+      "description": "Whether the mixture has been properly mixed",
+      "default": false
+    },
+    "mixture_shelf_life_start": {
+      "type": "number",
+      "description": "Timestamp (seconds) when the resin/hardener were mixed. Shelf life begins.",
+      "default": null
+    },
+    "mixture_shelf_life_max_seconds": {
+      "type": "number",
+      "description": "Maximum allowed shelf life of the mixture in seconds (e.g. 30 minutes = 1800s)",
+      "default": 1800
+    },
+    "layers_placed": {
+      "type": "integer",
+      "description": "Number of fiberglass layers placed on the mold (max 4)",
+      "min": 0,
+      "max": 4,
+      "default": 0
+    },
+    "layers_resined": {
+      "type": "integer",
+      "description": "Number of layers that have had resin applied (max 4)",
+      "min": 0,
+      "max": 4,
+      "default": 0
+    },
+    "consolidated": {
+      "type": "boolean",
+      "description": "Whether roller consolidation has been performed",
+      "default": false
+    },
+    "human_wearing_gloves": {
+      "type": "boolean",
+      "description": "Whether the human operator is wearing protective gloves",
+      "default": false
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": [
+        "idle",
+        "preparing_resin",
+        "mixing",
+        "placing_fiberglass",
+        "applying_resin",
+        "rolling",
+        "inspecting",
+        "waiting_for_robot",
+        "done"
+      ],
+      "default": "idle"
+    },
+    "action_confidence": {
+      "type": "number",
+      "description": "Confidence level (0-1) in the current action detection",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "The predicted next action based on task graph",
+      "default": "place_cup_on_scale"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0
+    },
+    "elapsed_time_seconds": {
+      "type": "number",
+      "description": "Time elapsed since task start",
+      "default": 0.0
+    },
+    "safety_alerts": {
+      "type": "array",
+      "description": "Active safety alerts (no gloves, shelf life exceeded, etc.)",
+      "default": []
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "current_phase": {"type": "string"},
+      "current_action": {"type": "string"},
+      "robot_state": {"type": "string"},
+      "gripper_state": {"type": "string"},
+      "human_state": {"type": "string"},
+      "layers_placed": {"type": "integer"},
+      "layers_resined": {"type": "integer"},
+      "consolidated": {"type": "boolean"},
+      "human_wearing_gloves": {"type": "boolean"},
+      "safety_alerts": {"type": "array"},
+      "predicted_next_action": {"type": "string"},
+      "prediction_confidence": {"type": "number"},
+      "reasoning": {"type": "string"}
+    },
+    "required": ["current_phase", "current_action", "robot_state", "human_state", "layers_placed", "predicted_next_action", "reasoning"]
+  }
+}
+
+```
+
+## Instructions
+You will be provided with a rolling window of the 3 most recent frames from the task video.
+Your task is to update the state variables based on the images and the schemas above.
+
+The state of the system at the start of this window is:
+```json
+{}
+```
+
+For each state variable, decide its current value. Boolean variables can be False, True, or "Unknown".
+
+Additionally, classify every step in the task graph into one of three categories:
+- **steps_completed**: Steps that are clearly finished.
+- **steps_in_progress**: The step currently being performed (usually at most one).
+- **steps_pending**: Steps not yet started.
+
+Also provide:
+- **predicted_next_action**: The most likely next step the human will perform.
+- **prediction_confidence**: Your confidence (0.0–1.0).
+- **reasoning**: A one-line summary of your analysis.
+
+## Current context
+- Frame number: 248
+- Timestamp: 10.36 seconds
+
+## Output Format
+Respond ONLY with a JSON object matching this structure (no markdown fences):
+{
+  "current_phase": "<phase>",
+  "current_action": "<action>",
+  "human_state": "<state>",
+  "steps_completed": [
+    "<step>",
+    "..."
+  ],
+  "steps_in_progress": [
+    "<step>",
+    "..."
+  ],
+  "steps_pending": [
+    "<step>",
+    "..."
+  ],
+  "predicted_next_action": "<step>",
+  "prediction_confidence": 0.0,
+  "reasoning": "<one line>",
+  "robot_state": "<string>",
+  "gripper_state": "<string>",
+  "cup_location": "<string>",
+  "resin_bottle_location": "<string>",
+  "hardener_bottle_location": "<string>",
+  "brush_small_location": "<string>",
+  "brush_medium_location": "<string>",
+  "roller_location": "<string>",
+  "weigh_scale_location": "<string>",
+  "mold_location": "<string>",
+  "resin_added": "<bool or 'Unknown'>",
+  "hardener_added": "<bool or 'Unknown'>",
+  "mixture_weighed": "<bool or 'Unknown'>",
+  "mixture_mixed": "<bool or 'Unknown'>",
+  "mixture_shelf_life_start": "<float>",
+  "mixture_shelf_life_max_seconds": "<float>",
+  "layers_placed": "<int>",
+  "layers_resined": "<int>",
+  "consolidated": "<bool or 'Unknown'>",
+  "human_wearing_gloves": "<bool or 'Unknown'>",
+  "action_confidence": "<float>",
+  "elapsed_time_seconds": "<float>",
+  "safety_alerts": "<string>"
+}
+
+Here are the frames:

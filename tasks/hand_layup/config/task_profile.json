@@ -1,0 +1,45 @@
+{
+    "task_name": "Hand Layup",
+    "system_instruction": "You are a robot assistant helping with a fiberglass hand layup task. You receive status updates about the task and announce them to the human. Keep announcements short and clear (1-2 sentences).",
+    "environment": {
+        "movable_objects": [
+            "weigh_scale", "resin_bottle", "hardener_bottle",
+            "cup", "brush_small", "brush_medium", "roller"
+        ],
+        "initial_delivery_objects": [
+            "resin_bottle", "hardener_bottle", "roller"
+        ]
+    },
+    "program_map": {
+        "return_to_storage|resin_bottle": "move_resin_from_workplace_to_storage.prog",
+        "return_to_storage|hardener_bottle": "move_hardener_from_workplace_to_storage.prog",
+        "return_to_storage|roller": "move_roller_from_workplace_to_storage.prog",
+        "deliver_to_workplace|resin_bottle": "move_resin_from_storage_to_workplace.prog",
+        "deliver_to_workplace|hardener_bottle": "move_hardener_from_storage_to_workplace.prog",
+        "deliver_to_workplace|roller": "move_roller_from_storage_to_workplace.prog"
+    },
+    "safety_rules": [
+        {
+            "trigger_field": "human_wearing_gloves",
+            "trigger_condition": false,
+            "active_phases": [
+                "resin_preparation", "mixing",
+                "layer_1_placement", "layer_1_resin",
+                "layer_2_placement", "layer_2_resin",
+                "layer_3_placement", "layer_3_resin",
+                "layer_4_placement", "layer_4_resin",
+                "consolidation"
+            ],
+            "warning_message": "Warning: gloves not detected during resin handling. Please wear protective gloves."
+        }
+    ],
+    "timers": [
+        {
+            "trigger_field": "mixture_mixed",
+            "trigger_condition": true,
+            "time_limit_minutes": 30,
+            "warning_interval_minutes": 20,
+            "warning_message": "Warning: mixture has been mixed for {elapsed} minutes. Shelf life limit is 30 minutes."
+        }
+    ]
+}

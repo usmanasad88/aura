@@ -1,0 +1,14 @@
+{
+  "total_updates": 3,
+  "completed_steps": [],
+  "total_robot_actions": 3,
+  "object_locations": {
+    "brush_small": "workplace",
+    "roller": "workplace",
+    "hardener_bottle": "workplace",
+    "weigh_scale": "workplace",
+    "resin_bottle": "workplace",
+    "brush_medium": "workplace",
+    "cup": "workplace"
+  }
+}

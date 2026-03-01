@@ -245,6 +245,7 @@ async def run_live(
     voice_name: str,
     webcam: int | str | None = None,
     gopro: bool = False,
+    gopro_stream: bool = False,
     gopro_ip: str = "172.29.170.51",
     gopro_fps: float = 0.3,
     gopro_lens: str = "front",
@@ -254,7 +255,13 @@ async def run_live(
     from tasks.hand_layup.decision_engine import HandLayupDecisionEngine
 
     # ── Video source ──────────────────────────────────────────────────
-    if gopro:
+    if gopro_stream:
+        from aura.sources.gopro_stream_source import GoProStreamSource
+        source = GoProStreamSource(camera_ip=gopro_ip)
+        source.open()
+        w, h = source.resolution
+        print(f"GoPro stream: camera={gopro_ip}  {w}x{h} realtime UDP")
+    elif gopro:
         from aura.sources.gopro_source import GoProSource
         source = GoProSource(camera_ip=gopro_ip, fps=gopro_fps, lens=gopro_lens)
         source.open()
@@ -448,7 +455,11 @@ def main():
     )
     parser.add_argument(
         "--gopro", action="store_true", default=False,
-        help="Use GoPro camera as video source (USB webcam stream).",
+        help="Use GoPro camera as video source (native photo capture, ~4-6s per frame).",
+    )
+    parser.add_argument(
+        "--gopro-stream", action="store_true", default=False,
+        help="Use GoPro realtime UDP video stream (~30 fps, low latency).",
     )
     parser.add_argument(
         "--gopro-ip", default="172.29.170.51", metavar="IP",
@@ -527,7 +538,7 @@ def main():
             sample_rate=args.rate,
             voice_name=args.voice_name,
         ))
-    elif args.video or webcam_device is not None or args.gopro:
+    elif args.video or webcam_device is not None or args.gopro or args.gopro_stream:
         # Live mode — video file, webcam, or GoPro + Gemini intent analysis
         asyncio.run(run_live(
             video_path=args.video,
@@ -543,12 +554,13 @@ def main():
             voice_name=args.voice_name,
             webcam=webcam_device,
             gopro=args.gopro,
+            gopro_stream=args.gopro_stream,
             gopro_ip=args.gopro_ip,
             gopro_fps=args.gopro_fps,
             gopro_lens=args.gopro_lens,
         ))
     else:
-        parser.error("One of --video, --webcam, --gopro, or --replay-logs is required.")
+        parser.error("One of --video, --webcam, --gopro, --gopro-stream, or --replay-logs is required.")
 
 
 if __name__ == "__main__":

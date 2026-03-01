@@ -1,0 +1,18 @@
+{
+  "update_number": 3,
+  "timestamp_sec": 35.464,
+  "frame_num": 250,
+  "completed_steps": [],
+  "object_locations": {
+    "brush_medium": "workplace",
+    "brush_small": "workplace",
+    "cup": "workplace",
+    "hardener_bottle": "workplace",
+    "resin_bottle": "workplace",
+    "roller": "workplace",
+    "weigh_scale": "workplace"
+  },
+  "robot_actions": [],
+  "voice_messages": [],
+  "dry_run": true
+}
