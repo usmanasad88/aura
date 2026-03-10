@@ -9,23 +9,22 @@ The system runs continuously — gesture detection on every frame
 sets a ``human_requesting_help`` flag that the decision engine uses
 to decide when proactive robot intervention is needed.
 
-This replaces ``run_aura_assistant.py`` while maintaining CLI
-compatibility.  The old flat-state pipeline is preserved as the
-rule-engine inside ``decide_action_node``.
+Includes a real-time web dashboard (http://localhost:5555) that
+displays frames, monitor outputs, and decision engine state.
 
 Usage
 -----
 ::
 
-    # Video file, dry-run
+    # Video file, dry-run, with dashboard
     uv run python scripts/run_aura.py \\
         --task hand_layup \\
         --video demo_data/layup_demo/layup_gesture_demo.mp4 \\
         --dry-run
 
-    # Webcam, dry-run
+    # Without dashboard
     uv run python scripts/run_aura.py \\
-        --task hand_layup --webcam 0 --dry-run
+        --task hand_layup --webcam 0 --dry-run --no-dashboard
 
     # Live robot
     uv run python scripts/run_aura.py \\
@@ -39,10 +38,14 @@ import argparse
 import asyncio
 import json
 import logging
+import os
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+# Disable LangSmith tracing (avoids noisy SSL/422 warnings)
+os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
 
 _project_root = Path(__file__).resolve().parent.parent
 if str(_project_root) not in sys.path:
@@ -109,6 +112,8 @@ async def run_workflow(
     speed: float,
     model: str,
     dry_run: bool,
+    dashboard_port: int = 5555,
+    no_dashboard: bool = False,
 ) -> None:
     """Build and run the LangGraph workflow loop."""
     from aura.workflow.builder import build_task_graph
@@ -125,6 +130,19 @@ async def run_workflow(
         model=model,
     )
 
+    # ── Start dashboard ──────────────────────────────────────────────
+    dash = None
+    if not no_dashboard:
+        try:
+            from aura.dashboard import DashboardServer
+            dash = DashboardServer(port=dashboard_port)
+            dash.start()
+            # Publish initial config
+            dash.publish("init", {"config": initial_state.get("config", {})})
+        except Exception as e:
+            logger.warning("Dashboard failed to start: %s", e)
+            dash = None
+
     task_display = initial_state["config"].get("task_name", task_name)
 
     print("\n" + "=" * 60)
@@ -134,19 +152,31 @@ async def run_workflow(
         print(f"  Video: {video_path}  |  Speed: {speed}x")
     elif webcam_device is not None:
         print(f"  Webcam: {webcam_device}")
+    if dash:
+        print(f"  Dashboard: http://localhost:{dashboard_port}")
     print("  Press Ctrl+C to stop")
     print("=" * 60 + "\n")
 
     thread_config = {
         "configurable": {
             "thread_id": f"aura_{task_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-        }
+        },
+        "recursion_limit": 200,
     }
 
     last_cycle = 0
     try:
         async for event in compiled_graph.astream(initial_state, thread_config):
             for node_name, node_state in event.items():
+                # ── Publish to dashboard ─────────────────────────────
+                if dash:
+                    dash.publish(node_name, node_state)
+                    # Push latest frame after capture
+                    if node_name == "capture_frame":
+                        buf = node_state.get("frames_buffer") or []
+                        if buf:
+                            dash.set_frame(buf[-1])
+
                 # After intent node, print result
                 if node_name == "run_intent" and node_state.get("intent_result"):
                     cycle = node_state.get("cycle_count", last_cycle)
@@ -171,6 +201,9 @@ async def run_workflow(
                     break
     except KeyboardInterrupt:
         print("\nInterrupted.")
+    finally:
+        if dash:
+            dash.stop()
 
     # ── Summary ──────────────────────────────────────────────────────
     print("\n" + "=" * 60)
@@ -208,6 +241,14 @@ def main() -> None:
         "--live", dest="dry_run", action="store_false",
         help="Execute robot actions for real",
     )
+    parser.add_argument(
+        "--no-dashboard", action="store_true",
+        help="Disable the web dashboard UI",
+    )
+    parser.add_argument(
+        "--dashboard-port", type=int, default=5555,
+        help="Dashboard server port (default: 5555)",
+    )
     args = parser.parse_args()
 
     webcam_dev: int | str | None = None
@@ -226,6 +267,8 @@ def main() -> None:
             speed=args.speed,
             model=args.model,
             dry_run=args.dry_run,
+            dashboard_port=args.dashboard_port,
+            no_dashboard=args.no_dashboard,
         )
     )
 

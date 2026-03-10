@@ -578,6 +578,7 @@ def check_complete_node(state: AuraGraphState) -> dict:
     for the next iteration (gesture must be re-detected each cycle).
     """
     cycle = (state.get("cycle_count") or 0) + 1
+    max_cycles = state.get("config", {}).get("max_cycles", 500)
 
     # Check for explicit completion
     dag = state.get("dag", {})
@@ -587,6 +588,11 @@ def check_complete_node(state: AuraGraphState) -> dict:
     is_complete = bool(completed & end_nodes) or state.get("is_complete", False)
 
     if state.get("error"):
+        is_complete = True
+
+    # Safety: stop after max cycles to prevent infinite loops
+    if cycle >= max_cycles:
+        logger.warning(f"Reached max cycles ({max_cycles}), stopping workflow")
         is_complete = True
 
     return {

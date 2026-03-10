@@ -2,15 +2,43 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run AURA Assistant (hand_layup)",
+      "name": "AURA Workflow + Dashboard",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_aura.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task", "hand_layup",
+        "--video", "demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4",
+        "--dry-run"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
+      "name": "AURA Workflow (no dashboard)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_aura.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task", "hand_layup",
+        "--video", "demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4",
+        "--dry-run",
+        "--no-dashboard"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
+      "name": "Run AURA Assistant (legacy)",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/scripts/run_aura_assistant.py",
       "console": "integratedTerminal",
       "args": [
         "--task", "hand_layup",
-        "--video", "demo_data/layup_demo/layup_gesture_demo.mp4",
-        "--dry-run"
+        "--video", "demo_data/layup_demo/layup_gesture_demo.mp4"
       ],
       "cwd": "${workspaceFolder}",
       "justMyCode": false

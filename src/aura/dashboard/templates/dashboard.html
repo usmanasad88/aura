@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA Dashboard</title>
+<link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>AURA</h1>
+    <span class="subtitle">Proactive Robotic Assistant</span>
+  </div>
+  <div class="header-right">
+    <span id="status-badge" class="badge badge-idle">IDLE</span>
+    <span id="cycle-counter" class="counter">Cycle: 0</span>
+    <span id="fps-counter" class="counter">0 fps</span>
+  </div>
+</header>
+
+<main>
+  <!-- Top row: Video + Gesture + Intent -->
+  <div class="grid top-grid">
+
+    <!-- Video Feed -->
+    <section class="video-section">
+      <h2>Camera Feed</h2>
+      <div class="video-container">
+        <img id="video-feed" src="/api/frame/stream" alt="Camera Feed">
+        <div class="video-overlay">
+          <span id="frame-info">Frame: 0 | 0.0s</span>
+          <span id="gesture-badge" class="gesture-indicator hidden"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gesture Monitor -->
+    <section class="monitor-section">
+      <h2>
+        <span class="dot" id="gesture-dot"></span>
+        Gesture Monitor
+      </h2>
+      <div class="monitor-content">
+        <div class="stat-row">
+          <span class="stat-label">Gesture</span>
+          <span id="gesture-name" class="stat-value mono">--</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Help Requested</span>
+          <span id="help-requested" class="stat-value">No</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Safety Stop</span>
+          <span id="safety-stop" class="stat-value">No</span>
+        </div>
+      </div>
+
+      <!-- Intent Monitor -->
+      <h2 style="margin-top:1.2rem;">
+        <span class="dot" id="intent-dot"></span>
+        Intent Monitor
+      </h2>
+      <div class="monitor-content">
+        <div class="stat-row">
+          <span class="stat-label">Phase</span>
+          <span id="intent-phase" class="stat-value mono">--</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Current Action</span>
+          <span id="intent-action" class="stat-value mono">--</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Human State</span>
+          <span id="intent-human-state" class="stat-value mono">--</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Predicted Next</span>
+          <span id="intent-predicted" class="stat-value mono">--</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Confidence</span>
+          <div class="progress-bar">
+            <div id="confidence-bar" class="progress-fill" style="width:0%"></div>
+          </div>
+          <span id="confidence-value" class="stat-value-sm">0%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">LLM Time</span>
+          <span id="intent-gen-time" class="stat-value-sm">--</span>
+        </div>
+        <div class="reasoning-box">
+          <span class="stat-label">Reasoning</span>
+          <p id="intent-reasoning" class="reasoning-text">--</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Bottom row: Task State + Decision + Action Log -->
+  <div class="grid bottom-grid">
+
+    <!-- Task State / SSG -->
+    <section class="state-section">
+      <h2>Task State</h2>
+      <div class="monitor-content">
+        <div id="task-state-vars"></div>
+        <h3 style="margin-top:1rem;">Steps Completed</h3>
+        <div id="completed-steps" class="chip-list"></div>
+        <h3 style="margin-top:0.8rem;">Object Locations</h3>
+        <div id="object-locations" class="location-grid"></div>
+      </div>
+    </section>
+
+    <!-- Decision Engine -->
+    <section class="decision-section">
+      <h2>
+        <span class="dot" id="decision-dot"></span>
+        Decision Engine
+      </h2>
+      <div class="monitor-content">
+        <div class="stat-row">
+          <span class="stat-label">Mode</span>
+          <span id="decision-mode" class="stat-value mono">--</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Pending Actions</span>
+          <span id="pending-count" class="stat-value">0</span>
+        </div>
+        <div class="reasoning-box">
+          <span class="stat-label">Reasoning</span>
+          <p id="decision-reasoning" class="reasoning-text">--</p>
+        </div>
+        <div id="pending-actions-list" class="action-cards"></div>
+      </div>
+
+      <h2 style="margin-top:1.2rem;">Action Log</h2>
+      <div class="action-log-container">
+        <table class="action-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Object</th>
+              <th>Trigger</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="action-log-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <span id="connection-status">Connecting...</span>
+  <span id="last-update">--</span>
+</footer>
+
+<script src="/static/dashboard.js"></script>
+</body>
+</html>

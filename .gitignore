@@ -8,6 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+.venv-vllm/
+.vscode
 
 # Environment variables with secrets
 .env
@@ -15,6 +17,7 @@ wheels/
 # Demo data and media files
 demo_data/
 Latex/
+logs/
 *.mp4
 *.avi
 *.mov

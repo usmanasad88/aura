@@ -29,6 +29,13 @@ from .performance_monitor import (
     FailureType,
 )
 from .pose_tracking_monitor import PoseTrackingMonitor
+from .local_vlm_monitor import (
+    LocalVLMMonitor,
+    LocalVLMConfig,
+    LocalVLMOutput,
+    VLMPerception,
+    DetectedObject,
+)
 
 __all__ = [
     # Base
@@ -65,4 +72,10 @@ __all__ = [
     "FailureType",
     # Pose Tracking
     "PoseTrackingMonitor",
+    # Local VLM
+    "LocalVLMMonitor",
+    "LocalVLMConfig",
+    "LocalVLMOutput",
+    "VLMPerception",
+    "DetectedObject",
 ]

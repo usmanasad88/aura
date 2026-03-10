@@ -132,6 +132,7 @@ def build_task_graph(
         "headless": headless,
         "predict_interval": wf_cfg.get("predict_interval_sec", 3.0),
         "resume_gestures": wf_cfg.get("resume_gestures", ["Thumb_Up"]),
+        "max_cycles": wf_cfg.get("max_cycles_sec", 500),
         **(extra_config or {}),
     }
 
