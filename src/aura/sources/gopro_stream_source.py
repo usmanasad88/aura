@@ -12,6 +12,7 @@ Requirements:
     - GoPro connected and reachable at ``camera_ip`` (default 172.29.170.51)
     - USB interface must have an IP in the camera's subnet
     - ``requests`` package installed
+Migh have to sudo ip addr add 172.29.170.50/24 dev enx04574796c048
 
 Usage::
 
@@ -216,3 +217,26 @@ class GoProStreamSource(FrameSource):
             if not silent:
                 logger.warning("GoProStreamSource: %s failed: %s", url, exc)
             return False
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    try:
+        with GoProStreamSource() as src:
+            logger.info("Starting GoPro Stream. Press 'q' to quit.")
+            while True:
+                frame = src.read()
+                if frame is not None:
+                    # Resize for preview if needed.
+                    disp = cv2.resize(frame.image, (1024, 512))
+                    cv2.imshow("GoPro Stream", disp)
+                
+                # Exit on 'q'
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        logger.error(f"Error streaming from GoPro: {e}")
+    finally:
+        cv2.destroyAllWindows()
+

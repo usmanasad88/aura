@@ -51,7 +51,7 @@ DEFAULT_VIDEO = str(
     _project_root
     / "demo_data"
     / "layup_demo"
-    / "layup_gesture_demo_stationary_with_overlay.mp4"
+    / "layup_dummy_demo_crop_1080.mp4"
 )
 DEFAULT_QUESTION = "Is the robot gripper holding anything? Output Nothing if the robot isn't holding anything."
 

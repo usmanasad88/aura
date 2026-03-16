@@ -22,7 +22,7 @@ MAX_MODEL_LEN="${MAX_MODEL_LEN:-4096}"
 
 # ── Isolate from ROS / conda polluting PYTHONPATH ─────────────────────
 unset PYTHONPATH AMENT_PREFIX_PATH COLCON_PREFIX_PATH ROS_DISTRO 2>/dev/null || true
-export PATH="${SGLANG_VENV}/bin:/home/mani/.local/bin:/usr/local/bin:/usr/bin:/bin"
+export PATH="${SGLANG_VENV}/bin:${HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin"
 
 # Parse CLI args (override env vars)
 while [[ $# -gt 0 ]]; do
