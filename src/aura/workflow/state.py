@@ -61,6 +61,7 @@ class WorkflowConfig(TypedDict, total=False):
     headless: bool
     max_frames: Optional[int]
     frame_skip: int
+    use_ground_truth_robot_status: bool
 
 
 # ─── Main state TypedDict ───────────────────────────────────────────────────
@@ -77,7 +78,7 @@ class AuraGraphState(TypedDict, total=False):
     """
 
     # ── task artefacts (immutable after init) ──────────────────────────
-    dag: Dict[str, Any]
+    dag: Any  # list[dict] — flat array of {id, description, dependencies}
     task_profile: Dict[str, Any]
     state_schema: Dict[str, Any]
 

@@ -492,8 +492,8 @@ def main():
         help="Seconds between intent predictions (default: 3.0)",
     )
     parser.add_argument(
-        "--model", default="gemini-2.5-flash",
-        help="Gemini model for intent analysis (default: gemini-2.5-flash)",
+        "--model", default="gemini-3.1-pro-preview",
+        help="Gemini model for intent analysis (default: gemini-3.1-pro-preview)",
     )
     parser.add_argument(
         "--voice", dest="voice", action="store_true", default=False,

@@ -228,7 +228,7 @@ def run_perception_node(state: HandLayupState) -> Dict[str, Any]:
 _rcwps_intent_monitor = None
 
 
-def _get_rcwps_monitor(model: str = "gemini-3-pro-preview") -> "HandLayupIntentMonitor":
+def _get_rcwps_monitor(model: str = "gemini-3.1-pro-preview", realtime: bool = False) -> "HandLayupIntentMonitor":
     """Return (or create) the module-level RCWPS intent monitor."""
     global _rcwps_intent_monitor
     if _rcwps_intent_monitor is None:
@@ -236,9 +236,10 @@ def _get_rcwps_monitor(model: str = "gemini-3-pro-preview") -> "HandLayupIntentM
         _rcwps_intent_monitor = HandLayupIntentMonitor(
             model=model,
             max_frames=5,
-            max_image_dimension=640,
+            max_image_dimension=1024,
             temperature=0.3,
             enable_logging=True,
+            realtime=realtime,
         )
     return _rcwps_intent_monitor
 
@@ -263,8 +264,9 @@ def run_intent_node(state: HandLayupState) -> Dict[str, Any]:
 
     try:
         config = state.get("config", {})
-        model = config.get("brain", {}).get("model", "gemini-2.5-flash")
-        monitor = _get_rcwps_monitor(model)
+        model = config.get("brain", {}).get("model", "gemini-3.1-pro-preview")
+        realtime = config.get("realtime", True)
+        monitor = _get_rcwps_monitor(model, realtime=realtime)
 
         # Decode base64 frames → numpy BGR (last 5)
         frames: List[np.ndarray] = []

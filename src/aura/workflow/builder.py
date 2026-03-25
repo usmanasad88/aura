@@ -57,7 +57,7 @@ def build_task_graph(
     webcam_device: int | str | None = None,
     robot_url: str = "http://localhost:5050",
     speed: float = 1.0,
-    model: str = "gemini-2.5-flash",
+    model: str = "gemini-3.1-pro-preview",
     enable_voice: bool = False,
     headless: bool = True,
     extra_config: Dict[str, Any] | None = None,
@@ -295,7 +295,7 @@ def _build_sense_decide_act(
 #  Helpers
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _load_json(path: Path) -> Dict[str, Any]:
+def _load_json(path: Path) -> Any:
     if not path.exists():
         logger.warning("Config file not found: %s", path)
         return {}

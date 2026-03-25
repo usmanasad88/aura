@@ -1,47 +1,243 @@
 {
   "name": "Hand Layup Robot Skills",
-  "description": "Robot skills available for hand layup task — limited to object logistics",
-  "version": "1.0",
+  "description": "Robot skills for hand layup task — object logistics, consolidation, cleaning, and motion primitives via UR5 External Control API",
+  "version": "2.0",
+  "api_base_url": "http://localhost:5050",
   "skills": [
     {
-      "id": "deliver_to_workplace",
-      "name": "Deliver Object to Workplace",
-      "description": "Pick up a movable object from the storage table and place it on the workplace in front of the human",
-      "category": "manipulation",
-      "parameters": [
-        {"name": "object_id", "type": "object_id", "required": true},
-        {"name": "from_region", "type": "region_id", "required": false, "default": "storage_area"},
-        {"name": "to_region", "type": "region_id", "required": false, "default": "workplace"}
-      ],
+      "id": "move_resin_to_workplace",
+      "name": "Move Resin to Workplace",
+      "description": "Pick up the resin bottle from storage and place it on the workplace in front of the human",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_resin_from_storage_to_workplace"}},
       "preconditions": {
-        "object.at_region": "storage_area",
-        "object.is_graspable": true
+        "resin_bottle.location": "storage_area"
       },
       "effects": {
-        "object.location": "workplace"
+        "resin_bottle.location": "workplace"
       },
-      "estimated_duration_sec": 10.0,
+      "estimated_duration_sec": 15.0,
       "can_interrupt": false
     },
     {
-      "id": "return_to_storage",
-      "name": "Return Object to Storage",
-      "description": "Pick up a movable object from the workplace and return it to the storage table",
-      "category": "manipulation",
-      "parameters": [
-        {"name": "object_id", "type": "object_id", "required": true},
-        {"name": "from_region", "type": "region_id", "required": false, "default": "workplace"},
-        {"name": "to_region", "type": "region_id", "required": false, "default": "storage_area"}
-      ],
+      "id": "return_resin_to_storage",
+      "name": "Return Resin to Storage",
+      "description": "Pick up the resin bottle from the workplace and return it to the storage area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_resin_from_workplace_to_storage"}},
       "preconditions": {
-        "object.at_region": "workplace",
-        "object.is_graspable": true
+        "resin_bottle.location": "workplace"
       },
       "effects": {
-        "object.location": "storage_area"
+        "resin_bottle.location": "storage_area"
       },
-      "estimated_duration_sec": 10.0,
+      "estimated_duration_sec": 15.0,
       "can_interrupt": false
+    },
+    {
+      "id": "move_hardener_to_workplace",
+      "name": "Move Hardener to Workplace",
+      "description": "Pick up the hardener bottle from storage and place it on the workplace in front of the human",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_hardener_from_storage_to_workplace"}},
+      "preconditions": {
+        "hardener_bottle.location": "storage_area"
+      },
+      "effects": {
+        "hardener_bottle.location": "workplace"
+      },
+      "estimated_duration_sec": 15.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_hardener_to_storage",
+      "name": "Return Hardener to Storage",
+      "description": "Pick up the hardener bottle from the workplace and return it to the storage area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_hardener_from_workplace_to_storage"}},
+      "preconditions": {
+        "hardener_bottle.location": "workplace"
+      },
+      "effects": {
+        "hardener_bottle.location": "storage_area"
+      },
+      "estimated_duration_sec": 15.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_roller_to_workplace",
+      "name": "Move Roller to Workplace",
+      "description": "Pick up the roller from storage and place it at the workplace position",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_roller_from_storage_to_workplace"}},
+      "preconditions": {
+        "roller.location": "storage_area"
+      },
+      "effects": {
+        "roller.location": "workplace"
+      },
+      "estimated_duration_sec": 15.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_roller_to_storage",
+      "name": "Return Roller to Storage",
+      "description": "Pick up the roller from the workplace and return it to the storage area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_roller_from_workplace_to_storage"}},
+      "preconditions": {
+        "roller.location": "workplace"
+      },
+      "effects": {
+        "roller.location": "storage_area"
+      },
+      "estimated_duration_sec": 15.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "consolidate_with_roller_force",
+      "name": "Consolidate Layup with Roller (Force Mode)",
+      "description": "Pick up the roller from storage, use force-controlled rolling with Z-axis compliance to press and sweep over the workpiece, then return roller to storage",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "use_roller_to_consolidate_in_force_mode"}},
+      "preconditions": {
+        "roller.location": "storage_area",
+        "workpiece.needs_consolidation": true
+      },
+      "effects": {
+        "workpiece.consolidated": true,
+        "roller.location": "storage_area"
+      },
+      "estimated_duration_sec": 35.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "clean_table",
+      "name": "Clean Table Surface",
+      "description": "Wipe the table surface using force-controlled sweeping motions with a cloth held in the gripper",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "table_cleaning"}},
+      "preconditions": {},
+      "effects": {
+        "table.clean": true
+      },
+      "estimated_duration_sec": 20.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_to_named_position",
+      "name": "Move to Named Position",
+      "description": "Move the robot to a predefined named position (Home, Upright, Stowed, neutral, table_surface_center, etc.)",
+      "category": "motion",
+      "api_call": {"method": "POST", "endpoint": "/api/move/named", "body": {"name": "<position_name>"}},
+      "parameters": [
+        {
+          "name": "position_name",
+          "type": "string",
+          "required": true,
+          "allowed_values": [
+            "Home", "Upright", "Stowed", "neutral",
+            "table_surface_center", "table_far_corner", "table_near_corner",
+            "Bottle_Resin_Storage", "Bottle_Hardener_Storage",
+            "Bottle_Resin_Workspace", "Bottle_Hardener_Workspace",
+            "Roller_Storage_Pick",
+            "TableRightCorner", "TableLeftCorner"
+          ]
+        }
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "move_relative",
+      "name": "Move Relative",
+      "description": "Move the robot by a relative offset from its current position or from a named position. Directions: up, down, left, right, forward, back.",
+      "category": "motion",
+      "api_call": {"method": "POST", "endpoint": "/api/move/relative", "body": {"direction": "<direction>", "distance": "<distance_m>"}},
+      "parameters": [
+        {
+          "name": "direction",
+          "type": "string",
+          "required": true,
+          "allowed_values": ["up", "down", "left", "right", "forward", "back"]
+        },
+        {
+          "name": "distance",
+          "type": "number",
+          "required": false,
+          "default": 0.05,
+          "description": "Distance in meters"
+        },
+        {
+          "name": "reference",
+          "type": "string",
+          "required": false,
+          "default": "current",
+          "description": "Reference position name to move relative from (default: current position)"
+        }
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "gripper_open",
+      "name": "Open Gripper",
+      "description": "Open the Robotiq gripper to release an object",
+      "category": "gripper",
+      "api_call": {"method": "POST", "endpoint": "/api/gripper", "body": {"action": "open"}},
+      "preconditions": {},
+      "effects": {
+        "gripper.state": "open"
+      },
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "gripper_close",
+      "name": "Close Gripper",
+      "description": "Close the Robotiq gripper to grasp an object",
+      "category": "gripper",
+      "api_call": {"method": "POST", "endpoint": "/api/gripper", "body": {"action": "close"}},
+      "preconditions": {},
+      "effects": {
+        "gripper.state": "closed"
+      },
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "set_speed",
+      "name": "Set Speed",
+      "description": "Set the robot speed factor (0.0 to 1.0)",
+      "category": "utility",
+      "api_call": {"method": "POST", "endpoint": "/api/speed", "body": {"speed": "<factor>"}},
+      "parameters": [
+        {
+          "name": "factor",
+          "type": "number",
+          "required": true,
+          "description": "Speed factor between 0.0 and 1.0"
+        }
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
+      "id": "stop_program",
+      "name": "Stop Program",
+      "description": "Emergency stop — halt the current program and hold at current position",
+      "category": "utility",
+      "api_call": {"method": "POST", "endpoint": "/api/program/stop"},
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
     },
     {
       "id": "wait",

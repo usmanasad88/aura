@@ -1,1 +1,99 @@
-hand_layup_state.json
+{
+  "name": "Hand Layup Task State",
+  "description": "State variables the intent monitor LLM must track from video frames",
+  "version": "2.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "Current high-level phase of the task",
+      "valid_values": [
+        "initialization", "resin_preparation", "mixing",
+        "layup", "consolidation", "cleanup", "complete"
+      ],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "Specific action currently being performed (must match a DAG node name)",
+      "valid_values": [
+        "idle", "place_cup_on_scale",
+        "add_resin_to_cup", "add_hardener_to_cup",
+        "weigh_mixture", "mix_resin_hardener",
+        "place_layer_1", "apply_resin_layer_1",
+        "place_layer_2", "apply_resin_layer_2",
+        "place_layer_3", "apply_resin_layer_3",
+        "place_layer_4", "apply_resin_layer_4",
+        "consolidate_with_roller", "cleanup", "task_complete"
+      ],
+      "default": "idle"
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": [
+        "idle", "preparing_resin", "mixing",
+        "placing_fiberglass", "applying_resin",
+        "rolling", "inspecting", "done"
+      ],
+      "default": "idle"
+    },
+    "layers_placed": {
+      "type": "integer",
+      "description": "Number of fiberglass layers placed on the mold (0-4)",
+      "default": 0
+    },
+    "layers_resined": {
+      "type": "integer",
+      "description": "Number of layers that have had resin applied (0-4)",
+      "default": 0
+    },
+    "resin_added": {
+      "type": "boolean",
+      "description": "Whether resin has been added to the cup",
+      "default": false
+    },
+    "hardener_added": {
+      "type": "boolean",
+      "description": "Whether hardener has been added to the cup",
+      "default": false
+    },
+    "mixture_mixed": {
+      "type": "boolean",
+      "description": "Whether the mixture has been properly mixed",
+      "default": false
+    },
+    "consolidated": {
+      "type": "boolean",
+      "description": "Whether roller consolidation has been performed",
+      "default": false
+    },
+    "human_wearing_gloves": {
+      "type": "boolean",
+      "description": "Whether the human operator is wearing protective gloves",
+      "default": false
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "Predicted next action based on task graph",
+      "default": "place_cup_on_scale"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action (0-1)",
+      "default": 0.0
+    },
+    "robot_state": {
+      "type": "string",
+      "description": "Robot execution status for decision context",
+      "valid_values": [
+        "unknown", "idle", "busy"
+      ],
+      "default": "unknown"
+    },
+    "robot_active_program": {
+      "type": "string",
+      "description": "Current robot program/action id when busy",
+      "default": ""
+    }
+  }
+}

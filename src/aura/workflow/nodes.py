@@ -24,11 +24,11 @@ import time
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from aura.core.scene_graph import SemanticSceneGraph
-    from aura.assistant.intent_monitor import AURAIntentMonitor
+    from aura.monitors.intent_monitor import AURAIntentMonitor
     from aura.monitors.gesture_monitor import GestureMonitor
     from aura.brain.decision_engine import DecisionEngine
 
@@ -49,9 +49,10 @@ _decision_engines: Dict[str, Any] = {}
 _video_sources: Dict[str, Any] = {}
 _robot_clients: Dict[str, Any] = {}
 _ssg_instances: Dict[str, Any] = {}
+_ground_truth_data_cache: Dict[str, Any] = {}
 
 
-def _get_ssg(state: dict) -> "SemanticSceneGraph":
+def _get_ssg(state: AuraGraphState) -> "SemanticSceneGraph":
     """Get or create the live SSG instance for this task, restoring from
     the serialised ``ssg`` snapshot in state on first call."""
     from aura.core.scene_graph import SemanticSceneGraph
@@ -62,28 +63,28 @@ def _get_ssg(state: dict) -> "SemanticSceneGraph":
     if task_name not in _ssg_instances:
         ssg_data = state.get("ssg")
         if ssg_data and ssg_data.get("nodes"):
-            _ssg_instances[task_name] = SemanticSceneGraph.from_dict(ssg_data)
+            _ssg_instances[task_name] = SemanticSceneGraph.from_dict(cast(Dict[str, Any], ssg_data))
         else:
             _ssg_instances[task_name] = SemanticSceneGraph(name=task_name)
     return _ssg_instances[task_name]
 
 
-def _get_intent_monitor(state: dict) -> "AURAIntentMonitor":
-    from aura.assistant.intent_monitor import AURAIntentMonitor
+def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
+    from aura.monitors.intent_monitor import AURAIntentMonitor
 
     config = state.get("config", {})
     config_dir = config.get("config_dir", "")
     if config_dir not in _intent_monitors:
         _intent_monitors[config_dir] = AURAIntentMonitor(
             config_dir=config_dir,
-            model=config.get("model", "gemini-2.5-flash"),
-            realtime=True,
+            model=config.get("model", "gemini-3.1-pro-preview"),
+            realtime=config.get("realtime", True),
             enable_logging=True,
         )
     return _intent_monitors[config_dir]
 
 
-def _get_gesture_monitor(state: dict) -> "GestureMonitor":
+def _get_gesture_monitor(state: AuraGraphState) -> "GestureMonitor":
     from aura.monitors.gesture_monitor import GestureMonitor, GestureMonitorConfig
 
     config = state.get("config", {})
@@ -100,7 +101,7 @@ def _get_gesture_monitor(state: dict) -> "GestureMonitor":
     return _gesture_monitors[key]
 
 
-def _get_decision_engine(state: dict) -> "DecisionEngine":
+def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
     """Lazy-init the Brain DecisionEngine with SSG + SkillRegistry."""
     from aura.brain.decision_engine import DecisionEngine, DecisionEngineConfig
 
@@ -132,37 +133,46 @@ def _get_decision_engine(state: dict) -> "DecisionEngine":
 
         engine.load_task(
             dag_path=str(dag_path),
-            state_path=str(state_path) if state_path.exists() else None,
-            skills_path=str(skills_path) if skills_path.exists() else None,
-            initial_scene_path=str(scene_path) if scene_path.exists() else None,
+            state_path=str(state_path) if state_path.exists() else "",
+            skills_path=str(skills_path) if skills_path.exists() else "",
+            initial_scene_path=str(scene_path) if scene_path.exists() else "",
         )
         _decision_engines[config_dir] = engine
     return _decision_engines[config_dir]
 
 
-def _get_video_source(state: dict):
+def _get_video_source(state: AuraGraphState):
     """Get or open the video/webcam source."""
     config = state.get("config", {})
     video_path = config.get("video_path")
     webcam_device = config.get("webcam_device")
+    realtime = config.get("realtime", True)
 
     key = video_path or f"webcam:{webcam_device}"
     if key not in _video_sources:
         if webcam_device is not None:
             from aura.sources.webcam import WebcamSource
             source = WebcamSource(device=webcam_device)
-        else:
+        elif video_path is None:
+            raise ValueError("video_path must be set when webcam_device is not provided")
+        elif realtime:
             from aura.sources.realtime_video import RealtimeVideoSource
             source = RealtimeVideoSource(
                 path=video_path,
                 speed=config.get("speed", 1.0),
+            )
+        else:
+            from aura.sources.video_file import VideoFileSource
+            source = VideoFileSource(
+                path=video_path,
+                frame_skip=config.get("frame_skip", 30),
             )
         source.open()
         _video_sources[key] = source
     return _video_sources[key]
 
 
-def _get_robot_client(state: dict):
+def _get_robot_client(state: AuraGraphState):
     """Get or create the RobotControlClient (None if dry-run)."""
     config = state.get("config", {})
     if config.get("dry_run", True):
@@ -174,6 +184,103 @@ def _get_robot_client(state: dict):
         client = RobotControlClient(url)
         _robot_clients[url] = client if client.is_available() else None
     return _robot_clients.get(url)
+
+
+def _get_ground_truth_data(state: AuraGraphState) -> Dict[str, Any] | None:
+    """Load and cache the task's ground-truth file.
+
+    Expected format: ``tasks/<task>/config/ground_truth.json`` with an
+    ``events`` array and optional ``total_duration_seconds``.
+    """
+    config = state.get("config", {})
+    config_dir = config.get("config_dir", "")
+    if not config_dir:
+        return None
+
+    path = str(Path(config_dir) / "ground_truth.json")
+    if path in _ground_truth_data_cache:
+        return _ground_truth_data_cache[path]
+
+    gt_path = Path(path)
+    if not gt_path.exists():
+        logger.warning("Ground-truth robot status requested but file missing: %s", gt_path)
+        _ground_truth_data_cache[path] = None
+        return None
+
+    try:
+        with open(gt_path, "r", encoding="utf-8") as handle:
+            gt_data = json.load(handle)
+    except Exception as exc:
+        logger.warning("Failed to read ground truth file %s: %s", gt_path, exc)
+        _ground_truth_data_cache[path] = None
+        return None
+
+    events = gt_data.get("events", [])
+    if not isinstance(events, list):
+        logger.warning("Invalid ground truth format (events not a list): %s", gt_path)
+        _ground_truth_data_cache[path] = None
+        return None
+
+    events = sorted(
+        [event for event in events if isinstance(event, dict)],
+        key=lambda event: float(event.get("timestamp", 0.0)),
+    )
+    cached = {
+        "events": events,
+        "total_duration_seconds": float(gt_data.get("total_duration_seconds", 0.0) or 0.0),
+    }
+    _ground_truth_data_cache[path] = cached
+    return cached
+
+
+def _robot_status_from_ground_truth(state: AuraGraphState, timestamp_sec: float) -> Dict[str, Any]:
+    """Derive robot status at ``timestamp_sec`` from ground-truth events.
+
+    Rules:
+    - when the latest robot-tagged event at/under timestamp has a non-null
+      ``robot_action``, robot is BUSY running that action;
+    - if a completion marker ``<action>_complete`` is observed later, robot
+      returns to IDLE with empty active action;
+    - otherwise defaults to unknown.
+    """
+    gt_data = _get_ground_truth_data(state)
+    if not gt_data:
+        return {
+            "robot_state": "unknown",
+            "robot_active_program": "",
+        }
+
+    events: List[Dict[str, Any]] = gt_data.get("events", [])
+    if not events:
+        return {
+            "robot_state": "unknown",
+            "robot_active_program": "",
+        }
+
+    active_action = ""
+    robot_state = "idle"
+
+    for event in events:
+        event_ts = float(event.get("timestamp", 0.0) or 0.0)
+        if event_ts > float(timestamp_sec):
+            break
+
+        robot_action = event.get("robot_action")
+        action_name = str(event.get("action", "") or "")
+
+        if isinstance(robot_action, str) and robot_action.strip():
+            active_action = robot_action.strip()
+            robot_state = "busy"
+            continue
+
+        if active_action and action_name == f"{active_action}_complete":
+            active_action = ""
+            robot_state = "idle"
+
+    return {
+        "robot_state": robot_state,
+        "robot_active_program": active_action,
+    }
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -323,6 +430,19 @@ def update_ssg_node(state: AuraGraphState) -> dict:
     ssg = _get_ssg(state)
     ssg.update_from_intent_result(intent)
 
+    config = state.get("config", {})
+    if config.get("use_ground_truth_robot_status", False):
+        robot_status = _robot_status_from_ground_truth(
+            state,
+            state.get("current_timestamp_sec", 0.0),
+        )
+        ssg.set_task_state("robot_state", robot_status["robot_state"])
+        ssg.set_task_state("robot_active_program", robot_status["robot_active_program"])
+
+        robot = ssg.get_node("robot")
+        if robot and hasattr(robot, "state"):
+            setattr(robot, "state", "BUSY" if robot_status["robot_state"] == "busy" else "IDLE")
+
     # Update flat tracking fields
     completed_steps = list(set(
         (state.get("completed_steps") or [])
@@ -345,23 +465,16 @@ def update_ssg_node(state: AuraGraphState) -> dict:
     }
 
 
-def decide_action_node(state: AuraGraphState) -> dict:
-    """Decide what the robot should do using hybrid LLM + rule engine.
+async def decide_action_node(state: AuraGraphState) -> dict:
+    """Decide what the robot should do.
 
-    1. Feeds the latest intent result into the old rule-based
-       ``AURADecisionEngine`` for backward-compatible DAG-driven
-       delivery/return actions.
-    2. When ``human_requesting_help`` is True (gesture detected),
-       always queries the Brain ``DecisionEngine`` for LLM-based
-       proactive opportunities, even if rule actions already exist.
-    3. Merges results into ``pending_actions`` and ``last_decision``.
+    Queries the Brain ``DecisionEngine`` which reasons over the current
+    state, DAG, monitors, and robot_skills.json to select actions.
     """
     intent_result = state.get("intent_result")
     if not intent_result:
         return {}
 
-    config = state.get("config", {})
-    decision_mode = config.get("decision_mode", "hybrid")
     timestamp = state.get("current_timestamp_sec", 0.0)
     help_requested = state.get("human_requesting_help", False)
 
@@ -371,35 +484,30 @@ def decide_action_node(state: AuraGraphState) -> dict:
     if help_requested:
         reasoning_parts.append("Human requesting help (gesture detected)")
 
-    # ── Phase 1: Rule-based (always) ────────────────────────────────
-    rule_actions = _run_rule_engine(state, intent_result, timestamp)
-    actions.extend(rule_actions)
-    if rule_actions:
-        reasoning_parts.append(
-            f"Rule engine: {len(rule_actions)} action(s)"
-        )
-
-    # ── Phase 2: Brain LLM ─────────────────────────────────────────
-    # When human requests help, always consult the brain regardless
-    # of existing rule actions.  Otherwise, only if no rule actions.
-    should_consult_brain = (
-        decision_mode in ("llm", "hybrid")
-        and (help_requested or not actions)
-    )
-    if should_consult_brain:
-        brain_action = _run_brain_engine(state, timestamp)
-        if brain_action:
-            actions.append(brain_action)
+    # ── Brain decision engine ───────────────────────────────────────
+    try:
+        engine = _get_decision_engine(state)
+        prediction = await engine.decide_action(current_time_sec=timestamp)
+        if prediction:
+            actions.append({
+                "action_type": prediction.action_id,
+                "object_name": prediction.target_id,
+                "trigger_step": "brain",
+                "reason": prediction.reasoning,
+                "confidence": prediction.confidence,
+                "timestamp": timestamp,
+            })
             reasoning_parts.append(
-                f"Brain LLM: {brain_action.get('action_id', '?')}"
+                f"Brain: {prediction.action_id}"
             )
+    except Exception as e:
+        logger.warning("Brain engine error: %s", e)
 
     decision_record = {
         "timestamp_sec": timestamp,
         "frame_num": state.get("current_frame_num", 0),
         "actions": actions,
         "reasoning": " | ".join(reasoning_parts) or "No action needed",
-        "decision_mode": decision_mode,
         "decided_at": datetime.now().isoformat(),
     }
 
@@ -408,102 +516,6 @@ def decide_action_node(state: AuraGraphState) -> dict:
         "last_decision": decision_record,
         "decision_history": [decision_record],
     }
-
-
-def _run_rule_engine(
-    state: dict,
-    intent_result: dict,
-    timestamp: float,
-) -> List[Dict[str, Any]]:
-    """Execute rule-based logic from the existing AURADecisionEngine.
-
-    Instead of instantiating AURADecisionEngine (which has its own
-    internal state), we replicate the core logic inline using the DAG
-    and task_profile from the state.
-    """
-    dag = state.get("dag", {})
-    task_profile = state.get("task_profile", {})
-    nodes_def = dag.get("nodes", {})
-
-    env = task_profile.get("environment", {})
-    movable_objects = set(env.get("movable_objects", []))
-    initial_delivery = set(env.get("initial_delivery_objects", []))
-
-    obj_locs: Dict[str, str] = dict(state.get("object_locations") or {})
-    completed: set = set(state.get("completed_steps") or [])
-    cycle_count = state.get("cycle_count", 0)
-
-    actions: List[Dict[str, Any]] = []
-
-    # ── Initial delivery (first cycle only) ─────────────────────────
-    if cycle_count == 0:
-        for obj in initial_delivery:
-            if obj_locs.get(obj, "storage") == "storage":
-                actions.append({
-                    "action_type": "deliver_to_workplace",
-                    "object_name": obj,
-                    "trigger_step": "idle",
-                    "reason": f"Initial setup — delivering {obj} to workplace",
-                    "timestamp": timestamp,
-                })
-                obj_locs[obj] = "workplace"
-
-    # ── Return-to-storage triggers ──────────────────────────────────
-    new_completed = set(intent_result.get("steps_completed", [])) - completed
-    for step_name in new_completed:
-        node_def = nodes_def.get(step_name, {})
-        rts = node_def.get("robot_return_to_storage", {})
-        for obj in rts.get("objects", []):
-            if obj_locs.get(obj) == "workplace":
-                actions.append({
-                    "action_type": "return_to_storage",
-                    "object_name": obj,
-                    "trigger_step": step_name,
-                    "reason": rts.get("reason", f"{obj} no longer needed"),
-                    "timestamp": timestamp,
-                })
-                obj_locs[obj] = "storage"
-
-    # ── Proactive delivery based on predicted next action ───────────
-    predicted = intent_result.get("predicted_next_action", "")
-    if predicted and predicted != "unknown":
-        needed = nodes_def.get(predicted, {}).get("objects_needed_on_workplace", [])
-        for obj in needed:
-            if obj in movable_objects and obj_locs.get(obj) == "storage":
-                actions.append({
-                    "action_type": "deliver_to_workplace",
-                    "object_name": obj,
-                    "trigger_step": predicted,
-                    "reason": f"Proactively needed for {predicted}",
-                    "timestamp": timestamp,
-                })
-                obj_locs[obj] = "workplace"
-
-    return actions
-
-
-def _run_brain_engine(state: dict, timestamp: float) -> Optional[Dict[str, Any]]:
-    """Query the Brain DecisionEngine for LLM-based action selection."""
-    try:
-        engine = _get_decision_engine(state)
-        # Use rule-based fallback if in sync context (LLM is async)
-        prediction = engine._rule_based_decide(
-            engine.reasoner.get_available_actions("robot"),
-            engine.reasoner.get_proactive_opportunities("robot"),
-            timestamp,
-        )
-        if prediction:
-            return {
-                "action_type": prediction.action_id,
-                "object_name": prediction.target_id,
-                "trigger_step": "brain_proactive",
-                "reason": prediction.reasoning,
-                "confidence": prediction.confidence,
-                "timestamp": timestamp,
-            }
-    except Exception as e:
-        logger.warning("Brain engine error: %s", e)
-    return None
 
 
 def execute_action_node(state: AuraGraphState) -> dict:
@@ -532,6 +544,15 @@ def execute_action_node(state: AuraGraphState) -> dict:
     obj_locs: Dict[str, str] = dict(state.get("object_locations") or {})
     executed: List[Dict[str, Any]] = []
 
+    # ── Set robot BUSY in SSG before execution ──────────────────
+    from aura.core.scene_graph.nodes import AgentState, AgentNode
+
+    ssg = _get_ssg(state)
+    robot_node = ssg.get_node("robot")
+    if robot_node and isinstance(robot_node, AgentNode):
+        robot_node.state = AgentState.BUSY
+        robot_node.current_action = actions[0].get("action_type", "")
+
     for action in actions:
         action_type = action.get("action_type", "")
         obj_name = action.get("object_name", "")
@@ -543,8 +564,8 @@ def execute_action_node(state: AuraGraphState) -> dict:
             result["success"] = True
             result["mode"] = "dry_run"
             logger.info(
-                "[DRY-RUN] %s %s (program=%s, trigger=%s)",
-                action_type, obj_name, prog, action.get("trigger_step"),
+                "[DRY-RUN] Would execute: %s %s (program=%s) — SSG updated, robot API skipped",
+                action_type, obj_name, prog,
             )
         else:
             try:
@@ -564,10 +585,31 @@ def execute_action_node(state: AuraGraphState) -> dict:
 
         executed.append(result)
 
+    # ── Sync execution results back into live SSG ─────────────
+    # Map action outcomes to SSG region IDs (flat state uses "storage",
+    # but SSG region nodes are "storage_area" and "workplace").
+    for ex in executed:
+        if not ex.get("success"):
+            continue
+        obj_name = ex.get("object_name", "")
+        action_type = ex.get("action_type", "")
+        if action_type == "deliver_to_workplace" and ssg.has_node(obj_name):
+            ssg.set_location(obj_name, "workplace")
+        elif action_type == "return_to_storage" and ssg.has_node(obj_name):
+            ssg.set_location(obj_name, "storage_area")
+
+    # Reset robot state after execution
+    if robot_node and isinstance(robot_node, AgentNode):
+        robot_node.state = AgentState.IDLE
+        robot_node.current_action = None
+
+    ssg.take_snapshot()
+
     return {
         "pending_actions": [],
         "object_locations": obj_locs,
         "decision_history": executed,
+        "ssg": ssg.to_dict(),
     }
 
 
@@ -580,9 +622,11 @@ def check_complete_node(state: AuraGraphState) -> dict:
     cycle = (state.get("cycle_count") or 0) + 1
     max_cycles = state.get("config", {}).get("max_cycles", 500)
 
-    # Check for explicit completion
-    dag = state.get("dag", {})
-    end_nodes = set(dag.get("end_nodes", ["task_complete"]))
+    # Check for explicit completion — find terminal nodes (no step depends on them)
+    dag = state.get("dag") or []
+    all_ids = {step["id"] for step in dag if isinstance(step, dict)}
+    depended_on = {d for step in dag if isinstance(step, dict) for d in step.get("dependencies", [])}
+    end_nodes = all_ids - depended_on if all_ids else {"task_complete"}
     completed = set(state.get("completed_steps") or [])
 
     is_complete = bool(completed & end_nodes) or state.get("is_complete", False)

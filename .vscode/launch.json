@@ -31,6 +31,23 @@
       "justMyCode": false
     },
     {
+      "name": "AURA Workflow (fast, non-realtime)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_aura.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task", "hand_layup",
+        "--video", "demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4",
+        "--dry-run",
+        "--no-realtime",
+        "--frame-skip", "90",
+        "--max-cycles", "10"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
       "name": "Run AURA Assistant (legacy)",
       "type": "python",
       "request": "launch",

@@ -5,9 +5,6 @@
         "movable_objects": [
             "weigh_scale", "resin_bottle", "hardener_bottle",
             "cup", "brush_small", "brush_medium", "roller"
-        ],
-        "initial_delivery_objects": [
-            "resin_bottle", "hardener_bottle", "roller"
         ]
     },
     "program_map": {

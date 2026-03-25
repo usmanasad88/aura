@@ -180,7 +180,7 @@ class HandLayupDemoRunner:
         elif self.config.get("brain", {}).get("model"):
             self.model = self.config["brain"]["model"]
         else:
-            self.model = "gemini-3-pro-preview"
+            self.model = "gemini-3.1-pro-preview"
         
         # Robot API URL: CLI arg > config > None
         self.robot_api_url = robot_api_url

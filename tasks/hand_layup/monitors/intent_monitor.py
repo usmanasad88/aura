@@ -224,11 +224,11 @@ class HandLayupIntentMonitor:
 
     def __init__(
         self,
-        model: str = "gemini-3-pro-preview",
+        model: str = "gemini-3.1-pro-preview",
         dag_path: Optional[str] = None,
         state_path: Optional[str] = None,
         max_frames: int = 5,
-        max_image_dimension: int = 640,
+        max_image_dimension: int = 1024,
         temperature: float = 0.3,
         log_dir: Optional[str] = None,
         enable_logging: bool = True,
@@ -238,10 +238,10 @@ class HandLayupIntentMonitor:
 
         # Override defaults for realtime / low-latency mode
         if realtime:
-            if model == "gemini-3-pro-preview":  # not explicitly overridden
-                model = "gemini-2.5-flash"
+            if model == "gemini-3.1-pro-preview":  # not explicitly overridden
+                model = "gemini-3.1-flash-lite-preview"
             max_frames = min(max_frames, 3)
-            max_image_dimension = min(max_image_dimension, 480)
+            max_image_dimension = min(max_image_dimension, 768)
 
         self.model = model
         self.max_frames = max_frames

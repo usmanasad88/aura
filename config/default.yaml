@@ -14,7 +14,7 @@ monitors:
     use_gemini_detection: true
     max_objects: 10
     confidence_threshold: 0.5
-    gemini_model: "gemini-3-pro-preview"
+    gemini_model: "gemini-3.1-pro-preview"
     default_prompts:
       - "person"
       - "hand"
@@ -49,7 +49,7 @@ monitors:
 
 # Brain Configuration
 brain:
-  decision_model: "gemini-3-pro-preview"
+  decision_model: "gemini-3.1-pro-preview"
   reasoning_depth: "standard"
   enable_explainability: true
   state_update_rate_hz: 10.0

@@ -1,1 +1,87 @@
-hand_layup_dag.json
+[
+  {
+    "id": "idle",
+    "description": "System initialized, waiting for task to begin",
+    "dependencies": []
+  },
+  {
+    "id": "place_cup_on_scale",
+    "description": "Place the mixing cup on the weigh scale",
+    "dependencies": ["idle"]
+  },
+  {
+    "id": "add_resin_to_cup",
+    "description": "Add resin from the bottle into the cup",
+    "dependencies": ["place_cup_on_scale"]
+  },
+  {
+    "id": "add_hardener_to_cup",
+    "description": "Add hardener from the bottle into the cup",
+    "dependencies": ["add_resin_to_cup"]
+  },
+  {
+    "id": "weigh_mixture",
+    "description": "Check the weight of the resin/hardener mixture on the scale",
+    "dependencies": ["add_hardener_to_cup"]
+  },
+  {
+    "id": "mix_resin_hardener",
+    "description": "Stir the resin and hardener together until uniformly mixed",
+    "dependencies": ["weigh_mixture"]
+  },
+  {
+    "id": "place_layer_1",
+    "description": "Place the first fiberglass sheet on the mold",
+    "dependencies": ["mix_resin_hardener"]
+  },
+  {
+    "id": "apply_resin_layer_1",
+    "description": "Apply resin to the first layer with a brush",
+    "dependencies": ["place_layer_1"]
+  },
+  {
+    "id": "place_layer_2",
+    "description": "Place the second fiberglass sheet on top of the first",
+    "dependencies": ["apply_resin_layer_1"]
+  },
+  {
+    "id": "apply_resin_layer_2",
+    "description": "Apply resin to the second layer",
+    "dependencies": ["place_layer_2"]
+  },
+  {
+    "id": "place_layer_3",
+    "description": "Place the third fiberglass sheet",
+    "dependencies": ["apply_resin_layer_2"]
+  },
+  {
+    "id": "apply_resin_layer_3",
+    "description": "Apply resin to the third layer",
+    "dependencies": ["place_layer_3"]
+  },
+  {
+    "id": "place_layer_4",
+    "description": "Place the fourth and final fiberglass sheet",
+    "dependencies": ["apply_resin_layer_3"]
+  },
+  {
+    "id": "apply_resin_layer_4",
+    "description": "Apply resin to the final layer",
+    "dependencies": ["place_layer_4"]
+  },
+  {
+    "id": "consolidate_with_roller",
+    "description": "Use roller to consolidate all layers and remove trapped air",
+    "dependencies": ["apply_resin_layer_4"]
+  },
+  {
+    "id": "cleanup",
+    "description": "Return remaining tools to storage and clear workspace",
+    "dependencies": ["consolidate_with_roller"]
+  },
+  {
+    "id": "task_complete",
+    "description": "Task finished, layup complete",
+    "dependencies": ["cleanup"]
+  }
+]

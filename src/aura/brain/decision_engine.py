@@ -11,11 +11,12 @@ The engine uses a configurable Gemini model for reasoning.
 
 import os
 import json
+import time
 import asyncio
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any
 from pathlib import Path
 
 from aura.core.scene_graph import (
@@ -34,6 +35,93 @@ from .explainer import DecisionExplainer, DecisionRecord
 
 
 logger = logging.getLogger(__name__)
+
+
+# ─── Prompt / Response Logger ────────────────────────────────────────────────
+
+class DecisionPromptLogger:
+    """Logs every LLM prompt/response exchange to disk.
+
+    Mirrors the ``PromptLogger`` used by ``AURAIntentMonitor`` so that
+    decision engine calls can be reviewed and debugged in the same way.
+
+    Directory layout per call::
+
+        <session_dir>/
+          call_0001/
+            prompt.txt
+            response.txt
+            response_parsed.json
+            ssg_snapshot.json
+            meta.json
+          call_0002/
+            ...
+    """
+
+    def __init__(self, log_dir: Optional[str] = None, enabled: bool = True):
+        self.enabled = enabled
+        if not enabled:
+            self.session_dir: Optional[Path] = None
+            return
+
+        base = Path(log_dir) if log_dir else Path("logs/decision_engine")
+        session_name = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self.session_dir = base / session_name
+        self.session_dir.mkdir(parents=True, exist_ok=True)
+        self.call_counter = 0
+        logger.info("Decision prompt logger session: %s", self.session_dir)
+
+    def log_call(
+        self,
+        *,
+        prompt_text: str,
+        response_text: str,
+        parsed_response: Optional[Dict[str, Any]],
+        model: str,
+        generation_time_sec: float,
+        timestamp_sec: float,
+        frame_num: int = 0,
+        decision: Optional[str] = None,
+        ssg_snapshot: Optional[Dict[str, Any]] = None,
+        available_actions: Optional[List[Dict]] = None,
+        proactive_opportunities: Optional[List[Dict]] = None,
+    ) -> None:
+        """Persist one LLM call to the session directory."""
+        if not self.enabled or self.session_dir is None:
+            return
+
+        self.call_counter += 1
+        call_dir = self.session_dir / f"call_{self.call_counter:04d}"
+        call_dir.mkdir(parents=True, exist_ok=True)
+
+        (call_dir / "prompt.txt").write_text(prompt_text, encoding="utf-8")
+        (call_dir / "response.txt").write_text(response_text, encoding="utf-8")
+
+        if parsed_response is not None:
+            with open(call_dir / "response_parsed.json", "w") as f:
+                json.dump(parsed_response, f, indent=2, default=str)
+
+        if ssg_snapshot is not None:
+            with open(call_dir / "ssg_snapshot.json", "w") as f:
+                json.dump(ssg_snapshot, f, indent=2, default=str)
+
+        meta: Dict[str, Any] = {
+            "call_number": self.call_counter,
+            "model": model,
+            "generation_time_sec": round(generation_time_sec, 3),
+            "timestamp_sec": round(timestamp_sec, 3),
+            "frame_num": frame_num,
+            "decision": decision,
+            "response_length_chars": len(response_text),
+            "num_available_actions": len(available_actions) if available_actions else 0,
+            "num_proactive_opportunities": len(proactive_opportunities) if proactive_opportunities else 0,
+            "logged_at": datetime.now().isoformat(),
+        }
+        with open(call_dir / "meta.json", "w") as f:
+            json.dump(meta, f, indent=2)
+
+    def get_session_dir(self) -> Optional[Path]:
+        return self.session_dir
 
 
 # Lazy import Gemini
@@ -69,6 +157,10 @@ class DecisionEngineConfig:
     proactive_threshold: float = 0.7  # Min confidence for proactive actions
     timing_prediction_enabled: bool = True
     
+    # Logging
+    enable_logging: bool = True
+    log_dir: Optional[str] = None
+
     # Paths
     sop_path: Optional[str] = None
     skills_path: Optional[str] = None
@@ -105,8 +197,12 @@ class DecisionEngine:
         self.graph = SemanticSceneGraph(name="aura_ssg")
         self.reasoner = GraphReasoner(self.graph)
         self.explainer = DecisionExplainer(self.graph)
-        self.skills = SkillRegistry.create_default()
-        
+        self.skills = SkillRegistry()
+        self.prompt_logger = DecisionPromptLogger(
+            log_dir=self.config.log_dir,
+            enabled=self.config.enable_logging,
+        )
+
         # Load additional skills if path provided
         if self.config.skills_path and Path(self.config.skills_path).exists():
             self.skills.load_from_file(self.config.skills_path)
@@ -231,28 +327,25 @@ class DecisionEngine:
                 }
     
     def update_from_sound(self, output: SoundOutput) -> None:
-        """Update SSG from sound monitor output."""
+        """Update SSG from sound monitor output.
+
+        Stores each utterance in ``task_state["recent_utterances"]`` so
+        the LLM prompt can reference them for context-aware decisions.
+        """
         if not output or not output.is_valid:
             return
-        
+
+        recent: List[Dict[str, Any]] = list(
+            self.graph.task_state.get("recent_utterances", [])
+        )
         for utterance in output.utterances:
-            # Check for relevant commands or preferences
-            text = utterance.text.lower()
-            
-            # Update task state based on spoken preferences
-            if "sugar" in text:
-                if any(word in text for word in ["no", "none", "without"]):
-                    self.graph.set_task_state("sugar_preference", "none")
-                    self.graph.set_task_state("sugar_preference_known", True)
-                elif any(word in text for word in ["less", "little", "bit"]):
-                    self.graph.set_task_state("sugar_preference", "little")
-                    self.graph.set_task_state("sugar_preference_known", True)
-                elif any(word in text for word in ["more", "extra", "lot"]):
-                    self.graph.set_task_state("sugar_preference", "extra")
-                    self.graph.set_task_state("sugar_preference_known", True)
-                else:
-                    self.graph.set_task_state("sugar_preference", "standard")
-                    self.graph.set_task_state("sugar_preference_known", True)
+            recent.append({
+                "text": utterance.text,
+                "timestamp": getattr(utterance, "timestamp", None),
+            })
+
+        # Keep only the last 10 utterances
+        self.graph.set_task_state("recent_utterances", recent[-10:])
     
     def process_monitor_outputs(self, outputs: Dict[str, MonitorOutput]) -> None:
         """Process outputs from all monitors."""
@@ -314,6 +407,22 @@ class DecisionEngine:
                 current_time_sec
             )
     
+    def _format_recent_decisions(self, n: int = 5) -> str:
+        """Format the last *n* decisions for inclusion in the LLM prompt."""
+        recent = self.explainer.decision_history[-n:]
+        if not recent:
+            return "No actions taken yet."
+        lines: List[str] = []
+        for d in recent:
+            if d.decision_type == "action":
+                lines.append(
+                    f"- Executed: {d.action_id} on {d.target or 'N/A'} "
+                    f"(confidence {d.confidence:.1f}) — {d.reasoning[:100]}"
+                )
+            else:
+                lines.append(f"- Waited — {d.reasoning[:100]}")
+        return "\n".join(lines)
+
     async def _llm_decide_action(self, available_actions: List[Dict],
                                   opportunities: List[Dict],
                                   current_time_sec: float) -> Optional[ActionPrediction]:
@@ -344,6 +453,9 @@ Your goal is to anticipate what the human needs and provide timely assistance.
 ## Current Time
 Task time: {current_time_sec:.1f} seconds
 
+## Recent Robot Actions
+{self._format_recent_decisions()}
+
 ## Your Task
 Decide whether the robot should:
 1. Execute an action now
@@ -369,6 +481,7 @@ If waiting is better:
 Respond with ONLY the JSON object, no other text."""
 
         try:
+            t0 = time.monotonic()
             response = await asyncio.wait_for(
                 asyncio.to_thread(
                     self.llm_client.models.generate_content,
@@ -381,9 +494,25 @@ Respond with ONLY the JSON object, no other text."""
                 ),
                 timeout=self.config.max_reasoning_time_sec
             )
-            
-            result = json.loads(response.text)
-            
+            generation_time = time.monotonic() - t0
+
+            response_text = response.text
+            result = json.loads(response_text)
+
+            # ── Log the call ────────────────────────────────────
+            self.prompt_logger.log_call(
+                prompt_text=prompt,
+                response_text=response_text,
+                parsed_response=result,
+                model=self.config.gemini_model,
+                generation_time_sec=generation_time,
+                timestamp_sec=current_time_sec,
+                decision=result.get("decision"),
+                ssg_snapshot=self.graph.to_dict(),
+                available_actions=available_actions,
+                proactive_opportunities=opportunities,
+            )
+
             if result.get("decision") == "act":
                 prediction = ActionPrediction(
                     action_id=result["action_id"],
@@ -393,7 +522,7 @@ Respond with ONLY the JSON object, no other text."""
                     reasoning=result.get("reasoning", ""),
                     parameters=result.get("parameters", {}),
                 )
-                
+
                 # Record decision
                 if self.config.enable_explainability:
                     self.explainer.record_decision(DecisionRecord(
@@ -405,7 +534,7 @@ Respond with ONLY the JSON object, no other text."""
                         reasoning=prediction.reasoning,
                         confidence=prediction.confidence,
                     ))
-                
+
                 return prediction
             else:
                 # Record wait decision
@@ -417,7 +546,7 @@ Respond with ONLY the JSON object, no other text."""
                         confidence=1.0,
                     ))
                 return None
-                
+
         except asyncio.TimeoutError:
             logger.warning("LLM reasoning timed out")
             return self._rule_based_decide(available_actions, opportunities, current_time_sec)
@@ -473,7 +602,8 @@ Respond with ONLY the JSON object, no other text."""
         
         # Store DAG in graph metadata
         self.graph.metadata = {"dag": dag}
-        logger.info(f"Loaded task DAG: {dag.get('name', 'unknown')}")
+        dag_name = dag.get("name", "unknown") if isinstance(dag, dict) else f"{len(dag)} steps"
+        logger.info(f"Loaded task DAG: {dag_name}")
         
         # Load state schema
         if state_path and Path(state_path).exists():
@@ -545,7 +675,7 @@ Respond with ONLY the JSON object, no other text."""
         
         Ground truth format:
         [
-            {"time_sec": 10.5, "action_id": "retrieve_object", "target": "sugar"},
+            {"time_sec": 10.5, "action_id": "retrieve_object", "target": "obj_a"},
             {"time_sec": 25.0, "action_id": "ask_preference", "target": null},
             ...
         ]

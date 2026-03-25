@@ -44,8 +44,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-# Disable LangSmith tracing (avoids noisy SSL/422 warnings)
-os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
+# Disable LangSmith tracing (force-set to avoid noisy SSL/422 warnings)
+os.environ["LANGCHAIN_TRACING_V2"] = "false"
+os.environ["LANGSMITH_TRACING"] = "false"
 
 _project_root = Path(__file__).resolve().parent.parent
 if str(_project_root) not in sys.path:
@@ -114,11 +115,23 @@ async def run_workflow(
     dry_run: bool,
     dashboard_port: int = 5555,
     no_dashboard: bool = False,
+    realtime: bool = True,
+    frame_skip: int = 30,
+    max_cycles: int | None = None,
+    use_ground_truth_robot_status: bool = False,
 ) -> None:
     """Build and run the LangGraph workflow loop."""
     from aura.workflow.builder import build_task_graph
 
     config_dir = _project_root / "tasks" / task_name / "config"
+
+    extra = {
+        "realtime": realtime,
+        "frame_skip": frame_skip,
+        "use_ground_truth_robot_status": use_ground_truth_robot_status,
+    }
+    if max_cycles is not None:
+        extra["max_cycles"] = max_cycles
 
     compiled_graph, initial_state = build_task_graph(
         config_dir=config_dir,
@@ -128,6 +141,7 @@ async def run_workflow(
         robot_url=robot_url,
         speed=speed,
         model=model,
+        extra_config=extra,
     )
 
     # ── Start dashboard ──────────────────────────────────────────────
@@ -161,7 +175,7 @@ async def run_workflow(
         "configurable": {
             "thread_id": f"aura_{task_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
         },
-        "recursion_limit": 200,
+        "recursion_limit": 2000,
     }
 
     last_cycle = 0
@@ -232,7 +246,7 @@ def main() -> None:
         help="Robot HTTP API base URL",
     )
     parser.add_argument("--speed", type=float, default=1.0)
-    parser.add_argument("--model", default="gemini-2.5-flash")
+    parser.add_argument("--model", default="gemini-3.1-pro-preview")
     parser.add_argument(
         "--dry-run", action="store_true", default=True,
         help="Log robot actions without executing (default)",
@@ -240,6 +254,22 @@ def main() -> None:
     parser.add_argument(
         "--live", dest="dry_run", action="store_false",
         help="Execute robot actions for real",
+    )
+    parser.add_argument(
+        "--no-realtime", action="store_true",
+        help="Process video as fast as possible (no wall-clock pacing)",
+    )
+    parser.add_argument(
+        "--frame-skip", type=int, default=30,
+        help="In non-realtime mode, yield every N-th frame (default: 30)",
+    )
+    parser.add_argument(
+        "--max-cycles", type=int, default=None,
+        help="Stop after N workflow cycles (limits LLM calls)",
+    )
+    parser.add_argument(
+        "--use-ground-truth-robot-status", action="store_true",
+        help="Populate robot_state from tasks/<task>/config/ground_truth.json",
     )
     parser.add_argument(
         "--no-dashboard", action="store_true",
@@ -269,6 +299,10 @@ def main() -> None:
             dry_run=args.dry_run,
             dashboard_port=args.dashboard_port,
             no_dashboard=args.no_dashboard,
+            realtime=not args.no_realtime,
+            frame_skip=args.frame_skip,
+            max_cycles=args.max_cycles,
+            use_ground_truth_robot_status=args.use_ground_truth_robot_status,
         )
     )
 

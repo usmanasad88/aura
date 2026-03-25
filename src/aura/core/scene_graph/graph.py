@@ -196,18 +196,25 @@ class SemanticSceneGraph:
     # Spatial Convenience Methods
     # =========================================================================
     
-    def set_location(self, object_id: str, region_id: str, 
+    def set_location(self, object_id: str, region_id: str,
                      relation: SpatialRelation = SpatialRelation.AT) -> None:
         """Set object location to a region."""
+        # Remove object from old region's contained_objects list
+        old_location = self.get_location(object_id)
+        if old_location and old_location != region_id:
+            old_region = self.get_node(old_location)
+            if isinstance(old_region, RegionNode):
+                old_region.remove_object(object_id)
+
         # Remove old location edges
         for edge in self.get_edges(source_id=object_id, edge_type=EdgeType.SPATIAL):
             if edge.relation in [SpatialRelation.AT.value, SpatialRelation.ON.value,
                                  SpatialRelation.INSIDE.value]:
                 self.remove_edge(edge.source_id, edge.target_id, edge.relation)
-        
+
         # Add new location edge
         self.add_edge(SSGEdge.spatial(object_id, region_id, relation))
-        
+
         # Update region's contained objects
         region = self.get_node(region_id)
         if isinstance(region, RegionNode):

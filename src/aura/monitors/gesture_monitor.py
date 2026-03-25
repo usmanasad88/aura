@@ -72,6 +72,7 @@ class GestureOutput(MonitorOutput):
     dominant_gesture: Optional[str] = None  # Most confident gesture
     safety_triggered: bool = False  # Safety stop signal
     intent: Optional[Intent] = None  # Interpreted intent from gesture
+    person_bbox: Optional[Any] = None  # [x1,y1,x2,y2] if person detector used
 
 
 @dataclass
@@ -89,7 +90,13 @@ class GestureMonitorConfig(MonitorConfig):
     
     # Intent mapping
     enable_intent_mapping: bool = True
-    
+
+    # Person detection (YOLO) — crop to person before gesture recognition
+    use_person_detector: bool = False
+    yolo_model_path: str = ""  # Path to yolov8 weights; empty = default
+    yolo_confidence: float = 0.5
+    yolo_pad_ratio: float = 0.15  # Padding around person bbox
+
 
 class GestureMonitor(BaseMonitor):
     """Real-time gesture recognition for human-robot interaction.
@@ -164,7 +171,17 @@ class GestureMonitor(BaseMonitor):
         
         # Initialize recognizer
         self._init_recognizer()
-        
+
+        # Person detector (YOLO)
+        self.person_detector = None
+        if self.gesture_config.use_person_detector:
+            from aura.utils.person_detector import PersonDetector
+            self.person_detector = PersonDetector(
+                model_path=self.gesture_config.yolo_model_path or None,
+                confidence=self.gesture_config.yolo_confidence,
+                pad_ratio=self.gesture_config.yolo_pad_ratio,
+            )
+
         logger.info(f"GestureMonitor initialized with {self.gesture_config.num_hands} hands")
         logger.info(f"Stop gestures: {self.gesture_config.stop_gestures}")
         logger.info(f"Resume gestures: {self.gesture_config.resume_gestures}")
@@ -241,7 +258,30 @@ class GestureMonitor(BaseMonitor):
             raise RuntimeError(f"Could not download gesture recognizer model: {e}")
         
         return model_path
-    
+
+    @staticmethod
+    def _remap_landmarks(landmarks, ox: int, oy: int, cw: int, ch: int, fw: int, fh: int):
+        """Remap normalised crop-space landmarks to full-frame normalised coords.
+
+        MediaPipe landmarks are in [0,1] relative to the input image.  When we
+        feed a person crop, we need to convert back to full-frame coordinates so
+        that visualisation draws in the right place.
+        """
+        from dataclasses import dataclass
+
+        @dataclass
+        class _LM:
+            x: float
+            y: float
+            z: float
+
+        remapped = []
+        for lm in landmarks:
+            abs_x = ox + lm.x * cw
+            abs_y = oy + lm.y * ch
+            remapped.append(_LM(x=abs_x / fw, y=abs_y / fh, z=lm.z))
+        return remapped
+
     async def _process(self, frame: np.ndarray, **inputs) -> GestureOutput:
         """Process frame and detect gestures.
         
@@ -257,12 +297,32 @@ class GestureMonitor(BaseMonitor):
                 is_valid=False,
                 error="Invalid frame input"
             )
-        
+
+        full_h, full_w = frame.shape[:2]
+
+        # ── Optionally crop to detected person ──
+        crop_frame = frame
+        crop_offset_x, crop_offset_y = 0, 0
+        crop_w, crop_h = full_w, full_h
+        person_bbox = None
+
+        if self.person_detector is not None:
+            person = self.person_detector.detect_largest(frame)
+            if person is not None:
+                crop_frame = person.crop
+                crop_offset_x = int(person.bbox_xyxy[0])
+                crop_offset_y = int(person.bbox_xyxy[1])
+                crop_h, crop_w = crop_frame.shape[:2]
+                person_bbox = person.bbox_xyxy
+            else:
+                # No person found — still run on full frame
+                pass
+
         # Convert BGR to RGB for MediaPipe
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb_frame = cv2.cvtColor(crop_frame, cv2.COLOR_BGR2RGB)
         rgb_frame = np.ascontiguousarray(rgb_frame)
         mp_image = mp.Image(mp.ImageFormat.SRGB, rgb_frame)
-        
+
         # Run gesture recognition
         try:
             result = self.recognizer.recognize(mp_image)
@@ -272,27 +332,32 @@ class GestureMonitor(BaseMonitor):
                 is_valid=False,
                 error=str(e)
             )
-        
-        # Extract gesture results
+
+        # Extract gesture results and remap landmarks to full-frame coords
         gestures = []
         if result.gestures and len(result.gestures) > 0:
             for hand_idx, hand_gestures in enumerate(result.gestures):
                 if not hand_gestures:
                     continue
-                
+
                 # Get top gesture for this hand
                 top_gesture = hand_gestures[0]
-                
+
                 # Get handedness
                 handedness = "Unknown"
                 if result.handedness and len(result.handedness) > hand_idx:
                     handedness = result.handedness[hand_idx][0].category_name
-                
-                # Get landmarks
+
+                # Get landmarks and remap to full-frame normalised coords
                 landmarks = None
                 if result.hand_landmarks and len(result.hand_landmarks) > hand_idx:
                     landmarks = result.hand_landmarks[hand_idx]
-                
+                    if self.person_detector is not None and (crop_offset_x or crop_offset_y):
+                        landmarks = self._remap_landmarks(
+                            landmarks, crop_offset_x, crop_offset_y,
+                            crop_w, crop_h, full_w, full_h,
+                        )
+
                 gestures.append(GestureRecognitionResult(
                     gesture_name=top_gesture.category_name,
                     confidence=top_gesture.score,
@@ -367,7 +432,8 @@ class GestureMonitor(BaseMonitor):
             dominant_gesture=stable_gesture,
             safety_triggered=self.safety_triggered,
             intent=intent,
-            is_valid=True
+            is_valid=True,
+            person_bbox=person_bbox,
         )
     
     def get_visualization_frame(self, frame: np.ndarray, output: GestureOutput) -> np.ndarray:
