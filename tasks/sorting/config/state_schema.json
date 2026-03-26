@@ -1,0 +1,75 @@
+{
+  "name": "Object Sorting State",
+  "description": "State variables tracked from video frames. IMPORTANT: The *_in_basket booleans are monotonic — once set to false, only change to true if you POSITIVELY see the object inside the basket. Never assume an object is in the basket just because you cannot see it on the table (it may be occluded, held by the robot, or out of frame). When uncertain, keep the previous state value.",
+  "version": "2.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "Current high-level phase of the task. Transition from initialization to sorting as soon as any human presence is detected — do not wait for explicit instructions. Only set to complete when ALL five *_in_basket booleans are true.",
+      "valid_values": ["initialization", "sorting", "complete"],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "Specific action currently being performed (must match a DAG node id)",
+      "default": "idle"
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator. Set to 'placing_object' when the human is picking up or placing an object into the basket themselves.",
+      "valid_values": ["idle", "instructing", "pointing", "placing_object", "observing", "done"],
+      "default": "idle"
+    },
+    "white_ball_in_basket": {
+      "type": "boolean",
+      "description": "Whether the white ball has been confirmed in the basket. Only set to true if you can positively see it in the basket or saw it being dropped there. If you simply cannot see the ball on the table, keep the previous value — do NOT assume it is in the basket.",
+      "default": false
+    },
+    "rainbow_ball_in_basket": {
+      "type": "boolean",
+      "description": "Whether the rainbow ball has been confirmed in the basket. Only set to true if you can positively see it in the basket or saw it being dropped there. If you simply cannot see the ball on the table, keep the previous value — do NOT assume it is in the basket.",
+      "default": false
+    },
+    "orange_ball_in_basket": {
+      "type": "boolean",
+      "description": "Whether the orange ball has been confirmed in the basket. Only set to true if you can positively see it in the basket or saw it being dropped there. If you simply cannot see the ball on the table, keep the previous value — do NOT assume it is in the basket.",
+      "default": false
+    },
+    "punch_in_basket": {
+      "type": "boolean",
+      "description": "Whether the hole punch has been confirmed in the basket. Only set to true if you can positively see it in the basket or saw it being dropped there. If you simply cannot see it on the table, keep the previous value — do NOT assume it is in the basket.",
+      "default": false
+    },
+    "tape_in_basket": {
+      "type": "boolean",
+      "description": "Whether the tape has been confirmed in the basket. Only set to true if you can positively see it in the basket or saw it being dropped there. If you simply cannot see it on the table, keep the previous value — do NOT assume it is in the basket.",
+      "default": false
+    },
+    "objects_in_basket": {
+      "type": "integer",
+      "description": "Count of the *_in_basket booleans that are true (0-5). Must equal the number of true values above.",
+      "default": 0
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "Predicted next action based on task graph",
+      "default": "sort_objects"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action (0-1)",
+      "default": 0.0
+    },
+    "robot_state": {
+      "type": "string",
+      "description": "Robot execution status",
+      "valid_values": ["unknown", "idle", "busy"],
+      "default": "unknown"
+    },
+    "robot_active_program": {
+      "type": "string",
+      "description": "Current robot program id when busy",
+      "default": ""
+    }
+  }
+}

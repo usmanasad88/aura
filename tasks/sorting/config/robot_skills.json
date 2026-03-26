@@ -1,0 +1,106 @@
+{
+  "name": "Object Sorting Robot Skills",
+  "description": "Atomic robot skills for sorting objects. The decision engine composes these into pick-and-place sequences. The robot must always move to Home between positions.",
+  "version": "2.0",
+  "skills": [
+    {
+      "id": "move_to_home",
+      "name": "Move to Home",
+      "description": "Move to the safe Home position via /api/move/named {name: Home}",
+      "category": "motion",
+      "preconditions": {},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_to_pick_white_ball",
+      "name": "Move to White Ball Pick Position",
+      "description": "Move to Pick_White_Ball position via /api/move/named {name: Pick_White_Ball}",
+      "category": "motion",
+      "preconditions": {"white_ball.location": "table"},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_to_pick_rainbow_ball",
+      "name": "Move to Rainbow Ball Pick Position",
+      "description": "Move to Pick_Rainbow_Ball position via /api/move/named {name: Pick_Rainbow_Ball}",
+      "category": "motion",
+      "preconditions": {"rainbow_ball.location": "table"},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_to_pick_orange_ball",
+      "name": "Move to Orange Ball Pick Position",
+      "description": "Move to Pick_Orange_Ball position via /api/move/named {name: Pick_Orange_Ball}",
+      "category": "motion",
+      "preconditions": {"orange_ball.location": "table"},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_to_pick_punch",
+      "name": "Move to Punch Pick Position",
+      "description": "Move to Pick_Punch position via /api/move/named {name: Pick_Punch}",
+      "category": "motion",
+      "preconditions": {"punch.location": "table"},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_to_pick_tape",
+      "name": "Move to Tape Pick Position",
+      "description": "Move to Pick_Tape position via /api/move/named {name: Pick_Tape}",
+      "category": "motion",
+      "preconditions": {"tape.location": "table"},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "move_to_basket_drop",
+      "name": "Move to Basket Drop Position",
+      "description": "Move to Drop_Position_Basket position via /api/move/named {name: Drop_Position_Basket}",
+      "category": "motion",
+      "preconditions": {},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "open_gripper",
+      "name": "Open Gripper",
+      "description": "Open the Robotiq gripper via /api/gripper {action: open}",
+      "category": "gripper",
+      "preconditions": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "close_gripper",
+      "name": "Close Gripper",
+      "description": "Close the Robotiq gripper via /api/gripper {action: close}",
+      "category": "gripper",
+      "preconditions": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "stop_program",
+      "name": "Stop Program",
+      "description": "Emergency stop — halt the current program",
+      "category": "utility",
+      "preconditions": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
+      "id": "wait",
+      "name": "Wait",
+      "description": "Wait for a specified duration or until the human signals readiness",
+      "category": "utility",
+      "preconditions": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    }
+  ]
+}

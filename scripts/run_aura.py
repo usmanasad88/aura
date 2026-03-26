@@ -121,6 +121,9 @@ async def run_workflow(
     speed: float,
     model: str,
     dry_run: bool,
+    gopro_stream: bool = False,
+    gopro_ip: str = "172.29.170.51",
+    gopro_lens: str = "front",
     dashboard_port: int = 5555,
     no_dashboard: bool = False,
     realtime: bool = True,
@@ -145,6 +148,9 @@ async def run_workflow(
         "use_ground_truth_robot_status": use_ground_truth_robot_status,
         "llm_backend": llm_backend,
         "sglang_base_url": sglang_base_url,
+        "gopro_stream": gopro_stream,
+        "gopro_ip": gopro_ip,
+        "gopro_lens": gopro_lens,
         # Per-component overrides (fall back to shared llm_backend / model)
         "intent_backend": intent_backend or llm_backend,
         "intent_model": intent_model or model,
@@ -194,6 +200,8 @@ async def run_workflow(
         print(f"  SGLang   : {sglang_base_url}")
     if video_path:
         print(f"  Video: {video_path}  |  Speed: {speed}x")
+    elif gopro_stream:
+        print(f"  GoPro Stream: {gopro_ip}")
     elif webcam_device is not None:
         print(f"  Webcam: {webcam_device}")
     if dash:
@@ -272,6 +280,18 @@ def main() -> None:
         help="Webcam device index (default: 0)",
     )
     parser.add_argument(
+        "--gopro-stream", action="store_true", default=False,
+        help="Use GoPro realtime UDP video stream (~30 fps, low latency)",
+    )
+    parser.add_argument(
+        "--gopro-ip", default="172.29.170.51", metavar="IP",
+        help="GoPro camera IP address (default: 172.29.170.51)",
+    )
+    parser.add_argument(
+        "--gopro-lens", choices=["front", "back", "both"], default="front",
+        help="Which GoPro lens to use: front (ultrawide), back, or both (raw dual-fisheye). Default: front",
+    )
+    parser.add_argument(
         "--robot-url", default="http://localhost:5050",
         help="Robot HTTP API base URL",
     )
@@ -348,6 +368,9 @@ def main() -> None:
             task_name=args.task,
             video_path=args.video,
             webcam_device=webcam_dev,
+            gopro_stream=args.gopro_stream,
+            gopro_ip=args.gopro_ip,
+            gopro_lens=args.gopro_lens,
             robot_url=args.robot_url,
             speed=args.speed,
             model=args.model,

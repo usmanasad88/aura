@@ -1,0 +1,5 @@
+[
+  {"id": "idle", "description": "System initialized, ready to sort. Begin sorting as soon as a human is present.", "dependencies": []},
+  {"id": "sort_objects", "description": "Pick and place objects into the basket. Start immediately when human is detected.", "dependencies": ["idle"]},
+  {"id": "task_complete", "description": "All designated objects have been placed in the basket", "dependencies": ["sort_objects"]}
+]

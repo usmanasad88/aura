@@ -165,6 +165,9 @@ class DecisionEngineConfig:
     enable_logging: bool = True
     log_dir: Optional[str] = None
 
+    # Task-specific system instruction (from task_profile.json)
+    task_system_instruction: str = ""
+
     # Paths
     sop_path: Optional[str] = None
     skills_path: Optional[str] = None
@@ -450,8 +453,12 @@ class DecisionEngine:
         scene_state = self.graph.get_state_summary_for_llm()
         skills_desc = self.skills.get_skills_for_llm()
 
+        task_instruction = self.config.task_system_instruction
         prompt = f"""You are a proactive robot assistant helping a human with a task.
 Your goal is to anticipate what the human needs and provide timely assistance.
+
+## Task Instructions
+{task_instruction if task_instruction else "No specific task instructions."}
 
 {scene_state}
 

@@ -118,12 +118,14 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
         # Per-component overrides fall back to shared defaults
         decision_backend = config.get("decision_backend") or config.get("llm_backend", "gemini")
         decision_model = config.get("decision_model") or config.get("model", "gemini-2.5-pro-preview-06-05")
+        task_profile = state.get("task_profile", {})
         engine_config = DecisionEngineConfig(
             gemini_model=decision_model,
             enable_llm_reasoning=(decision_mode in ("llm", "hybrid")),
             proactive_threshold=0.6,
             llm_backend=decision_backend,
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
+            task_system_instruction=task_profile.get("system_instruction", ""),
         )
         engine = DecisionEngine(config=engine_config)
 
@@ -158,9 +160,16 @@ def _get_video_source(state: AuraGraphState):
     webcam_device = config.get("webcam_device")
     realtime = config.get("realtime", True)
 
-    key = video_path or f"webcam:{webcam_device}"
+    gopro_stream = config.get("gopro_stream", False)
+    gopro_ip = config.get("gopro_ip", "172.29.170.51")
+    gopro_lens = config.get("gopro_lens", "front")
+
+    key = video_path or (f"gopro:{gopro_ip}:{gopro_lens}" if gopro_stream else f"webcam:{webcam_device}")
     if key not in _video_sources:
-        if webcam_device is not None:
+        if gopro_stream:
+            from aura.sources.gopro_stream_source import GoProStreamSource
+            source = GoProStreamSource(camera_ip=gopro_ip, lens=gopro_lens)
+        elif webcam_device is not None:
             from aura.sources.webcam import WebcamSource
             source = WebcamSource(device=webcam_device)
         elif video_path is None:
@@ -579,7 +588,23 @@ def execute_action_node(state: AuraGraphState) -> dict:
             )
         else:
             try:
-                resp = robot.execute_program(prog) if prog else {"success": False, "error": "no program"}
+                resp: Dict[str, Any] = {"success": False, "error": "no handler"}
+                # Dispatch based on action type
+                if action_type == "move_to_home":
+                    resp = robot.move_to_named("Home")
+                elif action_type.startswith("move_to_pick_"):
+                    # Extract named position from skill description or use prog
+                    pick_name = action.get("parameters", {}).get("named_position") or prog
+                    resp = robot.move_to_named(pick_name) if pick_name else resp
+                elif action_type == "move_to_basket_drop":
+                    resp = robot.move_to_named("Drop_Position_Basket")
+                elif action_type == "open_gripper":
+                    resp = robot.gripper_open()
+                elif action_type == "close_gripper":
+                    resp = robot.gripper_close()
+                elif prog:
+                    # Fallback: execute .prog file
+                    resp = robot.execute_program(prog)
                 result["success"] = resp.get("success", False)
                 result["api_response"] = resp
             except Exception as e:

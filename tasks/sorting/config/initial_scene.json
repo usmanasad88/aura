@@ -1,0 +1,18 @@
+{
+  "regions": [
+    {"id": "table", "name": "Table", "region_type": "workspace"},
+    {"id": "basket", "name": "Basket", "region_type": "storage"}
+  ],
+  "objects": [
+    {"id": "white_ball", "name": "White Ball", "category": "material", "is_movable": true, "initial_location": "table"},
+    {"id": "rainbow_ball", "name": "Rainbow Ball", "category": "material", "is_movable": true, "initial_location": "table"},
+    {"id": "orange_ball", "name": "Orange Ball", "category": "material", "is_movable": true, "initial_location": "table"},
+    {"id": "punch", "name": "Hole Punch", "category": "tool", "is_movable": true, "initial_location": "table"},
+    {"id": "tape", "name": "Tape", "category": "tool", "is_movable": true, "initial_location": "table"},
+    {"id": "basket", "name": "Basket", "category": "container", "is_movable": false, "initial_location": "table"}
+  ],
+  "agents": [
+    {"id": "human", "name": "Human Operator", "agent_type": "human"},
+    {"id": "robot", "name": "Robot Assistant", "agent_type": "robot"}
+  ]
+}
