@@ -124,11 +124,11 @@ class DecisionPromptLogger:
         return self.session_dir
 
 
-# Lazy import Gemini
+# Lazy import for backwards compatibility
 _gemini_client = None
 
 def _get_gemini_client(api_key: str = None):
-    """Get or create Gemini client."""
+    """Get or create Gemini client (legacy helper, prefer create_llm_client)."""
     global _gemini_client
     if _gemini_client is None:
         try:
@@ -156,7 +156,11 @@ class DecisionEngineConfig:
     enable_explainability: bool = True
     proactive_threshold: float = 0.7  # Min confidence for proactive actions
     timing_prediction_enabled: bool = True
-    
+
+    # LLM backend: "gemini", "openai", "sglang", "vllm", "ollama"
+    llm_backend: str = "gemini"
+    sglang_base_url: str = "http://localhost:8100/v1"
+
     # Logging
     enable_logging: bool = True
     log_dir: Optional[str] = None
@@ -187,12 +191,12 @@ class DecisionEngine:
     
     def __init__(self, config: DecisionEngineConfig = None):
         """Initialize the Decision Engine.
-        
+
         Args:
             config: Engine configuration
         """
         self.config = config or DecisionEngineConfig()
-        
+
         # Core components
         self.graph = SemanticSceneGraph(name="aura_ssg")
         self.reasoner = GraphReasoner(self.graph)
@@ -206,27 +210,38 @@ class DecisionEngine:
         # Load additional skills if path provided
         if self.config.skills_path and Path(self.config.skills_path).exists():
             self.skills.load_from_file(self.config.skills_path)
-        
+
         # State tracking
         self.is_running = False
         self.task_start_time: Optional[datetime] = None
         self.current_video_time_sec: float = 0.0
         self.pending_actions: List[ActionPrediction] = []
         self.executed_actions: List[Dict[str, Any]] = []
-        
+
         # Ground truth for evaluation
         self.ground_truth: List[Dict[str, Any]] = []
-        
-        # LLM client
+
+        # LLM client (unified abstraction)
         self._llm_client = None
-        
-        logger.info(f"DecisionEngine initialized with model: {self.config.gemini_model}")
-    
+
+        logger.info(
+            "DecisionEngine initialized — model: %s, backend: %s",
+            self.config.gemini_model, self.config.llm_backend,
+        )
+
     @property
     def llm_client(self):
-        """Get LLM client (lazy initialization)."""
+        """Get LLM client (lazy initialization via unified abstraction)."""
         if self._llm_client is None:
-            self._llm_client = _get_gemini_client()
+            try:
+                from aura.utils.llm_client import create_llm_client
+                self._llm_client = create_llm_client(
+                    self.config.llm_backend,
+                    model=self.config.gemini_model,
+                    base_url=self.config.sglang_base_url,
+                )
+            except Exception as e:
+                logger.warning("Failed to create LLM client (%s): %s", self.config.llm_backend, e)
         return self._llm_client
     
     # =========================================================================
@@ -427,16 +442,14 @@ class DecisionEngine:
                                   opportunities: List[Dict],
                                   current_time_sec: float) -> Optional[ActionPrediction]:
         """Use LLM to decide on action."""
-        try:
-            from google.genai import types
-        except ImportError:
-            logger.warning("google-genai not available, falling back to rules")
+        if not self.llm_client:
+            logger.warning("LLM client not available, falling back to rules")
             return self._rule_based_decide(available_actions, opportunities, current_time_sec)
-        
+
         # Build prompt
         scene_state = self.graph.get_state_summary_for_llm()
         skills_desc = self.skills.get_skills_for_llm()
-        
+
         prompt = f"""You are a proactive robot assistant helping a human with a task.
 Your goal is to anticipate what the human needs and provide timely assistance.
 
@@ -482,21 +495,17 @@ Respond with ONLY the JSON object, no other text."""
 
         try:
             t0 = time.monotonic()
-            response = await asyncio.wait_for(
+            response_text = await asyncio.wait_for(
                 asyncio.to_thread(
-                    self.llm_client.models.generate_content,
-                    model=self.config.gemini_model,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        temperature=0.3,
-                    )
+                    self.llm_client.generate,
+                    prompt,
+                    temperature=0.3,
+                    json_mode=True,
                 ),
-                timeout=self.config.max_reasoning_time_sec
+                timeout=self.config.max_reasoning_time_sec,
             )
             generation_time = time.monotonic() - t0
 
-            response_text = response.text
             result = json.loads(response_text)
 
             # ── Log the call ────────────────────────────────────

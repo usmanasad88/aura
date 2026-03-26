@@ -369,3 +369,29 @@ class PoseTrackingOutput(MonitorOutput):
     intrinsics: Optional[np.ndarray] = None  # (3, 3) camera matrix
     frame_index: int = 0
     overlay_rgb: Optional[np.ndarray] = None  # (H, W, 3) rendered overlay
+
+
+@dataclass
+class PersonBodyPose:
+    """Body pose for a single detected person (SAM-3D-Body output)."""
+    bbox: np.ndarray                         # (4,) detection box [x1,y1,x2,y2]
+    keypoints_3d: np.ndarray                 # (J, 3) 3D joint positions
+    keypoints_2d: np.ndarray                 # (J, 2) projected 2D joints
+    vertices: np.ndarray                     # (V, 3) SMPL mesh vertices
+    camera_translation: np.ndarray           # (3,) predicted camera translation
+    body_pose_params: np.ndarray             # SMPL body pose parameters
+    hand_pose_params: np.ndarray             # SMPL hand pose parameters
+    shape_params: np.ndarray                 # SMPL shape (beta) parameters
+    global_rotation: np.ndarray              # (3, 3) global rotation matrix
+    joint_global_rotations: Optional[np.ndarray] = None  # per-joint global rotations
+    expression_params: Optional[np.ndarray] = None
+    focal_length: Optional[np.ndarray] = None
+
+
+@dataclass
+class BodyPoseOutput(MonitorOutput):
+    """Output from SAM-3D-Body human pose/mesh monitor."""
+    monitor_type: MonitorType = field(default=MonitorType.BODY_POSE)
+    persons: List[PersonBodyPose] = field(default_factory=list)
+    num_persons: int = 0
+    inference_time_sec: float = 0.0

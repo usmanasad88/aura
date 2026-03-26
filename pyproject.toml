@@ -38,6 +38,8 @@ dependencies = [
     "transformers>=4.56.0",
     "accelerate>=1.13.0",
     "num2words>=0.5.14",
+    "pyzmq>=26.0.0",
+    "msgpack>=1.0.0",
 ]
 
 [project.optional-dependencies]

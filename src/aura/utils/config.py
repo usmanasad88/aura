@@ -40,6 +40,9 @@ class IntentMonitorConfig(MonitorConfig):
     max_image_dimension: int = 1024  # Max image dimension for Gemini
     model: str = "gemini-3.1-pro-preview"  # Gemini model
     timeout_sec: float = 30.0  # Longer timeout for Gemini API calls
+    # LLM backend selection: "gemini", "openai", "sglang", "vllm", "ollama"
+    llm_backend: str = "gemini"
+    sglang_base_url: str = "http://localhost:8100/v1"
     # Task graph configuration
     dag_file: Optional[str] = None  # Path to DAG JSON file
     state_file: Optional[str] = None  # Path to state schema JSON file
@@ -133,6 +136,9 @@ class BrainConfig(BaseModel):
     state_update_rate_hz: float = 10.0
     sop_directory: str = "sops"
     max_reasoning_time_seconds: float = 5.0
+    # LLM backend selection: "gemini", "openai", "sglang", "vllm", "ollama"
+    llm_backend: str = "gemini"
+    sglang_base_url: str = "http://localhost:8100/v1"
 
 
 class ActionConfig(BaseModel):

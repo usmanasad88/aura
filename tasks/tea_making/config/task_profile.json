@@ -1,0 +1,27 @@
+{
+  "task_name": "Collaborative Tea Making",
+  "system_instruction": "You are a robot assistant helping a human make chai tea. You proactively retrieve items from storage, assist with sugar and stirring, and return items when done. Keep announcements short and clear.",
+  "program_map": {
+    "deliver_to_workplace|pot": "retrieve_pot_from_storage_to_working_area",
+    "deliver_to_workplace|cup_1": "retrieve_cup_1_from_storage_to_working_area",
+    "deliver_to_workplace|cup_2": "retrieve_cup_2_from_storage_to_working_area",
+    "deliver_to_workplace|tea_container": "retrieve_tea_container_from_storage_to_working_area",
+    "deliver_to_workplace|milk_container": "retrieve_milk_container_from_storage_to_working_area",
+    "deliver_to_workplace|sugar_container": "retrieve_sugar_container_from_storage_to_working_area",
+    "deliver_to_workplace|spoon": "retrieve_spoon_from_storage_to_working_area",
+    "return_to_storage|pot": "return_pot_from_working_area_to_storage",
+    "return_to_storage|tea_container": "return_tea_container_from_working_area_to_storage",
+    "return_to_storage|milk_container": "return_milk_container_from_working_area_to_storage",
+    "return_to_storage|sugar_container": "return_sugar_container_from_working_area_to_storage",
+    "return_to_storage|spoon": "return_spoon_from_working_area_to_storage"
+  },
+  "workflow_config": {
+    "active_monitors": ["intent", "gesture"],
+    "decision_mode": "hybrid",
+    "graph_topology": "sense_decide_act",
+    "predict_interval_sec": 3.0,
+    "gesture_hold_frames": 3,
+    "resume_gestures": ["Thumb_Up"],
+    "stop_gestures": ["Open_Palm", "Pointing_Up"]
+  }
+}

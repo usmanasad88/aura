@@ -47,6 +47,9 @@ from .types import (
     # Pose tracking
     ObjectPose6D,
     PoseTrackingOutput,
+    # Body pose (SAM-3D-Body)
+    PersonBodyPose,
+    BodyPoseOutput,
 )
 
 __all__ = [
@@ -84,4 +87,7 @@ __all__ = [
     # Pose tracking
     "ObjectPose6D",
     "PoseTrackingOutput",
+    # Body pose (SAM-3D-Body)
+    "PersonBodyPose",
+    "BodyPoseOutput",
 ]

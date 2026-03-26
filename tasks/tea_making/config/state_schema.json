@@ -1,0 +1,101 @@
+{
+  "name": "Tea Making Task State",
+  "description": "State variables the intent monitor LLM must track from video frames",
+  "version": "2.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "Current high-level phase of the task",
+      "valid_values": ["initialization", "setup", "heating", "brewing", "serving", "cleanup", "complete"],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "Specific action currently being performed (must match a DAG node id)",
+      "valid_values": [
+        "idle", "setup_workspace", "fill_pot_with_water", "place_pot_on_stove",
+        "turn_on_stove", "wait_for_boil", "add_chai_powder", "simmer_tea",
+        "add_milk_to_pot", "stir_pot", "pour_tea", "ask_sugar_preference",
+        "add_sugar", "skip_sugar", "stir_cup", "serve_tea", "cleanup", "task_complete"
+      ],
+      "default": "idle"
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": ["idle", "filling_water", "placing_pot", "operating_stove", "adding_ingredient", "stirring", "pouring", "waiting", "drinking", "done"],
+      "default": "idle"
+    },
+    "water_in_pot": {
+      "type": "boolean",
+      "description": "Water has been added to the pot",
+      "default": false
+    },
+    "pot_on_stove": {
+      "type": "boolean",
+      "description": "Pot is on the induction cooker",
+      "default": false
+    },
+    "stove_on": {
+      "type": "boolean",
+      "description": "Induction cooker is turned on",
+      "default": false
+    },
+    "water_boiling": {
+      "type": "boolean",
+      "description": "Water is boiling (steam or bubbles visible)",
+      "default": false
+    },
+    "chai_added": {
+      "type": "boolean",
+      "description": "Chai powder has been added to the water",
+      "default": false
+    },
+    "milk_added": {
+      "type": "boolean",
+      "description": "Powdered milk has been added to the pot",
+      "default": false
+    },
+    "tea_poured": {
+      "type": "boolean",
+      "description": "Tea has been poured into cups",
+      "default": false
+    },
+    "sugar_preference_known": {
+      "type": "boolean",
+      "description": "Whether the human's sugar preference has been determined",
+      "default": false
+    },
+    "sugar_added": {
+      "type": "boolean",
+      "description": "Sugar has been added to cup (if requested)",
+      "default": false
+    },
+    "tea_served": {
+      "type": "boolean",
+      "description": "Tea is ready and served",
+      "default": false
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "Predicted next action based on task graph",
+      "default": "setup_workspace"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action (0-1)",
+      "default": 0.0
+    },
+    "robot_state": {
+      "type": "string",
+      "description": "Robot execution status for decision context",
+      "valid_values": ["unknown", "idle", "busy"],
+      "default": "unknown"
+    },
+    "robot_active_program": {
+      "type": "string",
+      "description": "Current robot program/action id when busy",
+      "default": ""
+    }
+  }
+}

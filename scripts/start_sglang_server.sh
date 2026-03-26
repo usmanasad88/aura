@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 SGLANG_VENV="${PROJECT_DIR}/.venv-sglang"
 
-MODEL="${MODEL:-Qwen/Qwen3.5-0.8B}"
+MODEL="${MODEL:-Qwen/Qwen3.5-4B}"
 PORT="${PORT:-8100}"
 MEM_FRACTION="${MEM_FRACTION:-0.85}"
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-4096}"

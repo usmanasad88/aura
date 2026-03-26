@@ -75,11 +75,16 @@ def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
     config = state.get("config", {})
     config_dir = config.get("config_dir", "")
     if config_dir not in _intent_monitors:
+        # Per-component overrides fall back to shared defaults
+        intent_backend = config.get("intent_backend") or config.get("llm_backend", "gemini")
+        intent_model = config.get("intent_model") or config.get("model", "gemini-3.1-pro-preview")
         _intent_monitors[config_dir] = AURAIntentMonitor(
             config_dir=config_dir,
-            model=config.get("model", "gemini-3.1-pro-preview"),
+            model=intent_model,
             realtime=config.get("realtime", True),
             enable_logging=True,
+            llm_backend=intent_backend,
+            sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
         )
     return _intent_monitors[config_dir]
 
@@ -110,10 +115,15 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
     decision_mode = config.get("decision_mode", "hybrid")
 
     if config_dir not in _decision_engines:
+        # Per-component overrides fall back to shared defaults
+        decision_backend = config.get("decision_backend") or config.get("llm_backend", "gemini")
+        decision_model = config.get("decision_model") or config.get("model", "gemini-2.5-pro-preview-06-05")
         engine_config = DecisionEngineConfig(
-            gemini_model=config.get("model", "gemini-2.5-pro-preview-06-05"),
+            gemini_model=decision_model,
             enable_llm_reasoning=(decision_mode in ("llm", "hybrid")),
             proactive_threshold=0.6,
+            llm_backend=decision_backend,
+            sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
         )
         engine = DecisionEngine(config=engine_config)
 

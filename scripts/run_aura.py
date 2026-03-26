@@ -30,6 +30,14 @@ Usage
     uv run python scripts/run_aura.py \\
         --task hand_layup --webcam 0 --live \\
         --robot-url http://192.168.1.100:5050
+
+    # Local VLM via SGLang (start server first: ./scripts/start_sglang_server.sh)
+    uv run python scripts/run_aura.py \\
+        --task hand_layup \\
+        --video demo_data/layup_demo/layup_gesture_demo.mp4 \\
+        --llm-backend sglang \\
+        --model Qwen/Qwen3.5-VL-4B-Instruct \\
+        --sglang-url http://localhost:8100/v1
 """
 
 from __future__ import annotations
@@ -119,6 +127,12 @@ async def run_workflow(
     frame_skip: int = 30,
     max_cycles: int | None = None,
     use_ground_truth_robot_status: bool = False,
+    llm_backend: str = "gemini",
+    sglang_base_url: str = "http://localhost:8100/v1",
+    intent_backend: str | None = None,
+    intent_model: str | None = None,
+    decision_backend: str | None = None,
+    decision_model: str | None = None,
 ) -> None:
     """Build and run the LangGraph workflow loop."""
     from aura.workflow.builder import build_task_graph
@@ -129,6 +143,13 @@ async def run_workflow(
         "realtime": realtime,
         "frame_skip": frame_skip,
         "use_ground_truth_robot_status": use_ground_truth_robot_status,
+        "llm_backend": llm_backend,
+        "sglang_base_url": sglang_base_url,
+        # Per-component overrides (fall back to shared llm_backend / model)
+        "intent_backend": intent_backend or llm_backend,
+        "intent_model": intent_model or model,
+        "decision_backend": decision_backend or llm_backend,
+        "decision_model": decision_model or model,
     }
     if max_cycles is not None:
         extra["max_cycles"] = max_cycles
@@ -159,9 +180,18 @@ async def run_workflow(
 
     task_display = initial_state["config"].get("task_name", task_name)
 
+    ib = extra["intent_backend"]
+    im = extra["intent_model"]
+    db = extra["decision_backend"]
+    dm = extra["decision_model"]
+
     print("\n" + "=" * 60)
     print(f"  AURA Workflow [{task_display}]")
     print(f"  Mode: {'dry-run' if dry_run else 'LIVE'}  |  Continuous")
+    print(f"  Intent   : {ib}  |  {im}")
+    print(f"  Decision : {db}  |  {dm}")
+    if ib != "gemini" or db != "gemini":
+        print(f"  SGLang   : {sglang_base_url}")
     if video_path:
         print(f"  Video: {video_path}  |  Speed: {speed}x")
     elif webcam_device is not None:
@@ -279,6 +309,31 @@ def main() -> None:
         "--dashboard-port", type=int, default=5555,
         help="Dashboard server port (default: 5555)",
     )
+    _backend_choices = ["gemini", "openai", "sglang", "vllm", "ollama", "local"]
+    parser.add_argument(
+        "--llm-backend", default="gemini", choices=_backend_choices,
+        help="Default LLM backend for both monitors (default: gemini)",
+    )
+    parser.add_argument(
+        "--sglang-url", default="http://localhost:8100/v1",
+        help="SGLang / OpenAI-compatible server base URL (default: http://localhost:8100/v1)",
+    )
+    parser.add_argument(
+        "--intent-backend", default=None, choices=_backend_choices,
+        help="LLM backend for intent monitor only (overrides --llm-backend)",
+    )
+    parser.add_argument(
+        "--intent-model", default=None,
+        help="Model for intent monitor only (overrides --model)",
+    )
+    parser.add_argument(
+        "--decision-backend", default=None, choices=_backend_choices,
+        help="LLM backend for decision engine only (overrides --llm-backend)",
+    )
+    parser.add_argument(
+        "--decision-model", default=None,
+        help="Model for decision engine only (overrides --model)",
+    )
     args = parser.parse_args()
 
     webcam_dev: int | str | None = None
@@ -303,6 +358,12 @@ def main() -> None:
             frame_skip=args.frame_skip,
             max_cycles=args.max_cycles,
             use_ground_truth_robot_status=args.use_ground_truth_robot_status,
+            llm_backend=args.llm_backend,
+            sglang_base_url=args.sglang_url,
+            intent_backend=args.intent_backend,
+            intent_model=args.intent_model,
+            decision_backend=args.decision_backend,
+            decision_model=args.decision_model,
         )
     )
 

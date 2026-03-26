@@ -44,6 +44,7 @@ class MonitorType(Enum):
     AFFORDANCE = auto()
     PERFORMANCE = auto()
     POSE_TRACKING = auto()
+    BODY_POSE = auto()
 
 
 class TaskState(Enum):

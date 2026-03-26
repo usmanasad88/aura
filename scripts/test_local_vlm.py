@@ -198,7 +198,7 @@ def main() -> None:
         help="Inference backend (default: sglang)",
     )
     parser.add_argument(
-        "--model", default="Qwen/Qwen3.5-0.8B",
+        "--model", default="Qwen/Qwen3.5-4B",
         help="HuggingFace model ID",
     )
     parser.add_argument(

@@ -36,6 +36,7 @@ from .local_vlm_monitor import (
     VLMPerception,
     DetectedObject,
 )
+from .body_pose_monitor import BodyPoseMonitor, BodyPoseMonitorConfig
 
 __all__ = [
     # Base
@@ -78,4 +79,7 @@ __all__ = [
     "LocalVLMOutput",
     "VLMPerception",
     "DetectedObject",
+    # Body Pose (SAM-3D-Body via ZMQ)
+    "BodyPoseMonitor",
+    "BodyPoseMonitorConfig",
 ]

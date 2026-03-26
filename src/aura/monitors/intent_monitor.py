@@ -176,6 +176,12 @@ class AURAIntentMonitor:
     Loads DAG, state schema, and task profile from ``config_dir``,
     builds structured prompts with previous-state context, and returns
     rich ``IntentResult`` objects.
+
+    Supports multiple LLM backends via ``llm_backend``:
+
+    * ``"gemini"`` (default) — Google Gemini API.
+    * ``"sglang"`` / ``"openai"`` / ``"vllm"`` — any OpenAI-compatible
+      server (e.g. SGLang serving Qwen 3.5 4B).
     """
 
     def __init__(
@@ -188,10 +194,14 @@ class AURAIntentMonitor:
         log_dir: Optional[str] = None,
         enable_logging: bool = True,
         realtime: bool = False,
+        llm_backend: str = "gemini",
+        sglang_base_url: str = "http://localhost:8100/v1",
     ):
         self.realtime = realtime
+        self.llm_backend = llm_backend
+
         if realtime:
-            if model == "gemini-3.1-pro-preview":
+            if llm_backend == "gemini" and model == "gemini-3.1-pro-preview":
                 model = "gemini-3.1-flash-lite-preview"
             max_frames = min(max_frames, 3)
             max_image_dimension = min(max_image_dimension, 768)
@@ -201,6 +211,7 @@ class AURAIntentMonitor:
         self.max_image_dimension = max_image_dimension
         self.temperature = temperature
         self.config_dir = Path(config_dir)
+        self.sglang_base_url = sglang_base_url
 
         # Load task profile, DAG, and state schema
         dag_path = self.config_dir / "dag.json"
@@ -223,17 +234,33 @@ class AURAIntentMonitor:
         self.previous_state: Optional[Dict[str, Any]] = None
         self.history: List[IntentResult] = []
 
+        # Unified LLM client (supports Gemini, SGLang, vLLM, etc.)
+        self._llm_client = None
+        try:
+            from aura.utils.llm_client import create_llm_client
+            self._llm_client = create_llm_client(
+                llm_backend,
+                model=model,
+                base_url=sglang_base_url,
+            )
+        except Exception as e:
+            logger.warning("Failed to create LLM client (%s): %s", llm_backend, e)
+
+        # Legacy Gemini client kept for backward compat with code that
+        # accesses self.client directly (e.g. IntentMonitor subclass).
         self.client = None
-        if GEMINI_AVAILABLE:
+        if llm_backend == "gemini" and GEMINI_AVAILABLE:
             api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
             if api_key:
                 self.client = genai.Client(api_key=api_key)
-            else:
-                logger.warning("No API key found – Gemini calls disabled")
 
         self.prompt_logger = PromptLogger(
             log_dir=log_dir,
             enabled=enable_logging,
+        )
+
+        logger.info(
+            "AURAIntentMonitor — model: %s, backend: %s", model, llm_backend,
         )
 
     def _build_output_format(self) -> Dict[str, Any]:
@@ -355,40 +382,25 @@ Here are the frames:
         )
 
         result = IntentResult(timestamp=timestamp, frame_num=frame_num)
-        if not self.client:
-            logger.warning("No Gemini client – returning default IntentResult")
-            result.reasoning = "Gemini client not available"
+        if not self._llm_client:
+            logger.warning("No LLM client – returning default IntentResult")
+            result.reasoning = "LLM client not available"
             return result
 
         t0 = time.time()
         try:
-            parts: list = [types.Part.from_text(text=prompt_text)]
-            for img in pil_frames:
-                buf = BytesIO()
-                img.save(buf, format="JPEG", quality=85)
-                parts.append(types.Part.from_bytes(data=buf.getvalue(), mime_type="image/jpeg"))
-
-            contents = [types.Content(role="user", parts=parts)]
-            generate_config = types.GenerateContentConfig(
-                temperature=self.temperature,
-                top_p=0.95,
-                top_k=30,
-                response_mime_type="text/plain",
-            )
-
             retries = 3
             response_text = ""
             for attempt in range(retries):
                 try:
-                    response = self.client.models.generate_content(
-                        model=self.model,
-                        contents=contents,
-                        config=generate_config,
+                    response_text = self._llm_client.generate(
+                        prompt_text,
+                        images=pil_frames,
+                        temperature=self.temperature,
                     )
-                    response_text = response.text or ""
                     break
                 except Exception as e:
-                    logger.warning(f"Gemini call attempt {attempt+1}/{retries} failed: {e}")
+                    logger.warning(f"LLM call attempt {attempt+1}/{retries} failed: {e}")
                     if attempt < retries - 1:
                         time.sleep(5 * (attempt + 1))
                     else:
@@ -396,8 +408,8 @@ Here are the frames:
             generation_time = time.time() - t0
         except Exception as e:
             generation_time = time.time() - t0
-            logger.error(f"Gemini prediction failed: {e}")
-            result.reasoning = f"Gemini error: {e}"
+            logger.error(f"LLM prediction failed: {e}")
+            result.reasoning = f"LLM error: {e}"
             result.generation_time_sec = generation_time
             self.prompt_logger.log_call(
                 prompt_text=prompt_text, response_text=str(e), parsed_response=None,
@@ -515,21 +527,31 @@ class IntentMonitor(BaseMonitor):
         self.analysis_instructions = config.analysis_instructions if config and config.analysis_instructions else ""
         self.output_format = config.output_format if config and config.output_format else ""
 
-        # Gemini client
-        if GEMINI_AVAILABLE:
+        # LLM backend
+        self.model = config.model if config else "gemini-3.1-pro-preview"
+        llm_backend = getattr(config, "llm_backend", "gemini") if config else "gemini"
+        sglang_url = getattr(config, "sglang_base_url", "http://localhost:8100/v1") if config else "http://localhost:8100/v1"
+
+        self._llm_client = None
+        self.client = None  # legacy Gemini client for backward compat
+        try:
+            from aura.utils.llm_client import create_llm_client
+            self._llm_client = create_llm_client(
+                llm_backend,
+                model=self.model,
+                base_url=sglang_url,
+            )
+        except Exception as e:
+            logger.warning("Failed to create LLM client (%s): %s — intent recognition disabled", llm_backend, e)
+
+        # Keep legacy Gemini client for any code that accesses self.client
+        if llm_backend == "gemini" and GEMINI_AVAILABLE:
             api_key = os.environ.get("GEMINI_API_KEY")
             if api_key:
                 self.client = genai.Client(
                     http_options={"api_version": "v1beta"},
                     api_key=api_key,
                 )
-                self.model = config.model if config else "gemini-3.1-pro-preview"
-            else:
-                logger.warning("GEMINI_API_KEY not set, intent recognition disabled")
-                self.client = None
-        else:
-            logger.warning("google-genai not installed, intent recognition disabled")
-            self.client = None
 
         self.last_prediction: Optional[IntentPrediction] = None
 
@@ -680,11 +702,11 @@ Identify their current action and predict what they will do next based on the ta
             return IntentType.UNKNOWN
 
     async def _predict_with_gemini(self) -> Optional[IntentPrediction]:
-        if not self.client or len(self.frame_buffer) < 2:
+        if not self._llm_client or len(self.frame_buffer) < 2:
             return None
 
         try:
-            frames_for_gemini = []
+            pil_frames = []
             for timestamp, frame in list(self.frame_buffer):
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 pil_image = Image.fromarray(frame_rgb)
@@ -692,22 +714,19 @@ Identify their current action and predict what they will do next based on the ta
                     scale = self.max_image_dimension / max(pil_image.size)
                     new_size = (int(pil_image.width * scale), int(pil_image.height * scale))
                     pil_image = pil_image.resize(new_size, Image.Resampling.LANCZOS)
-                frames_for_gemini.append(pil_image)
+                pil_frames.append(pil_image)
 
             prompt = self._build_prompt()
 
-            response = await asyncio.to_thread(
-                self.client.models.generate_content,
-                model=self.model,
-                contents=[prompt] + frames_for_gemini,
-                config=types.GenerateContentConfig(
-                    temperature=0.5,
-                    response_mime_type="application/json",
-                    response_schema=self._get_response_schema(),
-                ),
+            response_text = await asyncio.to_thread(
+                self._llm_client.generate,
+                prompt,
+                images=pil_frames,
+                temperature=0.5,
+                json_mode=True,
             )
 
-            result = json.loads(response.text)
+            result = json.loads(response_text)
 
             return IntentPrediction(
                 current_action=result.get("current_action", "Unknown"),
@@ -716,11 +735,11 @@ Identify their current action and predict what they will do next based on the ta
                 predicted_next_confidence=result.get("predicted_next_confidence", 0.5),
                 reasoning=result.get("reasoning", ""),
                 task_state=result.get("state", {}),
-                raw_response=response.text,
+                raw_response=response_text,
             )
 
         except Exception as e:
-            logger.error(f"Error predicting intent with Gemini: {e}")
+            logger.error(f"Error predicting intent: {e}")
             return None
 
     def _get_response_schema(self) -> Dict:
@@ -800,33 +819,30 @@ Identify their current action and predict what they will do next based on the ta
 
     async def predict_from_frames(self, frames: List[np.ndarray]) -> Optional[IntentPrediction]:
         """Predict intent from a list of frames directly (convenience method)."""
-        if not self.client or len(frames) < 1:
+        if not self._llm_client or len(frames) < 1:
             return None
 
         try:
-            frames_for_gemini = []
+            pil_frames = []
             for frame in frames:
                 pil_image = Image.fromarray(frame)
                 if max(pil_image.size) > self.max_image_dimension:
                     scale = self.max_image_dimension / max(pil_image.size)
                     new_size = (int(pil_image.width * scale), int(pil_image.height * scale))
                     pil_image = pil_image.resize(new_size, Image.Resampling.LANCZOS)
-                frames_for_gemini.append(pil_image)
+                pil_frames.append(pil_image)
 
             prompt = self._build_prompt()
 
-            response = await asyncio.to_thread(
-                self.client.models.generate_content,
-                model=self.model,
-                contents=[prompt] + frames_for_gemini,
-                config=types.GenerateContentConfig(
-                    temperature=0.5,
-                    response_mime_type="application/json",
-                    response_schema=self._get_response_schema(),
-                ),
+            response_text = await asyncio.to_thread(
+                self._llm_client.generate,
+                prompt,
+                images=pil_frames,
+                temperature=0.5,
+                json_mode=True,
             )
 
-            result = json.loads(response.text)
+            result = json.loads(response_text)
             prediction = IntentPrediction(
                 current_action=result.get("current_action", "Unknown"),
                 current_action_confidence=result.get("current_action_confidence", 0.5),
@@ -834,7 +850,7 @@ Identify their current action and predict what they will do next based on the ta
                 predicted_next_confidence=result.get("predicted_next_confidence", 0.5),
                 reasoning=result.get("reasoning", ""),
                 task_state=result.get("state", {}),
-                raw_response=response.text,
+                raw_response=response_text,
             )
 
             self.last_prediction = prediction
