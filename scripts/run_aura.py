@@ -31,6 +31,11 @@ Usage
         --task hand_layup --webcam 0 --live \\
         --robot-url http://192.168.1.100:5050
 
+    # Gemini Live API (low-latency streaming with persistent session)
+    uv run python scripts/run_aura.py \\
+        --task hand_layup --webcam 0 --dry-run \\
+        --model gemini-3.1-flash-live-preview
+
     # Local VLM via SGLang (start server first: ./scripts/start_sglang_server.sh)
     uv run python scripts/run_aura.py \\
         --task hand_layup \\

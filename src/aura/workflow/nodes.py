@@ -307,6 +307,31 @@ def _robot_status_from_ground_truth(state: AuraGraphState, timestamp_sec: float)
 # ═══════════════════════════════════════════════════════════════════════════
 
 
+def _maybe_stream_frame_to_live(state: AuraGraphState, image) -> None:
+    """If the intent monitor uses a GeminiLiveClient, stream the frame."""
+    try:
+        from aura.utils.llm_client import GeminiLiveClient
+        monitor = _get_intent_monitor(state)
+        client = getattr(monitor, "_llm_client", None)
+        if isinstance(client, GeminiLiveClient):
+            import cv2
+            from PIL import Image
+            if image.ndim == 3 and image.shape[2] == 3:
+                rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            else:
+                rgb = image
+            pil = Image.fromarray(rgb)
+            if max(pil.size) > 768:
+                scale = 768 / max(pil.size)
+                pil = pil.resize(
+                    (int(pil.width * scale), int(pil.height * scale)),
+                    Image.Resampling.LANCZOS,
+                )
+            client.send_frame(pil)
+    except Exception as exc:
+        logger.debug("Live frame stream skipped: %s", exc)
+
+
 def capture_frame_node(state: AuraGraphState) -> dict:
     """Read the next frame from the video/webcam source.
 
@@ -328,6 +353,10 @@ def capture_frame_node(state: AuraGraphState) -> dict:
     buf.append(frame_obj.image)
     if len(buf) > 10:
         buf = buf[-10:]
+
+    # Stream frame to Gemini Live session (if active) for continuous
+    # visual context between generate() calls.
+    _maybe_stream_frame_to_live(state, frame_obj.image)
 
     return {
         "frames_buffer": buf,

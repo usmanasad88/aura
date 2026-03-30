@@ -33,9 +33,11 @@ Usage::
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import logging
 import os
+import threading
 from abc import ABC, abstractmethod
 from io import BytesIO
 from typing import Any, Dict, List, Optional
@@ -145,6 +147,204 @@ class GeminiClient(LLMClient):
 
 
 # ---------------------------------------------------------------------------
+# Gemini Live API backend (persistent WebSocket session)
+# ---------------------------------------------------------------------------
+
+
+class GeminiLiveClient(LLMClient):
+    """Google Gemini Live API backend for low-latency streaming.
+
+    Maintains a persistent WebSocket session with the Gemini Live API.
+    Frames can be streamed continuously via ``send_frame()``, and
+    ``generate()`` sends a text prompt (optionally with images) and
+    collects the text response.
+
+    The session auto-reconnects on failure or expiry.
+    """
+
+    def __init__(self, model: str, api_key: Optional[str] = None):
+        super().__init__(model)
+        try:
+            from google import genai
+            from google.genai import types
+        except ImportError as exc:
+            raise ImportError(
+                "google-genai is required for the Gemini Live backend. "
+                "Install with: uv add google-genai"
+            ) from exc
+
+        key = api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if not key:
+            raise ValueError(
+                "GEMINI_API_KEY (or GOOGLE_API_KEY) must be set for the Gemini Live backend."
+            )
+        self._genai_client = genai.Client(
+            http_options={"api_version": "v1beta"},
+            api_key=key,
+        )
+        self._types = types
+
+        # Background event loop for the async Live session
+        self._loop = asyncio.new_event_loop()
+        self._thread = threading.Thread(
+            target=self._loop.run_forever, daemon=True, name="gemini-live",
+        )
+        self._thread.start()
+
+        # Session state
+        self._session = None
+        self._session_mgr = None
+        self._connected = threading.Event()
+
+        # Connect on init
+        self._ensure_connected()
+
+    # ── Connection management ─────────────────────────────────────────
+
+    def _ensure_connected(self) -> None:
+        if self._connected.is_set():
+            return
+        future = asyncio.run_coroutine_threadsafe(self._connect(), self._loop)
+        future.result(timeout=30)
+
+    async def _connect(self) -> None:
+        types = self._types
+        config = types.LiveConnectConfig(
+            response_modalities=["TEXT"],
+            media_resolution="MEDIA_RESOLUTION_LOW",
+        )
+        self._session_mgr = self._genai_client.aio.live.connect(
+            model=self.model, config=config,
+        )
+        self._session = await self._session_mgr.__aenter__()
+        self._connected.set()
+        logger.info("Gemini Live session connected: %s", self.model)
+
+    async def _disconnect(self) -> None:
+        if self._session_mgr:
+            try:
+                await self._session_mgr.__aexit__(None, None, None)
+            except Exception:
+                pass
+        self._session = None
+        self._session_mgr = None
+        self._connected.clear()
+
+    async def _reconnect(self) -> None:
+        logger.info("Reconnecting Gemini Live session …")
+        await self._disconnect()
+        await self._connect()
+
+    # ── Background frame streaming ────────────────────────────────────
+
+    def send_frame(self, image: Image.Image) -> None:
+        """Stream a video frame to the live session (non-blocking, ≤1 FPS).
+
+        Call this from the capture loop so the model has continuous
+        visual context between ``generate()`` calls.
+        """
+        buf = BytesIO()
+        image.save(buf, format="JPEG", quality=85)
+        jpeg_bytes = buf.getvalue()
+        asyncio.run_coroutine_threadsafe(
+            self._send_frame_async(jpeg_bytes), self._loop,
+        )
+
+    async def _send_frame_async(self, jpeg_bytes: bytes) -> None:
+        types = self._types
+        if self._session:
+            try:
+                await self._session.send_realtime_input(
+                    video=types.Blob(data=jpeg_bytes, mime_type="image/jpeg"),
+                )
+            except Exception as exc:
+                logger.warning("Failed to stream frame to Live session: %s", exc)
+
+    # ── generate() — drop-in replacement for GeminiClient ─────────────
+
+    def generate(
+        self,
+        prompt: str,
+        *,
+        images: Optional[List[Image.Image]] = None,
+        temperature: float = 0.3,
+        max_tokens: int = 2048,
+        json_mode: bool = False,
+    ) -> str:
+        self._ensure_connected()
+        future = asyncio.run_coroutine_threadsafe(
+            self._generate_async(prompt, images), self._loop,
+        )
+        return future.result(timeout=120)
+
+    async def _generate_async(
+        self, prompt: str, images: Optional[List[Image.Image]],
+    ) -> str:
+        try:
+            return await self._do_generate(prompt, images)
+        except Exception as exc:
+            logger.warning("Live generate failed (%s), reconnecting …", exc)
+            await self._reconnect()
+            return await self._do_generate(prompt, images)
+
+    async def _do_generate(
+        self, prompt: str, images: Optional[List[Image.Image]],
+    ) -> str:
+        types = self._types
+
+        # Build parts: images first, then text prompt
+        parts: list = []
+        for img in images or []:
+            buf = BytesIO()
+            img.save(buf, format="JPEG", quality=85)
+            parts.append(
+                types.Part.from_bytes(data=buf.getvalue(), mime_type="image/jpeg"),
+            )
+        parts.append(types.Part.from_text(text=prompt))
+
+        # Send as a user turn and signal turn-complete
+        await self._session.send_client_content(
+            turns=[types.Content(role="user", parts=parts)],
+            turn_complete=True,
+        )
+
+        # Collect model response until turn_complete
+        collected: list[str] = []
+        async for response in self._session.receive():
+            sc = response.server_content
+            if sc and sc.model_turn:
+                for part in sc.model_turn.parts:
+                    if hasattr(part, "text") and part.text:
+                        collected.append(part.text)
+            if sc and getattr(sc, "turn_complete", False):
+                break
+
+        return "".join(collected)
+
+    # ── Cleanup ───────────────────────────────────────────────────────
+
+    def close(self) -> None:
+        """Shut down the live session and background event loop."""
+        if self._loop.is_running():
+            future = asyncio.run_coroutine_threadsafe(
+                self._disconnect(), self._loop,
+            )
+            try:
+                future.result(timeout=5)
+            except Exception:
+                pass
+            self._loop.call_soon_threadsafe(self._loop.stop)
+        if self._thread.is_alive():
+            self._thread.join(timeout=5)
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+# ---------------------------------------------------------------------------
 # OpenAI-compatible backend (SGLang / vLLM / Ollama / OpenAI)
 # ---------------------------------------------------------------------------
 
@@ -238,6 +438,9 @@ def create_llm_client(
     backend = backend.lower().strip()
 
     if backend == "gemini":
+        # Auto-detect Gemini Live models (e.g. gemini-3.1-flash-live-preview)
+        if "live" in model.lower():
+            return GeminiLiveClient(model=model, api_key=api_key)
         return GeminiClient(model=model, api_key=api_key)
 
     if backend in _OPENAI_BACKENDS:
