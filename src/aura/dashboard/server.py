@@ -102,6 +102,8 @@ class DashboardServer:
 
     def publish(self, node_name: str, partial_state: Dict[str, Any]) -> None:
         """Publish a node's partial state update to all SSE subscribers."""
+        if partial_state is None:
+            return
         self._merge_state(node_name, partial_state)
 
         event_data = {

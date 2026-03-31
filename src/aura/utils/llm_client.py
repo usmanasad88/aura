@@ -178,10 +178,7 @@ class GeminiLiveClient(LLMClient):
             raise ValueError(
                 "GEMINI_API_KEY (or GOOGLE_API_KEY) must be set for the Gemini Live backend."
             )
-        self._genai_client = genai.Client(
-            http_options={"api_version": "v1beta"},
-            api_key=key,
-        )
+        self._genai_client = genai.Client(api_key=key)
         self._types = types
 
         # Background event loop for the async Live session
@@ -195,6 +192,7 @@ class GeminiLiveClient(LLMClient):
         self._session = None
         self._session_mgr = None
         self._connected = threading.Event()
+        self._generating: Optional[asyncio.Lock] = None  # created lazily on bg loop
 
         # Connect on init
         self._ensure_connected()
@@ -209,8 +207,11 @@ class GeminiLiveClient(LLMClient):
 
     async def _connect(self) -> None:
         types = self._types
+        # gemini-3.1-flash-live-preview only supports AUDIO response modality;
+        # we use output_audio_transcription to get text back.
         config = types.LiveConnectConfig(
-            response_modalities=["TEXT"],
+            response_modalities=["AUDIO"],
+            output_audio_transcription=types.AudioTranscriptionConfig(),
             media_resolution="MEDIA_RESOLUTION_LOW",
         )
         self._session_mgr = self._genai_client.aio.live.connect(
@@ -252,6 +253,10 @@ class GeminiLiveClient(LLMClient):
 
     async def _send_frame_async(self, jpeg_bytes: bytes) -> None:
         types = self._types
+        # Skip sending frames while a generate() call is active to avoid
+        # mixing unsolicited model responses into the receive loop.
+        if self._generating and self._generating.locked():
+            return
         if self._session:
             try:
                 await self._session.send_realtime_input(
@@ -292,34 +297,44 @@ class GeminiLiveClient(LLMClient):
     ) -> str:
         types = self._types
 
-        # Build parts: images first, then text prompt
-        parts: list = []
-        for img in images or []:
-            buf = BytesIO()
-            img.save(buf, format="JPEG", quality=85)
-            parts.append(
-                types.Part.from_bytes(data=buf.getvalue(), mime_type="image/jpeg"),
-            )
-        parts.append(types.Part.from_text(text=prompt))
+        if not self._generating:
+            self._generating = asyncio.Lock()
+        async with self._generating:
+            # gemini-3.1 Live models only support send_realtime_input
+            # (send_client_content returns 1007 invalid argument).
+            # Send images as video frames first, then text prompt.
+            n_images = len(images) if images else 0
+            logger.debug("Live generate: sending %d images + text (%d chars)", n_images, len(prompt))
+            for img in images or []:
+                buf = BytesIO()
+                img.save(buf, format="JPEG", quality=85)
+                await self._session.send_realtime_input(
+                    video=types.Blob(data=buf.getvalue(), mime_type="image/jpeg"),
+                )
 
-        # Send as a user turn and signal turn-complete
-        await self._session.send_client_content(
-            turns=[types.Content(role="user", parts=parts)],
-            turn_complete=True,
-        )
+            # Small delay so the model registers the frames before the prompt
+            if n_images:
+                await asyncio.sleep(0.5)
 
-        # Collect model response until turn_complete
-        collected: list[str] = []
-        async for response in self._session.receive():
-            sc = response.server_content
-            if sc and sc.model_turn:
-                for part in sc.model_turn.parts:
-                    if hasattr(part, "text") and part.text:
-                        collected.append(part.text)
-            if sc and getattr(sc, "turn_complete", False):
-                break
+            await self._session.send_realtime_input(text=prompt)
 
-        return "".join(collected)
+            # Collect transcribed text from audio response until turn_complete.
+            # Use a timeout to avoid hanging indefinitely.
+            collected: list[str] = []
+            try:
+                async with asyncio.timeout(60):
+                    async for response in self._session.receive():
+                        sc = response.server_content
+                        if sc and sc.output_transcription and sc.output_transcription.text:
+                            collected.append(sc.output_transcription.text)
+                        if sc and getattr(sc, "turn_complete", False):
+                            break
+            except TimeoutError:
+                logger.warning("Live generate timed out after 60s, returning partial response")
+
+        result = "".join(collected)
+        logger.debug("Live generate result (%d chars): %.200s", len(result), result)
+        return result
 
     # ── Cleanup ───────────────────────────────────────────────────────
 

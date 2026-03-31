@@ -65,6 +65,10 @@ _project_root = Path(__file__).resolve().parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
+# Load .env from project root (API keys, etc.)
+from dotenv import load_dotenv
+load_dotenv(_project_root / ".env")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",

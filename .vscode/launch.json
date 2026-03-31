@@ -40,6 +40,7 @@
         "--task", "hand_layup",
         "--video", "demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4",
         "--dry-run",
+        "--model", "gemini-3.1-flash-live-preview",
         "--no-realtime",
         "--frame-skip", "90",
         "--max-cycles", "10"
