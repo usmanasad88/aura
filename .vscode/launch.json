@@ -49,6 +49,19 @@
       "justMyCode": false
     },
     {
+      "name": "Perception Demo (hand_layup)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tasks/hand_layup/demo/run_perception_demo.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--video", "demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4",
+        "--frame-skip", "30"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
       "name": "Run AURA Assistant (legacy)",
       "type": "python",
       "request": "launch",

@@ -94,6 +94,18 @@
       "type": "string",
       "description": "Current robot program/action id when busy",
       "default": ""
+    },
+    "resin_bottle_location": {
+      "type": "string",
+      "description": "Current location of the resin bottle (storage_area or workplace)",
+      "valid_values": ["storage_area", "workplace", "unknown"],
+      "default": "storage_area"
+    },
+    "hardener_bottle_location": {
+      "type": "string",
+      "description": "Current location of the hardener bottle (storage_area or workplace)",
+      "valid_values": ["storage_area", "workplace", "unknown"],
+      "default": "storage_area"
     }
   }
 }

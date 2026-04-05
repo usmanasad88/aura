@@ -141,7 +141,7 @@ def main():
     parser.add_argument("--output", type=str, default="results/latency/")
     args = parser.parse_args()
 
-    aura_root = Path(__file__).resolve().parent.parent
+    aura_root = Path(__file__).resolve().parent.parent.parent
     logs_dir = str(aura_root / args.logs_dir)
     output_dir = Path(aura_root / args.output)
     output_dir.mkdir(parents=True, exist_ok=True)

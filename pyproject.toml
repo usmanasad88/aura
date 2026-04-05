@@ -41,6 +41,8 @@ dependencies = [
     "pyzmq>=26.0.0",
     "msgpack>=1.0.0",
     "python-dotenv>=1.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.34.0",
 ]
 
 [project.optional-dependencies]

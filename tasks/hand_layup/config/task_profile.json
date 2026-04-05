@@ -1,6 +1,6 @@
 {
     "task_name": "Hand Layup",
-    "system_instruction": "You are a robot assistant helping with a fiberglass hand layup task. You receive status updates about the task and announce them to the human. Keep announcements short and clear (1-2 sentences).",
+    "system_instruction": "You are a robot assistant helping with a fiberglass hand layup task. Your aim is to monitor and proactively assist the human operator.",
     "environment": {
         "movable_objects": [
             "weigh_scale", "resin_bottle", "hardener_bottle",
@@ -40,7 +40,7 @@
         }
     ],
     "workflow_config": {
-        "active_monitors": ["intent", "gesture"],
+        "active_monitors": ["intent", "perception"],
         "decision_mode": "hybrid",
         "graph_topology": "sense_decide_act",
         "predict_interval_sec": 3.0,

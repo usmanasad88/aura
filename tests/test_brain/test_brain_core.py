@@ -204,12 +204,12 @@ class TestDecisionEngine:
     """Tests for decision engine core functionality."""
     
     @pytest.fixture
-    def engine(self):
+    def engine(self, tmp_path):
         """Create decision engine for testing."""
         config = DecisionEngineConfig(
             enable_llm_reasoning=False,  # Use rule-based for tests
         )
-        return DecisionEngine(config)
+        return DecisionEngine(config_dir=str(tmp_path), config=config)
     
     def test_engine_initialization(self, engine):
         """Test engine initializes correctly."""
@@ -273,12 +273,12 @@ class TestDecisionEngineIntegration:
     """Integration tests for decision engine."""
     
     @pytest.fixture
-    def loaded_engine(self):
+    def loaded_engine(self, tmp_path):
         """Create engine loaded with tea-making task."""
         config = DecisionEngineConfig(
             enable_llm_reasoning=False,
         )
-        engine = DecisionEngine(config)
+        engine = DecisionEngine(config_dir=str(tmp_path), config=config)
         
         # Manually set up a simple scene for testing
         engine.graph.add_node(RegionNode(

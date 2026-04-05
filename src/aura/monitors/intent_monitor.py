@@ -302,8 +302,20 @@ class AURAIntentMonitor:
         previous_state: Optional[Dict[str, Any]],
         timestamp: float,
         frame_num: int,
+        window_duration_sec: float = 0.0,
     ) -> str:
         prev_state_str = json.dumps(previous_state, indent=2) if previous_state else "{}"
+
+        if window_duration_sec > 0:
+            window_desc = (
+                f"You will be provided with the {num_frames} most recent frames "
+                f"spanning the past {window_duration_sec:.1f} seconds of the task video."
+            )
+        else:
+            window_desc = (
+                f"You will be provided with a rolling window of the {num_frames} most "
+                f"recent frames from the task video."
+            )
 
         prompt = f"""{self.system_instruction}
 Your goal is to update the state variables based on the provided task graph, state schema, and the visual information from the images.
@@ -319,7 +331,7 @@ Your goal is to update the state variables based on the provided task graph, sta
 ```
 
 ## Instructions
-You will be provided with a rolling window of the {num_frames} most recent frames from the task video.
+{window_desc}
 Your task is to update the state variables based on the images and the schemas above.
 
 The state of the system at the start of this window is:
@@ -371,6 +383,7 @@ Here are the frames:
         frames: List[np.ndarray],
         timestamp: float = 0.0,
         frame_num: int = 0,
+        window_duration_sec: float = 0.0,
     ) -> IntentResult:
         """Run a synchronous RCWPS prediction on the given frames."""
         pil_frames = self._prepare_frames(frames)
@@ -379,6 +392,7 @@ Here are the frames:
             previous_state=self.previous_state,
             timestamp=timestamp,
             frame_num=frame_num,
+            window_duration_sec=window_duration_sec,
         )
 
         result = IntentResult(timestamp=timestamp, frame_num=frame_num)
@@ -397,6 +411,8 @@ Here are the frames:
                         prompt_text,
                         images=pil_frames,
                         temperature=self.temperature,
+                        json_mode=True,
+                        max_tokens=4096,
                     )
                     break
                 except Exception as e:
@@ -456,8 +472,14 @@ Here are the frames:
             cleaned = cleaned[:-3]
         cleaned = cleaned.strip()
 
+        def _unwrap(obj):
+            """If the LLM returned a JSON array, extract the first dict."""
+            if isinstance(obj, list):
+                return obj[0] if obj else None
+            return obj
+
         try:
-            return json.loads(cleaned)
+            return _unwrap(json.loads(cleaned))
         except json.JSONDecodeError:
             pass
 
@@ -465,7 +487,7 @@ Here are the frames:
         end = cleaned.rfind("}")
         if start != -1 and end != -1 and end > start:
             try:
-                return json.loads(cleaned[start:end + 1])
+                return _unwrap(json.loads(cleaned[start:end + 1]))
             except json.JSONDecodeError:
                 pass
         return None
@@ -727,6 +749,8 @@ Identify their current action and predict what they will do next based on the ta
             )
 
             result = json.loads(response_text)
+            if isinstance(result, list):
+                result = result[0] if result else {}
 
             return IntentPrediction(
                 current_action=result.get("current_action", "Unknown"),
@@ -843,6 +867,8 @@ Identify their current action and predict what they will do next based on the ta
             )
 
             result = json.loads(response_text)
+            if isinstance(result, list):
+                result = result[0] if result else {}
             prediction = IntentPrediction(
                 current_action=result.get("current_action", "Unknown"),
                 current_action_confidence=result.get("current_action_confidence", 0.5),

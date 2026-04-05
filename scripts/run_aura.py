@@ -227,7 +227,7 @@ async def run_workflow(
 
     last_cycle = 0
     try:
-        async for event in compiled_graph.astream(initial_state, thread_config):
+        async for event in compiled_graph.astream(initial_state, thread_config, stream_mode="updates"):
             for node_name, node_state in event.items():
                 # ── Publish to dashboard ─────────────────────────────
                 if dash:

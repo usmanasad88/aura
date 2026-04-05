@@ -373,6 +373,7 @@ dependencies = [
     { name = "accelerate" },
     { name = "decord" },
     { name = "einops" },
+    { name = "fastapi" },
     { name = "flask-cors" },
     { name = "google-genai" },
     { name = "jax" },
@@ -403,6 +404,7 @@ dependencies = [
     { name = "tqdm" },
     { name = "transformers" },
     { name = "ultralytics" },
+    { name = "uvicorn" },
 ]
 
 [package.optional-dependencies]
@@ -435,6 +437,7 @@ requires-dist = [
     { name = "decord", specifier = ">=0.6.0" },
     { name = "depth-anything-3", marker = "extra == 'pose-tracking'", editable = "../Depth-Anything-3" },
     { name = "einops", specifier = ">=0.8.1" },
+    { name = "fastapi", specifier = ">=0.115.0" },
     { name = "flask-cors", specifier = ">=6.0.2" },
     { name = "google-genai" },
     { name = "h5py", marker = "extra == 'pose-tracking'", specifier = ">=3.10.0" },
@@ -481,6 +484,7 @@ requires-dist = [
     { name = "transformers", specifier = ">=4.56.0" },
     { name = "trimesh", marker = "extra == 'pose-tracking'", specifier = ">=4.2.0" },
     { name = "ultralytics", specifier = ">=8.3.241" },
+    { name = "uvicorn", specifier = ">=0.34.0" },
     { name = "warp-lang", marker = "extra == 'pose-tracking'", specifier = ">=1.0.0" },
 ]
 
@@ -4782,6 +4786,7 @@ wheels = [
 
 [[package]]
 name = "sam3"
+version = "0.1.0"
 source = { editable = "third_party/sam3" }
 dependencies = [
     { name = "ftfy" },

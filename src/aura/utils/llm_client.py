@@ -143,6 +143,18 @@ class GeminiClient(LLMClient):
             contents=contents,
             config=config,
         )
+
+        # Log finish_reason so truncation causes are visible
+        if response.candidates:
+            fr = response.candidates[0].finish_reason
+            if fr and fr.name != "STOP":
+                logger.warning(
+                    "Gemini finish_reason=%s (model=%s, prompt_len=%d)",
+                    fr.name, self.model, len(prompt),
+                )
+        else:
+            logger.warning("Gemini returned no candidates (model=%s)", self.model)
+
         return response.text or ""
 
 

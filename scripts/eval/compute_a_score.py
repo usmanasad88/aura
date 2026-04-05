@@ -58,21 +58,46 @@ class AScoreResult:
     matched: bool
 
 
+# ── Object extraction from action names ───────────────────────────────────
+_OBJECT_KEYWORDS = ["resin", "hardener", "roller", "cup", "brush", "squeegee"]
+
+def _extract_targets(action: str) -> List[str]:
+    """Extract target objects from an action name like 'move_resin_to_workplace'."""
+    action_lower = action.lower()
+    return [kw for kw in _OBJECT_KEYWORDS if kw in action_lower]
+
+
 # ── Parse ground truth interventions ───────────────────────────────────────
 def parse_gt_interventions(gt_path: str) -> List[InterventionEvent]:
-    """Extract robot intervention events from ground truth."""
+    """Extract robot intervention events from ground truth.
+
+    Supports two GT formats:
+      - Legacy: events with ``robot_action`` field (string like "deliver_to_workplace(obj)")
+      - Current: events with ``agent: "robot"`` and ``action`` / ``start_time`` fields
+    """
     with open(gt_path) as f:
         data = json.load(f)
 
     interventions = []
     for ev in data["events"]:
+        # --- Current format: agent == "robot" with start_time ---
+        if ev.get("agent") == "robot":
+            action = ev.get("action", "")
+            timestamp = ev.get("start_time", ev.get("timestamp", 0.0))
+            interventions.append(InterventionEvent(
+                timestamp=timestamp,
+                action_type=action,
+                target_objects=_extract_targets(action),
+                reason=ev.get("description"),
+            ))
+            continue
+
+        # --- Legacy format: robot_action field ---
         ra = ev.get("robot_action")
         if ra is None:
             continue
 
-        # Parse robot_action string: "move_to_storage(obj1, obj2)" or "deliver_to_workplace(obj)"
         action_type = "return_to_storage" if "storage" in ra else "deliver_to_workplace"
-        # Extract objects from parentheses
         if "(" in ra and ")" in ra:
             obj_str = ra[ra.index("(") + 1:ra.index(")")]
             objects = [o.strip() for o in obj_str.split(",")]
@@ -80,7 +105,7 @@ def parse_gt_interventions(gt_path: str) -> List[InterventionEvent]:
             objects = []
 
         interventions.append(InterventionEvent(
-            timestamp=ev["timestamp"],
+            timestamp=ev.get("start_time", ev.get("timestamp", 0.0)),
             action_type=action_type,
             target_objects=objects,
             reason=ev.get("robot_action_reason"),
@@ -439,7 +464,7 @@ def main():
     parser.add_argument("--sigma", type=float, default=3.0)
     args = parser.parse_args()
 
-    aura_root = Path(__file__).resolve().parent.parent
+    aura_root = Path(__file__).resolve().parent.parent.parent
     gt_path = str(aura_root / args.ground_truth)
     output_dir = Path(aura_root / args.output)
     output_dir.mkdir(parents=True, exist_ok=True)

@@ -75,13 +75,18 @@
     "dependencies": ["apply_resin_layer_4"]
   },
   {
-    "id": "cleanup",
-    "description": "Return remaining tools to storage and clear workspace",
+    "id": "return_resin_to_storage",
+    "description": "Return resin bottle to storage",
+    "dependencies": ["consolidate_with_roller"]
+  },
+  {
+    "id": "return_hardener_to_storage",
+    "description": "Return hardener bottle to storage",
     "dependencies": ["consolidate_with_roller"]
   },
   {
     "id": "task_complete",
     "description": "Task finished, layup complete",
-    "dependencies": ["cleanup"]
+    "dependencies": ["return_resin_to_storage", "return_hardener_to_storage"]
   }
 ]

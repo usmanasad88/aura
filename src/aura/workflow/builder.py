@@ -190,6 +190,7 @@ def _build_sense_decide_act(
         capture_frame_node,
         run_gesture_node,
         run_intent_node,
+        run_perception_node,
         update_ssg_node,
         decide_action_node,
         execute_action_node,
@@ -202,8 +203,12 @@ def _build_sense_decide_act(
     workflow.add_node("capture_frame", capture_frame_node)
 
     use_gesture = "gesture" in active_monitors
+    use_perception = "perception" in active_monitors
+
     if use_gesture:
         workflow.add_node("run_gesture", run_gesture_node)
+    if use_perception:
+        workflow.add_node("run_perception", run_perception_node)
 
     workflow.add_node("run_intent", run_intent_node)
     workflow.add_node("update_ssg", update_ssg_node)
@@ -246,8 +251,12 @@ def _build_sense_decide_act(
             },
         )
 
-    # intent → ssg → decide
-    workflow.add_edge("run_intent", "update_ssg")
+    # intent → [perception] → ssg → decide
+    if use_perception:
+        workflow.add_edge("run_intent", "run_perception")
+        workflow.add_edge("run_perception", "update_ssg")
+    else:
+        workflow.add_edge("run_intent", "update_ssg")
     workflow.add_edge("update_ssg", "decide_action")
 
     # Conditional: execute or skip

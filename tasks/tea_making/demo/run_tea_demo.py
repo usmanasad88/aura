@@ -261,10 +261,10 @@ class TeaMakingDemo:
             proactive_threshold=self.config.get("decision_engine", {}).get("proactive_threshold", 0.7),
         )
         
-        self.engine = DecisionEngine(engine_config)
-        
-        # Load task files
         config_dir = TASK_DIR / "config"
+        self.engine = DecisionEngine(config_dir=str(config_dir), config=engine_config)
+
+        # Load task files
         self.engine.load_task(
             dag_path=str(config_dir / "tea_making_dag.json"),
             state_path=str(config_dir / "tea_making_state.json"),

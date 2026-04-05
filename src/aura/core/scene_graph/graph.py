@@ -475,8 +475,8 @@ class SemanticSceneGraph:
                 lines.append(f"- **{agent.name}** ({agent.agent_type}): {state}")
                 if agent.attention_target:
                     lines.append(f"  - Attending to: {agent.attention_target}")
-                if agent.capabilities:
-                    lines.append(f"  - Capabilities: {', '.join(agent.capabilities)}")
+                # if agent.capabilities:
+                #     lines.append(f"  - Capabilities: {', '.join(agent.capabilities)}")
         
         # Regions
         regions = self.get_regions()
@@ -489,15 +489,15 @@ class SemanticSceneGraph:
         
         # Objects
         objects = self.get_objects()
-        if objects:
-            lines.append("\n### Objects")
-            for obj in objects:
-                state = obj.state.name if hasattr(obj.state, 'name') else obj.state
-                loc = self.get_location(obj.id) or "unknown"
-                lines.append(f"- **{obj.name}**: {state}, at {loc}")
-                if obj.affordances:
-                    aff_names = [a.name for a in obj.affordances]
-                    lines.append(f"  - Affordances: {', '.join(aff_names)}")
+        # if objects:
+        #     lines.append("\n### Objects")
+        #     for obj in objects:
+        #         state = obj.state.name if hasattr(obj.state, 'name') else obj.state
+        #         loc = self.get_location(obj.id) or "unknown"
+        #         lines.append(f"- **{obj.name}**: {state}, at {loc}")
+        #         if obj.affordances:
+        #             aff_names = [a.name for a in obj.affordances]
+        #             lines.append(f"  - Affordances: {', '.join(aff_names)}")
         
         # Key Relationships
         lines.append("\n### Key Relationships")

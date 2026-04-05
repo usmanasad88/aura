@@ -28,8 +28,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 
 import sys
-_project_root = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(_project_root / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from compute_a_score import (
     InterventionEvent,

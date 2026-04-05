@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 _intent_monitors: Dict[str, Any] = {}
 _gesture_monitors: Dict[str, Any] = {}
+_perception_monitors: Dict[str, Any] = {}
 _decision_engines: Dict[str, Any] = {}
 _video_sources: Dict[str, Any] = {}
 _robot_clients: Dict[str, Any] = {}
@@ -106,6 +107,33 @@ def _get_gesture_monitor(state: AuraGraphState) -> "GestureMonitor":
     return _gesture_monitors[key]
 
 
+def _get_perception_monitor(state: AuraGraphState):
+    """Lazy-init a task-specific perception monitor (or None)."""
+    config = state.get("config", {})
+    key = config.get("config_dir", "default")
+    if key not in _perception_monitors:
+        _perception_monitors[key] = _create_perception_monitor(
+            config.get("task_name", ""), config,
+        )
+    return _perception_monitors[key]
+
+
+def _create_perception_monitor(task_name: str, config: dict):
+    """Factory: import the right perception monitor for *task_name*."""
+    normalised = task_name.lower().replace(" ", "_")
+    if normalised == "hand_layup":
+        try:
+            from tasks.hand_layup.perception.layup_perception_monitor import (
+                LayupPerceptionMonitor,
+            )
+            return LayupPerceptionMonitor()
+        except ImportError:
+            logger.warning("hand_layup perception monitor not found")
+            return None
+    logger.info("No task-specific perception monitor for '%s'", task_name)
+    return None
+
+
 def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
     """Lazy-init the Brain DecisionEngine with SSG + SkillRegistry."""
     from aura.brain.decision_engine import DecisionEngine, DecisionEngineConfig
@@ -127,7 +155,7 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
             task_system_instruction=task_profile.get("system_instruction", ""),
         )
-        engine = DecisionEngine(config=engine_config)
+        engine = DecisionEngine(config_dir=config_dir, config=engine_config)
 
         # Wire in the shared SSG
         engine.graph = _get_ssg(state)
@@ -408,6 +436,44 @@ def run_gesture_node(state: AuraGraphState) -> dict:
     }
 
 
+def run_perception_node(state: AuraGraphState) -> dict:
+    """Run task-specific perception on the latest frame.
+
+    Detects tracked objects (tables, bottles) via SAM3 and uses mask
+    heuristics to update ``object_locations`` with bottle positions.
+    """
+    buf = state.get("frames_buffer") or []
+    if not buf:
+        return {}
+
+    monitor = _get_perception_monitor(state)
+    if monitor is None:
+        return {}
+
+    latest_frame = buf[-1]
+    try:
+        result = asyncio.get_event_loop().run_until_complete(
+            monitor.process_frame(latest_frame)
+        )
+    except RuntimeError:
+        result = asyncio.run(monitor.process_frame(latest_frame))
+
+    if not result:
+        return {}
+
+    # Merge perception-derived locations (only overwrite when definitive).
+    obj_locs = dict(state.get("object_locations") or {})
+    for obj_id, region in result.get("bottle_locations", {}).items():
+        if region != "unknown":
+            obj_locs[obj_id] = region
+
+    monitor_out = state.get("monitor_outputs") or {}
+    return {
+        "object_locations": obj_locs,
+        "monitor_outputs": {**monitor_out, "perception": result},
+    }
+
+
 def run_intent_node(state: AuraGraphState) -> dict:
     """Run RCWPS intent prediction using ``AURAIntentMonitor.predict()``.
 
@@ -430,10 +496,27 @@ def run_intent_node(state: AuraGraphState) -> dict:
 
     try:
         monitor = _get_intent_monitor(state)
+
+        # Compute the time span the frame window covers.
+        # Each buffer slot is one workflow cycle, separated by
+        # frame_skip source frames (non-realtime) or predict_interval
+        # wall-clock seconds (realtime / live sources).
+        frames_to_send = buf[-5:]
+        source = _get_video_source(state)
+        source_fps = source.fps
+        frame_skip = getattr(source, "_frame_skip", None)
+        if frame_skip and source_fps:
+            window_duration = len(frames_to_send) * frame_skip / source_fps
+        elif source.is_live:
+            window_duration = len(frames_to_send) * predict_interval
+        else:
+            window_duration = 0.0
+
         result = monitor.predict(
-            frames=buf[-5:],
+            frames=frames_to_send,
             timestamp=state.get("current_timestamp_sec", 0.0),
             frame_num=state.get("current_frame_num", 0),
+            window_duration_sec=window_duration,
         )
     except Exception as e:
         logger.error("Intent prediction failed: %s", e)
@@ -465,18 +548,21 @@ def run_intent_node(state: AuraGraphState) -> dict:
 
 
 def update_ssg_node(state: AuraGraphState) -> dict:
-    """Sync the latest intent result into the live SSG and snapshot.
+    """Sync monitor outputs into the live SSG and snapshot.
 
-    1. Calls ``graph.update_from_intent_result()`` on the live SSG.
-    2. Updates ``completed_steps`` and ``object_locations`` in flat state.
-    3. Takes a snapshot for serialisation back into ``AuraGraphState.ssg``.
+    1. Calls ``graph.update_from_intent_result()`` on the live SSG
+       (when a new intent result is available).
+    2. Syncs perception-detected object locations into SSG task_state
+       so the decision engine prompt includes them.
+    3. Updates ``completed_steps`` and ``object_locations`` in flat state.
+    4. Takes a snapshot for serialisation back into ``AuraGraphState.ssg``.
     """
-    intent = state.get("intent_result")
-    if not intent:
-        return {}
-
     ssg = _get_ssg(state)
-    ssg.update_from_intent_result(intent)
+
+    # ── Sync intent result into SSG ────────────────────────────────
+    intent = state.get("intent_result")
+    if intent:
+        ssg.update_from_intent_result(intent)
 
     config = state.get("config", {})
     if config.get("use_ground_truth_robot_status", False):
@@ -491,17 +577,30 @@ def update_ssg_node(state: AuraGraphState) -> dict:
         if robot and hasattr(robot, "state"):
             setattr(robot, "state", "BUSY" if robot_status["robot_state"] == "busy" else "IDLE")
 
-    # Update flat tracking fields
-    completed_steps = list(set(
-        (state.get("completed_steps") or [])
-        + (intent.get("steps_completed") or [])
-    ))
+    # ── Sync perception-detected object locations ──────────────────
+    # Task-specific perception monitors return detected locations
+    # (e.g. bottle_0 → storage).  Store them in SSG task_state so the
+    # decision engine can see them even though perception cannot
+    # distinguish semantically named objects (resin vs hardener).
+    perception_output = (state.get("monitor_outputs") or {}).get("perception")
+    if isinstance(perception_output, dict):
+        detected_locs = perception_output.get("bottle_locations")
+        if detected_locs:
+            ssg.set_task_state("detected_bottle_locations", detected_locs)
+
+    # ── Update flat tracking fields ────────────────────────────────
+    completed_steps = list(set(state.get("completed_steps") or []))
+    if intent:
+        completed_steps = list(set(
+            completed_steps + (intent.get("steps_completed") or [])
+        ))
 
     # Derive object locations from SSG / intent state
     obj_locs: Dict[str, str] = dict(state.get("object_locations") or {})
-    for key, val in intent.get("state", {}).items():
-        if key.endswith("_location") and isinstance(val, str):
-            obj_locs[key.removesuffix("_location")] = val
+    if intent:
+        for key, val in intent.get("state", {}).items():
+            if key.endswith("_location") and isinstance(val, str):
+                obj_locs[key.removesuffix("_location")] = val
 
     ssg.take_snapshot()
 

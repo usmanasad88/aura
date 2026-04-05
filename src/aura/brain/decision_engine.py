@@ -192,19 +192,24 @@ class DecisionEngine:
     and uses LLM reasoning to decide on proactive robot actions.
     """
     
-    def __init__(self, config: DecisionEngineConfig = None):
+    def __init__(self, config_dir: str, config: DecisionEngineConfig = None):
         """Initialize the Decision Engine.
 
         Args:
+            config_dir: Path to task config directory containing dag.json, etc.
             config: Engine configuration
         """
         self.config = config or DecisionEngineConfig()
+        self.config_dir = Path(config_dir)
+        dag_path = self.config_dir / "dag.json"
 
         # Core components
         self.graph = SemanticSceneGraph(name="aura_ssg")
         self.reasoner = GraphReasoner(self.graph)
         self.explainer = DecisionExplainer(self.graph)
         self.skills = SkillRegistry()
+        self.task_graph_string = dag_path.read_text(encoding="utf-8") if dag_path.exists() else "{}"
+
         self.prompt_logger = DecisionPromptLogger(
             log_dir=self.config.log_dir,
             enabled=self.config.enable_logging,
@@ -454,28 +459,27 @@ class DecisionEngine:
         skills_desc = self.skills.get_skills_for_llm()
 
         task_instruction = self.config.task_system_instruction
+        
+        INCLUDE_RECENT_ACTIONS = False
+        recent_actions_str = f"\n## Recent Robot Actions\n{self._format_recent_decisions()}\n" if INCLUDE_RECENT_ACTIONS else ""
+
         prompt = f"""You are a proactive robot assistant helping a human with a task.
 Your goal is to anticipate what the human needs and provide timely assistance.
 
 ## Task Instructions
-{task_instruction if task_instruction else "No specific task instructions."}
 
+{task_instruction if task_instruction else "No specific task instructions."}
+## Task Graph Definition
+```json
+{self.task_graph_string}
+```
 {scene_state}
 
 {skills_desc}
 
-## Available Actions Now
-{json.dumps(available_actions[:5], indent=2) if available_actions else "No immediately available actions."}
-
-## Proactive Opportunities
-{json.dumps(opportunities[:3], indent=2) if opportunities else "No proactive opportunities identified."}
-
 ## Current Time
 Task time: {current_time_sec:.1f} seconds
-
-## Recent Robot Actions
-{self._format_recent_decisions()}
-
+{recent_actions_str}
 ## Your Task
 Decide whether the robot should:
 1. Execute an action now
@@ -500,6 +504,14 @@ If waiting is better:
 
 Respond with ONLY the JSON object, no other text."""
 
+# Removed from Prompt:
+# ## Available Actions Now
+# {json.dumps(available_actions[:5], indent=2) if available_actions else "No immediately available actions."}
+
+# ## Proactive Opportunities
+# {json.dumps(opportunities[:3], indent=2) if opportunities else "No proactive opportunities identified."}
+
+
         try:
             t0 = time.monotonic()
             response_text = await asyncio.wait_for(
@@ -514,6 +526,8 @@ Respond with ONLY the JSON object, no other text."""
             generation_time = time.monotonic() - t0
 
             result = json.loads(response_text)
+            if isinstance(result, list):
+                result = result[0] if result else {}
 
             # ── Log the call ────────────────────────────────────
             self.prompt_logger.log_call(

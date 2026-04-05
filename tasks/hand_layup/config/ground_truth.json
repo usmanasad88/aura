@@ -2,105 +2,135 @@
   "task_id": "hand_layup",
   "video": "demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4",
   "collection_method": "manual_annotation",
-  "description": "Ground truth for hand layup gesture demo (stationary camera with overlay). Robot actions are annotated; human actions have placeholder timestamps.",
+  "description": "Ground truth for hand layup demo. Cup is on the scale from the start. Picking and returning actions can be performed by either the robot or the human.",
   "total_duration_seconds": 270.0,
   "events": [
     {
-      "timestamp": 0.0,
       "action": "idle",
-      "robot_action": null,
-      "description": "Recording started, robot at home position"
+      "start_time": 0.0,
+      "end_time": 3.5,
+      "agent": null,
+      "description": "Recording started, robot at home position. Cup is already on the scale."
     },
     {
-      "timestamp": 3.5,
-      "action": "move_roller_to_workplace",
-      "robot_action": "move_roller_to_workplace",
-      "description": "Robot picks roller from storage and places it at the workplace"
+      "action": "move_resin_to_workplace",
+      "start_time": 3.5,
+      "end_time": 51.0,
+      "agent": "robot",
+      "description": "Robot picks resin bottle from storage and places it at the workplace"
     },
     {
-      "timestamp": 51.0,
-      "action": "move_roller_to_workplace_complete",
-      "robot_action": null,
-      "description": "Roller delivered to workplace, robot returning to home"
+      "action": "add_resin_to_cup",
+      "start_time": 38.0,
+      "end_time": 52.0,
+      "agent": "human",
+      "description": "Human adds resin from the bottle into the cup on the scale"
     },
     {
-      "timestamp": 54.5,
       "action": "move_hardener_to_workplace",
-      "robot_action": "move_hardener_to_workplace",
+      "start_time": 54.5,
+      "end_time": 90.0,
+      "agent": "robot",
       "description": "Robot picks hardener bottle from storage and places it at the workplace"
     },
     {
-      "timestamp": 90.0,
-      "action": "move_hardener_to_workplace_complete",
-      "robot_action": null,
-      "description": "Hardener delivered to workplace, robot returning to home"
-    },
-    {
-      "timestamp": 90.0,
-      "action": "place_cup_on_scale",
-      "robot_action": null,
-      "description": "TODO: Human places the mixing cup on the weigh scale"
-    },
-    {
-      "timestamp": 95.0,
-      "action": "add_resin",
-      "robot_action": null,
-      "description": "TODO: Human adds resin from the bottle into the cup"
-    },
-    {
-      "timestamp": 100.0,
-      "action": "add_hardener",
-      "robot_action": null,
-      "description": "TODO: Human adds hardener from the bottle into the cup"
-    },
-    {
-      "timestamp": 105.0,
-      "action": "weigh_mixture",
-      "robot_action": null,
-      "description": "TODO: Human checks the weight of the mixture on the scale"
-    },
-    {
-      "timestamp": 110.0,
-      "action": "mix_resin_hardener",
-      "robot_action": null,
-      "description": "TODO: Human stirs the resin and hardener together"
-    },
-    {
-      "timestamp": 120.0,
       "action": "place_layer_1",
-      "robot_action": null,
-      "description": "TODO: Human places first fiberglass sheet on the mold"
+      "start_time": 61.0,
+      "end_time": 74.0,
+      "agent": "human",
+      "description": "Human places the first fiberglass sheet on the mold"
     },
     {
-      "timestamp": 125.0,
+      "action": "add_hardener_to_cup",
+      "start_time": 82.0,
+      "end_time": 87.0,
+      "agent": "human",
+      "description": "Human adds hardener from the bottle into the cup"
+    },
+    {
+      "action": "mix_resin_hardener",
+      "start_time": 87.0,
+      "end_time": 90.0,
+      "agent": "human",
+      "description": "Human stirs the resin and hardener together"
+    },
+    {
       "action": "apply_resin_layer_1",
-      "robot_action": null,
-      "description": "TODO: Human applies resin to the first layer with a brush"
+      "start_time": 90.0,
+      "end_time": 94.0,
+      "agent": "human",
+      "description": "Human applies resin to the first layer"
     },
     {
-      "timestamp": 130.0,
+      "action": "place_layer_2",
+      "start_time": 94.0,
+      "end_time": 101.0,
+      "agent": "human",
+      "description": "Human places the second fiberglass sheet on top of the first"
+    },
+    {
+      "action": "apply_resin_layer_2",
+      "start_time": 101.0,
+      "end_time": 107.0,
+      "agent": "human",
+      "description": "Human applies resin to the second layer"
+    },
+    {
+      "action": "place_layer_3",
+      "start_time": 107.0,
+      "end_time": 113.0,
+      "agent": "human",
+      "description": "Human places the third fiberglass sheet"
+    },
+    {
+      "action": "apply_resin_layer_3",
+      "start_time": 113.0,
+      "end_time": 120.0,
+      "agent": "human",
+      "description": "Human applies resin to the third layer"
+    },
+    {
+      "action": "place_layer_4",
+      "start_time": 120.0,
+      "end_time": 122.0,
+      "agent": "human",
+      "description": "Human places the fourth and final fiberglass sheet"
+    },
+    {
+      "action": "apply_resin_layer_4",
+      "start_time": 122.0,
+      "end_time": 126.0,
+      "agent": "human",
+      "description": "Human applies resin to the final layer"
+    },
+    {
       "action": "consolidate_with_roller_force",
-      "robot_action": "consolidate_with_roller_force",
+      "start_time": 130.0,
+      "end_time": 195.0,
+      "agent": "robot",
       "description": "Robot picks roller, uses force-controlled rolling to consolidate layup, then returns roller"
     },
     {
-      "timestamp": 195.0,
-      "action": "consolidate_with_roller_force_complete",
-      "robot_action": null,
-      "description": "Consolidation complete, roller returned to storage"
+      "action": "return_hardener_to_storage",
+      "start_time": 185.0,
+      "end_time": 192.0,
+      "agent": "human",
+      "description": "Human returns hardener bottle to storage"
     },
     {
-      "timestamp": 234.0,
       "action": "return_resin_to_storage",
-      "robot_action": "return_resin_to_storage",
+      "start_time": 234.0,
+      "end_time": 270.0,
+      "agent": "robot",
       "description": "Robot picks resin bottle from workplace and returns it to storage"
     },
     {
-      "timestamp": 270.0,
       "action": "task_complete",
-      "robot_action": null,
+      "start_time": 270.0,
+      "end_time": 270.0,
+      "agent": null,
       "description": "Task finished, workspace cleared"
     }
   ],
-  "notes": "Human action timestamps (marked TODO) are placeholders — annotate from the video. Robot action timestamps are ground truth."
+  "notes": "Cup is on the scale from the start. Picking and returning actions (e.g. return_resin_to_storage, return_hardener_to_storage) can be performed by either the robot or the human."
 }

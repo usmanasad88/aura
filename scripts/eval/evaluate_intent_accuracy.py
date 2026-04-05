@@ -75,8 +75,10 @@ def load_ground_truth(path: str) -> List[GTEvent]:
         data = json.load(f)
     events = []
     for ev in data["events"]:
+        # Support both "timestamp" (legacy) and "start_time" (current) formats
+        timestamp = ev.get("start_time", ev.get("timestamp", 0.0))
         events.append(GTEvent(
-            timestamp=ev["timestamp"],
+            timestamp=timestamp,
             action=normalise_action(ev["action"]),
             raw_action=ev["action"],
             robot_action=ev.get("robot_action"),
@@ -356,7 +358,7 @@ def main():
     args = parser.parse_args()
 
     # Resolve paths relative to aura root
-    aura_root = Path(__file__).resolve().parent.parent
+    aura_root = Path(__file__).resolve().parent.parent.parent
     gt_path = str(aura_root / args.ground_truth)
     output_dir = Path(aura_root / args.output)
     output_dir.mkdir(parents=True, exist_ok=True)

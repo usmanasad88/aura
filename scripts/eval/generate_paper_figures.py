@@ -478,7 +478,7 @@ def main():
     parser.add_argument("--results-dir", type=str, default="results/")
     args = parser.parse_args()
 
-    aura_root = Path(__file__).resolve().parent.parent
+    aura_root = Path(__file__).resolve().parent.parent.parent
     output_dir = Path(aura_root / args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
     results_dir = aura_root / args.results_dir
