@@ -130,6 +130,15 @@ def _create_perception_monitor(task_name: str, config: dict):
         except ImportError:
             logger.warning("hand_layup perception monitor not found")
             return None
+    if normalised == "sorting":
+        try:
+            from tasks.sorting.perception.sorting_perception_monitor import (
+                SortingPerceptionMonitor,
+            )
+            return SortingPerceptionMonitor()
+        except ImportError:
+            logger.warning("sorting perception monitor not found")
+            return None
     logger.info("No task-specific perception monitor for '%s'", task_name)
     return None
 
@@ -462,10 +471,13 @@ def run_perception_node(state: AuraGraphState) -> dict:
         return {}
 
     # Merge perception-derived locations (only overwrite when definitive).
+    # Monitors may return locations under "object_locations" or
+    # task-specific keys like "bottle_locations".
     obj_locs = dict(state.get("object_locations") or {})
-    for obj_id, region in result.get("bottle_locations", {}).items():
-        if region != "unknown":
-            obj_locs[obj_id] = region
+    for key in ("object_locations", "bottle_locations"):
+        for obj_id, region in result.get(key, {}).items():
+            if region != "unknown":
+                obj_locs[obj_id] = region
 
     monitor_out = state.get("monitor_outputs") or {}
     return {
