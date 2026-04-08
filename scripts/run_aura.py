@@ -1,4 +1,4 @@
-f#!/usr/bin/env python3
+#!/usr/bin/env python3
 """AURA Unified Workflow — LangGraph + SSG runtime.
 
 Config-driven entry point that builds a task-specific LangGraph,
@@ -130,6 +130,9 @@ async def run_workflow(
     speed: float,
     model: str,
     dry_run: bool,
+    screen_capture: bool = False,
+    screen_monitor: int = 1,
+    screen_region: list[int] | None = None,
     gopro_stream: bool = False,
     gopro_ip: str = "172.29.170.51",
     gopro_lens: str = "front",
@@ -157,6 +160,9 @@ async def run_workflow(
         "use_ground_truth_robot_status": use_ground_truth_robot_status,
         "llm_backend": llm_backend,
         "sglang_base_url": sglang_base_url,
+        "screen_capture": screen_capture,
+        "screen_monitor": screen_monitor,
+        "screen_region": screen_region,
         "gopro_stream": gopro_stream,
         "gopro_ip": gopro_ip,
         "gopro_lens": gopro_lens,
@@ -209,6 +215,8 @@ async def run_workflow(
         print(f"  SGLang   : {sglang_base_url}")
     if video_path:
         print(f"  Video: {video_path}  |  Speed: {speed}x")
+    elif screen_capture:
+        print(f"  Screen Capture: monitor {screen_monitor}")
     elif gopro_stream:
         print(f"  GoPro Stream: {gopro_ip}")
     elif webcam_device is not None:
@@ -287,6 +295,19 @@ def main() -> None:
     parser.add_argument(
         "--webcam", default=None, nargs="?", const=0,
         help="Webcam device index (default: 0)",
+    )
+    parser.add_argument(
+        "--screen-capture", action="store_true", default=False,
+        help="Use live screen capture as frame source (requires mss package)",
+    )
+    parser.add_argument(
+        "--screen-monitor", type=int, default=1,
+        help="Monitor index for screen capture (0=all, 1=primary, 2=secondary, default: 1)",
+    )
+    parser.add_argument(
+        "--screen-region", type=int, nargs=4, default=None,
+        metavar=("LEFT", "TOP", "WIDTH", "HEIGHT"),
+        help="Sub-region of screen to capture: LEFT TOP WIDTH HEIGHT (pixels)",
     )
     parser.add_argument(
         "--gopro-stream", action="store_true", default=False,
@@ -377,6 +398,9 @@ def main() -> None:
             task_name=args.task,
             video_path=args.video,
             webcam_device=webcam_dev,
+            screen_capture=args.screen_capture,
+            screen_monitor=args.screen_monitor,
+            screen_region=args.screen_region,
             gopro_stream=args.gopro_stream,
             gopro_ip=args.gopro_ip,
             gopro_lens=args.gopro_lens,

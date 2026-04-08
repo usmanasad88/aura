@@ -309,19 +309,28 @@ class SemanticSceneGraph:
     
     def initialize_task_state(self, schema: Dict[str, Any]) -> None:
         """Initialize task state from a schema definition.
-        
+
         Args:
-            schema: Dict with 'state_variables' containing variable definitions
+            schema: Dict with 'state_variables' containing variable definitions.
+                    Variables with ``"source": "system"`` are tracked in
+                    ``_system_state_vars`` so that ``update_from_intent_result``
+                    skips them (they are managed by the robot API / ground truth).
         """
         state_vars = schema.get("state_variables", schema)
+        self._system_state_vars: Set[str] = set()
         for var_name, var_def in state_vars.items():
             if isinstance(var_def, dict):
                 default = var_def.get("default")
+                if var_def.get("source") == "system":
+                    self._system_state_vars.add(var_name)
             else:
                 default = var_def
             self._task_state[var_name] = default
         self.last_updated = datetime.now()
-        logger.info(f"Initialized task state with {len(self._task_state)} variables")
+        logger.info(
+            "Initialized task state with %d variables (%d system-sourced)",
+            len(self._task_state), len(self._system_state_vars),
+        )
     
     # =========================================================================
     # Bulk Monitor Updates
@@ -334,13 +343,20 @@ class SemanticSceneGraph:
         locations for any ``*_location`` keys, updates the human agent
         node, and records completed steps via spatial edges.
 
+        System-sourced variables (``"source": "system"`` in schema) are
+        skipped — they are managed by the robot API or ground truth,
+        not the vision-based intent monitor.
+
         Args:
             intent_result: Serialised ``IntentResult`` (as dict) —
                 expects ``state``, ``steps_completed``, ``current_action``,
                 ``predicted_next_action``, ``current_phase``.
         """
+        system_vars = getattr(self, "_system_state_vars", set())
         state = intent_result.get("state", {})
         for key, value in state.items():
+            if key in system_vars:
+                continue
             self._task_state[key] = value
 
         # Mirror object location state vars back to SSG edges

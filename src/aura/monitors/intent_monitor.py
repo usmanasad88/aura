@@ -219,7 +219,38 @@ class AURAIntentMonitor:
         profile_path = self.config_dir / "task_profile.json"
 
         self.task_graph_string = dag_path.read_text(encoding="utf-8") if dag_path.exists() else "{}"
-        self.state_schema_string = state_path.read_text(encoding="utf-8") if state_path.exists() else "{}"
+
+        # Load full schema, then filter out system-sourced variables
+        # (e.g. robot_state, robot_active_program) that the vision model
+        # cannot observe and would hallucinate.
+        self._full_state_schema: Dict[str, Any] = {}
+        self._system_var_names: set = set()
+        if state_path.exists():
+            self._full_state_schema = json.loads(state_path.read_text(encoding="utf-8"))
+            for var, defn in self._full_state_schema.get("state_variables", {}).items():
+                if isinstance(defn, dict) and defn.get("source") == "system":
+                    self._system_var_names.add(var)
+
+        # Build a filtered schema string with only vision-observable vars
+        if self._full_state_schema:
+            filtered = {
+                k: v for k, v in self._full_state_schema.items()
+                if k != "state_variables"
+            }
+            filtered["state_variables"] = {
+                var: defn
+                for var, defn in self._full_state_schema.get("state_variables", {}).items()
+                if var not in self._system_var_names
+            }
+            self.state_schema_string = json.dumps(filtered, indent=2)
+        else:
+            self.state_schema_string = "{}"
+
+        if self._system_var_names:
+            logger.info(
+                "Intent monitor: excluded system-sourced state vars from prompt: %s",
+                self._system_var_names,
+            )
 
         self.task_profile = {}
         if profile_path.exists():
@@ -277,13 +308,14 @@ class AURAIntentMonitor:
             "reasoning": "<one line>",
         }
 
-        # Pull extra state variables from schema
-        if self.state_schema_string:
+        # Pull extra state variables from schema (skip system-sourced vars)
+        if self._full_state_schema:
             try:
-                schema = json.loads(self.state_schema_string)
-                for var, desc in schema.get("state_variables", {}).items():
+                for var, desc in self._full_state_schema.get("state_variables", {}).items():
+                    if var in self._system_var_names:
+                        continue
                     if var not in fmt:
-                        t = desc.get("type", "string")
+                        t = desc.get("type", "string") if isinstance(desc, dict) else "string"
                         if t == "boolean":
                             fmt[var] = "<bool or 'Unknown'>"
                         elif t == "integer":
@@ -439,6 +471,11 @@ Here are the frames:
         result.generation_time_sec = generation_time
 
         if parsed:
+            # Strip any system-sourced vars the LLM may have returned
+            # (it shouldn't, but defensive in case it leaks from prior context)
+            for sysvar in self._system_var_names:
+                parsed.pop(sysvar, None)
+
             result.state = parsed
             result.current_phase = parsed.get("current_phase", "initialization")
             result.current_action = parsed.get("current_action", "idle")
@@ -597,14 +634,20 @@ class IntentMonitor(BaseMonitor):
             schema = _load_json_file(config.state_file)
             if schema:
                 if isinstance(schema, list):
-                    return schema
+                    return [v for v in schema if v.get("source") != "system"]
                 elif isinstance(schema, dict):
                     if 'state_variables' in schema:
                         variables = schema['state_variables']
                         if isinstance(variables, dict):
-                            return [{"name": k, **v} for k, v in variables.items()]
-                        return variables
-                    return [schema]
+                            return [
+                                {"name": k, **v}
+                                for k, v in variables.items()
+                                if not (isinstance(v, dict) and v.get("source") == "system")
+                            ]
+                        return [v for v in variables if v.get("source") != "system"]
+                    if schema.get("source") != "system":
+                        return [schema]
+                    return []
         return self._default_state_schema()
 
     def _default_task_graph(self) -> List[Dict]:

@@ -1,6 +1,7 @@
 """Live screen capture frame source using mss."""
 
 import logging
+import threading
 import time
 from typing import Optional
 
@@ -16,6 +17,10 @@ class ScreenCaptureSource(FrameSource):
     """Live frame source from screen / monitor capture.
 
     Requires the ``mss`` package (``pip install mss``).
+
+    Thread-safe: a fresh ``mss`` instance is created per-thread because
+    the underlying X11 display handle is stored in thread-local storage
+    and cannot be shared across threads (as LangGraph does).
 
     Args:
         monitor: Monitor index (``0`` = all monitors combined,
@@ -36,13 +41,26 @@ class ScreenCaptureSource(FrameSource):
         self._region = region
         self._target_fps = fps
 
-        self._sct = None  # mss instance
+        self._tls = threading.local()  # per-thread mss instances
         self._bbox: Optional[dict] = None
         self._width: int = 0
         self._height: int = 0
         self._frame_count: int = 0
         self._start_time: float = 0.0
         self._opened: bool = False
+
+    # ------------------------------------------------------------------
+    # Internal: get or create a per-thread mss instance
+    # ------------------------------------------------------------------
+
+    def _get_sct(self):
+        """Return an mss instance for the current thread."""
+        sct = getattr(self._tls, "sct", None)
+        if sct is None:
+            import mss
+            sct = mss.mss()
+            self._tls.sct = sct
+        return sct
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -52,14 +70,14 @@ class ScreenCaptureSource(FrameSource):
         if self._opened:
             return
         try:
-            import mss
+            import mss  # noqa: F401 — verify importable
         except ImportError:
             raise ImportError(
                 "ScreenCaptureSource requires the 'mss' package. "
                 "Install it with: pip install mss"
             )
 
-        self._sct = mss.mss()
+        sct = self._get_sct()
 
         if self._region is not None:
             left, top, w, h = self._region
@@ -68,7 +86,7 @@ class ScreenCaptureSource(FrameSource):
             }
             self._width, self._height = w, h
         else:
-            mon = self._sct.monitors[self._monitor_idx]
+            mon = sct.monitors[self._monitor_idx]
             self._bbox = mon
             self._width = mon["width"]
             self._height = mon["height"]
@@ -83,17 +101,31 @@ class ScreenCaptureSource(FrameSource):
         )
 
     def close(self) -> None:
-        if self._sct is not None:
-            self._sct.close()
-            self._sct = None
+        # Best-effort close of the calling thread's instance
+        sct = getattr(self._tls, "sct", None)
+        if sct is not None:
+            sct.close()
+            self._tls.sct = None
         self._opened = False
         logger.info("ScreenCaptureSource closed")
 
     def read(self) -> Optional[Frame]:
-        if not self._opened or self._sct is None:
+        if not self._opened:
             return None
 
-        raw = self._sct.grab(self._bbox)
+        sct = self._get_sct()
+
+        # Resolve bbox on first read in this thread if it was opened on
+        # another thread (region is already absolute so it's fine).
+        bbox = self._bbox
+        if bbox is None:
+            mon = sct.monitors[self._monitor_idx]
+            self._bbox = mon
+            bbox = mon
+            self._width = mon["width"]
+            self._height = mon["height"]
+
+        raw = sct.grab(bbox)
         # mss returns BGRA; convert to BGR for OpenCV convention
         image = np.array(raw, dtype=np.uint8)[:, :, :3].copy()
 

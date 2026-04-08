@@ -201,11 +201,25 @@ def _get_video_source(state: AuraGraphState):
     gopro_ip = config.get("gopro_ip", "172.29.170.51")
     gopro_lens = config.get("gopro_lens", "front")
 
-    key = video_path or (f"gopro:{gopro_ip}:{gopro_lens}" if gopro_stream else f"webcam:{webcam_device}")
+    screen_capture = config.get("screen_capture", False)
+    screen_monitor = config.get("screen_monitor", 1)
+    screen_region = config.get("screen_region")
+
+    key = video_path or (
+        f"gopro:{gopro_ip}:{gopro_lens}" if gopro_stream
+        else f"screen:{screen_monitor}" if screen_capture
+        else f"webcam:{webcam_device}"
+    )
     if key not in _video_sources:
         if gopro_stream:
             from aura.sources.gopro_stream_source import GoProStreamSource
             source = GoProStreamSource(camera_ip=gopro_ip, lens=gopro_lens)
+        elif screen_capture:
+            from aura.sources.screen_capture import ScreenCaptureSource
+            source = ScreenCaptureSource(
+                monitor=screen_monitor,
+                region=tuple(screen_region) if screen_region else None,
+            )
         elif webcam_device is not None:
             from aura.sources.webcam import WebcamSource
             source = WebcamSource(device=webcam_device)
@@ -336,6 +350,66 @@ def _robot_status_from_ground_truth(state: AuraGraphState, timestamp_sec: float)
     return {
         "robot_state": robot_state,
         "robot_active_program": active_action,
+    }
+
+
+# ── Live robot status via External Control API ────────────────────────────
+
+# Track the last active program so we can detect transitions to idle.
+_last_active_program: str = ""
+
+
+def _robot_status_from_api(state: AuraGraphState) -> Dict[str, Any]:
+    """Poll ``GET /api/status`` and derive ``robot_state`` / ``robot_active_program``.
+
+    Heuristics:
+    * ``executor_running=False`` → ``idle``  (no executor process)
+    * Any joint velocity > threshold → ``busy``
+    * Otherwise → ``idle``
+
+    Also returns gripper state and joint positions for downstream use.
+    """
+    global _last_active_program
+
+    robot = _get_robot_client(state)
+    if robot is None:
+        return {"robot_state": "unknown", "robot_active_program": ""}
+
+    try:
+        status = robot.get_status()
+    except Exception as exc:
+        logger.debug("Robot API status poll failed: %s", exc)
+        return {"robot_state": "unknown", "robot_active_program": ""}
+
+    executor_running = status.get("executor_running", False)
+    joint_state = status.get("joint_state") or {}
+    gripper_state = status.get("gripper_state") or {}
+    velocities = joint_state.get("velocities", [])
+
+    # Determine busy/idle from joint velocities
+    velocity_threshold = 0.01  # rad/s — above this we consider the robot moving
+    is_moving = any(abs(v) > velocity_threshold for v in velocities) if velocities else False
+
+    if not executor_running:
+        robot_state = "idle"
+        active_program = ""
+    elif is_moving:
+        robot_state = "busy"
+        active_program = _last_active_program  # retain from execute_action_node
+    else:
+        robot_state = "idle"
+        active_program = ""
+
+    _last_active_program = active_program
+
+    return {
+        "robot_state": robot_state,
+        "robot_active_program": active_program,
+        "executor_running": executor_running,
+        "joint_positions": joint_state.get("positions", []),
+        "joint_velocities": velocities,
+        "gripper_position": gripper_state.get("position", 0.0),
+        "speed": status.get("speed"),
     }
 
 
@@ -576,18 +650,32 @@ def update_ssg_node(state: AuraGraphState) -> dict:
     if intent:
         ssg.update_from_intent_result(intent)
 
+    # ── Sync robot status into SSG ───────────────────────────────
     config = state.get("config", {})
+    dry_run = config.get("dry_run", True)
+
     if config.get("use_ground_truth_robot_status", False):
+        # Offline evaluation: derive from annotated ground-truth file
         robot_status = _robot_status_from_ground_truth(
             state,
             state.get("current_timestamp_sec", 0.0),
         )
+    elif not dry_run:
+        # Live mode: poll the real robot API
+        robot_status = _robot_status_from_api(state)
+    else:
+        robot_status = None
+
+    if robot_status:
         ssg.set_task_state("robot_state", robot_status["robot_state"])
         ssg.set_task_state("robot_active_program", robot_status["robot_active_program"])
 
         robot = ssg.get_node("robot")
         if robot and hasattr(robot, "state"):
-            setattr(robot, "state", "BUSY" if robot_status["robot_state"] == "busy" else "IDLE")
+            from aura.core.scene_graph.nodes import AgentState
+            setattr(robot, "state",
+                    AgentState.BUSY if robot_status["robot_state"] == "busy"
+                    else AgentState.IDLE)
 
     # ── Sync perception-detected object locations ──────────────────
     # Task-specific perception monitors return detected locations
@@ -689,15 +777,10 @@ def execute_action_node(state: AuraGraphState) -> dict:
 
     config = state.get("config", {})
     dry_run = config.get("dry_run", True)
-    task_profile = state.get("task_profile", {})
-    program_map_raw = task_profile.get("program_map", {})
 
-    # Parse program_map from "action|object" keys
-    program_map: Dict[tuple, str] = {}
-    for k, v in program_map_raw.items():
-        parts = k.split("|")
-        if len(parts) == 2:
-            program_map[(parts[0], parts[1])] = v
+    # Get skill registry from the decision engine for api_call lookup
+    engine = _get_decision_engine(state)
+    skills = engine.skills
 
     robot = _get_robot_client(state)
     obj_locs: Dict[str, str] = dict(state.get("object_locations") or {})
@@ -715,65 +798,93 @@ def execute_action_node(state: AuraGraphState) -> dict:
     for action in actions:
         action_type = action.get("action_type", "")
         obj_name = action.get("object_name", "")
-        prog = program_map.get((action_type, obj_name))
+        skill = skills.get(action_type)
+        api_call = skill.metadata.get("api_call") if skill else None
 
-        result = {**action, "program": prog, "executed": True}
+        # Track active program for live status polling
+        global _last_active_program
+        _last_active_program = action_type
+
+        result = {**action, "skill_id": action_type, "executed": True}
 
         if dry_run or robot is None:
             result["success"] = True
             result["mode"] = "dry_run"
             logger.info(
-                "[DRY-RUN] Would execute: %s %s (program=%s) — SSG updated, robot API skipped",
-                action_type, obj_name, prog,
+                "[DRY-RUN] Would execute: %s %s (api_call=%s) — SSG updated, robot API skipped",
+                action_type, obj_name, api_call,
             )
         else:
             try:
                 resp: Dict[str, Any] = {"success": False, "error": "no handler"}
-                # Dispatch based on action type
-                if action_type == "move_to_home":
-                    resp = robot.move_to_named("Home")
-                elif action_type.startswith("move_to_pick_"):
-                    # Extract named position from skill description or use prog
-                    pick_name = action.get("parameters", {}).get("named_position") or prog
-                    resp = robot.move_to_named(pick_name) if pick_name else resp
-                elif action_type == "move_to_basket_drop":
-                    resp = robot.move_to_named("Drop_Position_Basket")
-                elif action_type == "open_gripper":
-                    resp = robot.gripper_open()
-                elif action_type == "close_gripper":
-                    resp = robot.gripper_close()
-                elif prog:
-                    # Fallback: execute .prog file
-                    resp = robot.execute_program(prog)
+                params = action.get("parameters") or {}
+                if api_call:
+                    # Dispatch using the skill's api_call definition
+                    endpoint = api_call.get("endpoint", "")
+                    body = dict(api_call.get("body", {}))
+                    # Substitute any LLM-provided parameters into the body
+                    for k, v in params.items():
+                        if f"<{k}>" in str(body.get(k, "")):
+                            body[k] = v
+                        elif k not in body:
+                            body[k] = v
+                    resp = robot._post(endpoint, body)
+                elif skill and skill.category == "gripper":
+                    # Infer gripper action from skill id
+                    if "open" in action_type:
+                        resp = robot.gripper_open()
+                    elif "close" in action_type:
+                        resp = robot.gripper_close()
+                elif skill and skill.category == "motion":
+                    # Infer named position from skill description or parameters
+                    # Sorting skills encode the position name in the description:
+                    # "Move to Pick_White_Ball position via /api/move/named {name: Pick_White_Ball}"
+                    named_pos = params.get("position_name") or params.get("named_position")
+                    if not named_pos:
+                        # Parse "via /api/move/named {name: <Pos>}" from description
+                        import re
+                        m = re.search(r'\{name:\s*(\S+)\}', skill.description) if skill.description else None
+                        named_pos = m.group(1) if m else None
+                    if named_pos:
+                        resp = robot.move_to_named(named_pos)
+                    else:
+                        logger.warning("Cannot infer named position for skill '%s'", action_type)
+                else:
+                    logger.warning(
+                        "No api_call found for skill '%s' — action skipped",
+                        action_type,
+                    )
                 result["success"] = resp.get("success", False)
                 result["api_response"] = resp
             except Exception as e:
                 result["success"] = False
                 result["error"] = str(e)
 
-        # Update locations on success
-        if result.get("success"):
-            if action_type == "return_to_storage":
-                obj_locs[obj_name] = "storage"
-            elif action_type == "deliver_to_workplace":
-                obj_locs[obj_name] = "workplace"
+        # Update object locations from skill effects on success
+        if result.get("success") and skill:
+            for effect_key, effect_val in skill.effects.items():
+                # Effects like "resin_bottle.location": "workplace"
+                parts = effect_key.split(".")
+                if len(parts) == 2 and parts[1] == "location":
+                    obj_locs[parts[0]] = effect_val
 
         executed.append(result)
 
     # ── Sync execution results back into live SSG ─────────────
-    # Map action outcomes to SSG region IDs (flat state uses "storage",
-    # but SSG region nodes are "storage_area" and "workplace").
+    # Apply skill effects to SSG (e.g., "resin_bottle.location": "workplace")
     for ex in executed:
         if not ex.get("success"):
             continue
-        obj_name = ex.get("object_name", "")
-        action_type = ex.get("action_type", "")
-        if action_type == "deliver_to_workplace" and ssg.has_node(obj_name):
-            ssg.set_location(obj_name, "workplace")
-        elif action_type == "return_to_storage" and ssg.has_node(obj_name):
-            ssg.set_location(obj_name, "storage_area")
+        ex_skill = skills.get(ex.get("action_type", ""))
+        if not ex_skill:
+            continue
+        for effect_key, effect_val in ex_skill.effects.items():
+            parts = effect_key.split(".")
+            if len(parts) == 2 and parts[1] == "location" and ssg.has_node(parts[0]):
+                ssg.set_location(parts[0], effect_val)
 
     # Reset robot state after execution
+    _last_active_program = ""
     if robot_node and isinstance(robot_node, AgentNode):
         robot_node.state = AgentState.IDLE
         robot_node.current_action = None

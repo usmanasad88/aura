@@ -62,13 +62,15 @@
     },
     "robot_state": {
       "type": "string",
-      "description": "Robot execution status",
+      "source": "system",
+      "description": "Robot execution status (populated from robot API, not vision)",
       "valid_values": ["unknown", "idle", "busy"],
       "default": "unknown"
     },
     "robot_active_program": {
       "type": "string",
-      "description": "Current robot program id when busy",
+      "source": "system",
+      "description": "Current robot program id when busy (populated from robot API, not vision)",
       "default": ""
     }
   }

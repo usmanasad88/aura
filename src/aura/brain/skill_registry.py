@@ -108,6 +108,10 @@ class RobotSkill:
             for p in data.get("parameters", [])
         ]
         
+        metadata = dict(data.get("metadata", {}))
+        if "api_call" in data:
+            metadata["api_call"] = data["api_call"]
+
         return cls(
             id=data["id"],
             name=data["name"],
@@ -118,7 +122,7 @@ class RobotSkill:
             effects=data.get("effects", {}),
             estimated_duration_sec=data.get("estimated_duration_sec", 5.0),
             can_interrupt=data.get("can_interrupt", True),
-            metadata=data.get("metadata", {}),
+            metadata=metadata,
         )
 
 

@@ -49,6 +49,24 @@
       "justMyCode": false
     },
     {
+      "name": "AURA Live Screen Capture (hand_layup)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_aura.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task", "hand_layup",
+        "--screen-capture",
+        "--screen-monitor", "2",
+        "--screen-region", "0", "0", "1920", "1080",
+        "--live",
+        "--robot-url", "http://localhost:5050",
+        "--model", "gemini-3.1-flash-lite-preview"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
       "name": "Perception Demo (hand_layup)",
       "type": "python",
       "request": "launch",
