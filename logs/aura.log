@@ -1533,3 +1533,1142 @@ AttributeError: 'PerceptionOutput' object has no attribute 'frame_count'
 2026-01-31 19:55:14,981 - aura.utils.config - INFO - Logging configured: level=INFO
 2026-01-31 19:55:14,981 - __main__ - INFO - Loaded config from /home/mani/Repos/config/weigh_bottles.yaml
 2026-01-31 19:55:14,981 - __main__ - INFO - Initializing task-specific monitors...
+2026-04-11 18:04:47,717 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-11 18:04:47,736 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-11 18:04:47,736 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-11 18:04:47,757 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'])
+2026-04-11 18:04:47,765 - aura.sources.realtime_video - INFO - RealtimeVideoSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  speed=0.20x  max=None
+2026-04-11 18:04:48,542 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_state', 'robot_active_program'}
+2026-04-11 18:04:48,843 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260411_180448
+2026-04-11 18:04:48,843 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:04:58,521 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:04:59,764 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-04-11 18:05:01,083 - aura.monitors.perception_module - ERROR - Perception processing failed: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 15.58 GiB of which 26.12 MiB is free. Process 10852 has 160.73 MiB memory in use. Process 13912 has 284.00 MiB memory in use. Process 14060 has 13.99 GiB memory in use. Including non-PyTorch memory, this process has 242.00 MiB memory in use. Of the allocated memory 746.00 KiB is allocated by PyTorch, and 1.27 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/workflow/nodes.py", line 539, in run_perception_node
+    result = asyncio.get_event_loop().run_until_complete(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/snap/code/232/.local/share/uv/python/cpython-3.12.8-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 702, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+RuntimeError: There is no current event loop in thread 'asyncio_0'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 230, in process_frame
+    self._ensure_model_loaded()
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 202, in _ensure_model_loaded
+    _load_sam3()
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 39, in _load_sam3
+    _sam3_model = build_sam3_image_model()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 591, in build_sam3_image_model
+    vision_encoder = _create_vision_backbone(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 505, in _create_vision_backbone
+    position_encoding = _create_position_encoding(precompute_resolution=1008)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 62, in _create_position_encoding
+    return PositionEmbeddingSine(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model/position_encoding.py", line 48, in __init__
+    self.forward(tensors)
+  File "/home/mani/Repos/aura/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model/position_encoding.py", line 113, in forward
+    pos_x = x_embed[:, :, :, None] / dim_t
+            ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 15.58 GiB of which 26.12 MiB is free. Process 10852 has 160.73 MiB memory in use. Process 13912 has 284.00 MiB memory in use. Process 14060 has 13.99 GiB memory in use. Including non-PyTorch memory, this process has 242.00 MiB memory in use. Of the allocated memory 746.00 KiB is allocated by PyTorch, and 1.27 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-04-11 18:05:01,086 - aura.dashboard.server - ERROR - Workflow error: 'NoneType' object has no attribute 'get'
+2026-04-11 18:07:04,699 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-11 18:07:04,718 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-11 18:07:04,719 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-11 18:07:04,734 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-11 18:07:04,741 - aura.sources.realtime_video - INFO - RealtimeVideoSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  speed=1.00x  max=None
+2026-04-11 18:07:05,518 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-11 18:07:05,813 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260411_180705
+2026-04-11 18:07:05,814 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:07:12,001 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:07:12,015 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260411_180712
+2026-04-11 18:07:12,016 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:07:12,016 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-11 18:07:12,016 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (2 system-sourced)
+2026-04-11 18:07:12,016 - aura.brain.decision_engine - INFO - Initialized 20 state variables
+2026-04-11 18:07:12,016 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-11 18:07:12,017 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-11 18:07:12,047 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:12,047 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4140 tokens: 2092 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:12,223 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:12,223 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4412 tokens: 3388 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:17,251 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:17,251 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4412 tokens: 3388 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:27,281 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:27,281 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4412 tokens: 3388 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:27,281 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4412 tokens: 3388 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:27,296 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:27,297 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4140 tokens: 2092 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:27,536 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:27,537 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4751 tokens: 3727 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:32,569 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:32,569 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4751 tokens: 3727 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:42,602 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:42,602 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4751 tokens: 3727 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:42,603 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4751 tokens: 3727 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:42,619 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:42,620 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4141 tokens: 2093 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:42,847 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:42,847 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:47,879 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:47,879 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:57,912 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:57,912 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:57,912 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:57,930 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:57,931 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4141 tokens: 2093 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:07:58,152 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:07:58,152 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:03,184 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:03,185 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:13,217 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:13,217 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:13,217 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:13,233 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:13,234 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4141 tokens: 2093 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:13,469 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:13,470 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:18,499 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:18,499 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:28,532 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:28,533 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:28,533 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:28,549 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:28,550 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4141 tokens: 2093 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:28,744 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:28,744 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:33,774 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:08:33,774 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4752 tokens: 3728 tokens from the input messages and 1024 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:08:42,944 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-04-11 18:15:29,355 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-11 18:15:29,372 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-11 18:15:29,373 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-11 18:15:29,388 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-11 18:15:29,408 - aura.sources.realtime_video - INFO - RealtimeVideoSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  speed=1.00x  max=None
+2026-04-11 18:15:30,157 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-11 18:15:30,448 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260411_181530
+2026-04-11 18:15:30,448 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:15:36,709 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:15:36,725 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260411_181536
+2026-04-11 18:15:36,725 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:15:36,725 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-11 18:15:36,725 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (2 system-sourced)
+2026-04-11 18:15:36,726 - aura.brain.decision_engine - INFO - Initialized 20 state variables
+2026-04-11 18:15:36,726 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-11 18:15:36,726 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-11 18:15:36,756 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:15:36,756 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4146 tokens: 2098 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:15:43,546 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:15:43,563 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:15:43,564 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4151 tokens: 2103 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:15:43,728 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:15:43,729 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4252 tokens: 3740 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:15:48,761 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:15:48,761 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4252 tokens: 3740 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:15:58,794 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:15:58,795 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4252 tokens: 3740 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:15:58,795 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4252 tokens: 3740 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:15:58,811 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:15:58,811 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4152 tokens: 2104 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:15:58,976 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:15:58,976 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4253 tokens: 3741 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:16:27,627 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-11 18:16:27,645 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-11 18:16:27,645 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-11 18:16:27,660 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-11 18:16:27,676 - aura.sources.realtime_video - INFO - RealtimeVideoSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  speed=1.00x  max=None
+2026-04-11 18:16:28,428 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_state', 'robot_active_program'}
+2026-04-11 18:16:28,721 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260411_181628
+2026-04-11 18:16:28,721 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:16:33,241 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:33,255 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260411_181633
+2026-04-11 18:16:33,255 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:16:33,256 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-11 18:16:33,256 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-11 18:16:33,256 - aura.brain.decision_engine - INFO - Initialized 16 state variables
+2026-04-11 18:16:33,256 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-11 18:16:33,257 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-11 18:16:34,692 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:39,529 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:40,863 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:45,839 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:47,252 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:52,191 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:53,391 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:16:58,212 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:44:54,457 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-11 18:44:54,475 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-11 18:44:54,475 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-11 18:44:54,497 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-11 18:44:54,512 - aura.sources.realtime_video - INFO - RealtimeVideoSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  speed=0.20x  max=None
+2026-04-11 18:44:55,260 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-11 18:44:55,560 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260411_184455
+2026-04-11 18:44:55,560 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:45:02,071 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:45:02,085 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260411_184502
+2026-04-11 18:45:02,085 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 18:45:02,086 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-11 18:45:02,086 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (2 system-sourced)
+2026-04-11 18:45:02,086 - aura.brain.decision_engine - INFO - Initialized 20 state variables
+2026-04-11 18:45:02,086 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-11 18:45:02,087 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-11 18:45:02,115 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:45:02,115 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4143 tokens: 2095 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:45:08,645 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:45:08,662 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:45:08,662 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4140 tokens: 2092 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:45:15,213 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:45:15,231 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:45:15,231 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4145 tokens: 2097 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 18:45:21,908 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 18:45:21,925 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-11 18:45:21,925 - aura.brain.decision_engine - ERROR - LLM reasoning error: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4145 tokens: 2097 tokens from the input messages and 2048 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-11 19:44:23,790 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-11 19:44:23,808 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-11 19:44:23,809 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-11 19:44:23,832 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-11 19:44:23,847 - aura.sources.realtime_video - INFO - RealtimeVideoSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  speed=0.50x  max=None
+2026-04-11 19:44:24,583 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_state', 'robot_active_program'}
+2026-04-11 19:44:24,872 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260411_194424
+2026-04-11 19:44:24,872 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 19:44:31,490 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:44:31,511 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260411_194431
+2026-04-11 19:44:31,511 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-11 19:44:31,512 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-11 19:44:31,512 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (2 system-sourced)
+2026-04-11 19:44:31,512 - aura.brain.decision_engine - INFO - Initialized 20 state variables
+2026-04-11 19:44:31,512 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-11 19:44:31,513 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-11 19:44:33,356 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:44:40,418 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:44:42,290 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:44:49,306 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:44:51,821 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:44:58,907 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:00,996 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:07,944 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:10,105 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:17,201 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:19,150 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:25,923 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:27,852 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:34,903 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:36,937 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:43,624 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:45,297 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:52,276 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:45:54,235 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:00,972 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:02,918 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:09,896 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:11,853 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:19,089 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:21,020 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:28,425 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:30,840 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:38,173 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:40,490 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:47,675 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:49,610 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:56,630 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:46:58,597 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:04,971 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:07,034 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:13,665 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:15,517 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:22,128 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:24,372 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:30,970 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:32,632 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:39,170 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:40,922 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:47,250 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:49,058 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:55,602 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:47:57,577 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:04,120 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:06,138 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:12,715 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:14,688 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:21,664 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:23,572 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:30,160 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:31,836 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:38,487 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:39,970 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:46,547 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:48,396 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:54,746 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:48:56,621 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:03,220 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:05,068 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:11,644 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:15,341 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:15,344 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_roller_to_workplace roller (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_roller_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-11 19:49:21,894 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:23,680 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:30,091 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:31,589 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:38,285 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:39,914 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:46,794 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:48,649 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:49:54,811 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:02,868 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:02,871 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_roller_to_workplace roller (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_roller_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-11 19:50:09,390 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:12,071 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:12,074 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-11 19:50:18,638 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:20,574 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:26,736 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:28,667 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:35,153 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:36,537 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:43,142 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:45,302 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:52,032 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:50:54,047 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:00,487 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:02,393 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:08,864 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:11,296 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:11,299 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-11 19:51:17,673 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:19,155 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:25,619 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:27,566 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:34,029 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:35,590 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:42,127 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:43,706 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:50,144 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:51,621 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:57,896 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:51:59,579 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:52:06,244 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:52:09,082 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:52:15,816 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 19:52:17,777 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-11 20:27:16,577 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-04-13 00:12:52,248 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-13 00:12:52,267 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-13 00:12:52,268 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-13 00:12:52,289 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'])
+2026-04-13 00:12:52,307 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  skip=30  max=None
+2026-04-13 00:12:52,992 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-13 00:12:53,322 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260413_001253
+2026-04-13 00:12:53,322 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:12:53,562 - openai._base_client - INFO - Retrying request to /chat/completions in 0.402320 seconds
+2026-04-13 00:12:53,966 - openai._base_client - INFO - Retrying request to /chat/completions in 0.829545 seconds
+2026-04-13 00:12:54,797 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Connection error.
+2026-04-13 00:12:59,801 - openai._base_client - INFO - Retrying request to /chat/completions in 0.421981 seconds
+2026-04-13 00:13:00,225 - openai._base_client - INFO - Retrying request to /chat/completions in 0.867743 seconds
+2026-04-13 00:13:01,095 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Connection error.
+2026-04-13 00:13:02,407 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-04-13 00:14:08,635 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-13 00:14:08,655 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-13 00:14:08,655 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-13 00:14:08,685 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'])
+2026-04-13 00:14:08,700 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  skip=30  max=None
+2026-04-13 00:14:09,346 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_state', 'robot_active_program'}
+2026-04-13 00:14:09,642 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260413_001409
+2026-04-13 00:14:09,642 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:14:09,838 - openai._base_client - INFO - Retrying request to /chat/completions in 0.401662 seconds
+2026-04-13 00:14:10,241 - openai._base_client - INFO - Retrying request to /chat/completions in 0.820967 seconds
+2026-04-13 00:14:11,064 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Connection error.
+2026-04-13 00:14:29,044 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:14:30,831 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-04-13 00:14:32,371 - aura.monitors.perception_module - ERROR - Perception processing failed: CUDA error: out of memory
+Search for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/workflow/nodes.py", line 570, in run_perception_node
+    result = asyncio.get_event_loop().run_until_complete(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/snap/code/232/.local/share/uv/python/cpython-3.12.8-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 702, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+RuntimeError: There is no current event loop in thread 'asyncio_0'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 230, in process_frame
+    self._ensure_model_loaded()
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 202, in _ensure_model_loaded
+    _load_sam3()
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 39, in _load_sam3
+    _sam3_model = build_sam3_image_model()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 591, in build_sam3_image_model
+    vision_encoder = _create_vision_backbone(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 505, in _create_vision_backbone
+    position_encoding = _create_position_encoding(precompute_resolution=1008)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 62, in _create_position_encoding
+    return PositionEmbeddingSine(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model/position_encoding.py", line 47, in __init__
+    tensors = torch.zeros((1, 1) + size, device="cuda")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: out of memory
+Search for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+2026-04-13 00:14:32,373 - aura.dashboard.server - ERROR - Workflow error: 'NoneType' object has no attribute 'get'
+2026-04-13 00:16:36,910 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-13 00:16:36,928 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-13 00:16:36,929 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-13 00:16:36,950 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'])
+2026-04-13 00:16:36,966 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  skip=30  max=None
+2026-04-13 00:16:37,733 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-13 00:16:38,029 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260413_001638
+2026-04-13 00:16:38,030 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:16:44,338 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:16:45,624 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-04-13 00:16:53,510 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-04-13 00:16:53,920 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-04-13 00:16:57,629 - aura.monitors.perception_module - ERROR - Perception processing failed: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 15.58 GiB of which 31.75 MiB is free. Process 260274 has 326.00 MiB memory in use. Process 260467 has 13.80 GiB memory in use. Process 263063 has 165.79 MiB memory in use. Including non-PyTorch memory, this process has 402.00 MiB memory in use. Of the allocated memory 154.00 MiB is allocated by PyTorch, and 8.00 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/workflow/nodes.py", line 570, in run_perception_node
+    result = asyncio.get_event_loop().run_until_complete(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/snap/code/232/.local/share/uv/python/cpython-3.12.8-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 702, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+RuntimeError: There is no current event loop in thread 'asyncio_0'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 230, in process_frame
+    self._ensure_model_loaded()
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 202, in _ensure_model_loaded
+    _load_sam3()
+  File "/home/mani/Repos/aura/src/aura/monitors/perception_module.py", line 39, in _load_sam3
+    _sam3_model = build_sam3_image_model()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 638, in build_sam3_image_model
+    model = _setup_device_and_mode(model, device, eval_mode)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/third_party/sam3/sam3/model_builder.py", line 553, in _setup_device_and_mode
+    model = model.cuda()
+            ^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1084, in cuda
+    return self._apply(lambda t: t.cuda(device))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mani/Repos/aura/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 930, in _apply
+    module._apply(fn)
+  File "/home/mani/Repos/aura/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 930, in _apply
+    module._apply(fn)
+  File "/home/mani/Repos/aura/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 930, in _apply
+    module._apply(fn)
+  [Previous line repeated 4 more times]
+  File "/home/mani/Repos/aura/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 957, in _apply
+    param_applied = fn(param)
+                    ^^^^^^^^^
+  File "/home/mani/Repos/aura/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1084, in <lambda>
+    return self._apply(lambda t: t.cuda(device))
+                                 ^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 15.58 GiB of which 31.75 MiB is free. Process 260274 has 326.00 MiB memory in use. Process 260467 has 13.80 GiB memory in use. Process 263063 has 165.79 MiB memory in use. Including non-PyTorch memory, this process has 402.00 MiB memory in use. Of the allocated memory 154.00 MiB is allocated by PyTorch, and 8.00 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-04-13 00:16:57,825 - aura.dashboard.server - ERROR - Workflow error: 'NoneType' object has no attribute 'get'
+2026-04-13 00:20:25,927 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-13 00:20:25,945 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-13 00:20:25,946 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-13 00:20:25,966 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-13 00:20:25,982 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  skip=30  max=None
+2026-04-13 00:20:26,768 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-13 00:20:27,066 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260413_002027
+2026-04-13 00:20:27,066 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:20:33,267 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:20:33,282 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260413_002033
+2026-04-13 00:20:33,282 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:20:33,282 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-13 00:20:33,283 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (2 system-sourced)
+2026-04-13 00:20:33,283 - aura.brain.decision_engine - INFO - Initialized 20 state variables
+2026-04-13 00:20:33,283 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-13 00:20:33,283 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-13 00:20:34,949 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:20:35,077 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:20:35,078 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:20:40,110 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:20:40,111 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:20:50,143 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:20:50,143 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:20:50,143 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:20:51,856 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:20:51,986 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:20:51,986 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:20:57,018 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:20:57,019 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:07,052 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:07,053 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:07,053 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:08,494 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:21:08,631 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:08,632 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:13,664 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:13,664 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:23,697 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:23,698 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:23,698 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:25,053 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:21:25,188 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:25,188 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:30,222 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:30,223 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:40,256 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:40,256 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:40,256 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:41,901 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:21:42,062 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:42,063 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:47,096 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:47,097 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:57,131 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:57,131 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:57,131 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:21:58,811 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:21:58,989 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:21:58,990 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:22:04,022 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:22:04,023 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:22:14,056 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-13 00:22:14,056 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:22:14,056 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: Error code: 400 - {'object': 'error', 'message': "Requested token count exceeds the model's maximum context length of 4096 tokens. You requested a total of 4390 tokens: 3878 tokens from the input messages and 512 tokens for the completion. Please reduce the number of tokens in the input messages or the completion to fit within the limit.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+2026-04-13 00:22:15,209 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-04-13 00:24:00,033 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-13 00:24:00,051 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-13 00:24:00,051 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-13 00:24:00,071 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-13 00:24:00,094 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  skip=30  max=None
+2026-04-13 00:24:00,880 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-13 00:24:01,178 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260413_002401
+2026-04-13 00:24:01,178 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:24:09,871 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:09,885 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260413_002409
+2026-04-13 00:24:09,885 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:24:09,885 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-13 00:24:09,885 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (2 system-sourced)
+2026-04-13 00:24:09,885 - aura.brain.decision_engine - INFO - Initialized 20 state variables
+2026-04-13 00:24:09,886 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-13 00:24:09,886 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-13 00:24:11,539 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:17,974 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:19,866 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:26,221 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:27,576 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:34,110 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:35,612 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:42,145 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:43,865 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:50,405 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:51,855 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:58,316 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:24:59,803 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:06,286 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:07,776 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:14,275 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:15,767 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:22,391 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:23,955 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:30,658 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:33,281 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:40,000 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:41,748 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:48,382 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:50,568 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:57,212 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:59,448 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:25:59,451 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: gripper_close resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/gripper', 'body': {'action': 'close'}}) — SSG updated, robot API skipped
+2026-04-13 00:26:06,090 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:07,681 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:14,329 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:16,378 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:16,381 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: gripper_close hardener_bottle (api_call={'method': 'POST', 'endpoint': '/api/gripper', 'body': {'action': 'close'}}) — SSG updated, robot API skipped
+2026-04-13 00:26:22,969 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:25,197 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:25,200 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: add_resin_to_cup resin_bottle (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:26:31,894 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:34,327 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:34,330 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: add_resin_to_cup resin_bottle (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:26:40,923 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:43,120 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:43,123 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture cup (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:26:49,789 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:51,905 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:26:51,908 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:26:58,487 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:02,587 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:02,590 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_roller_to_workplace None (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_roller_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:27:09,272 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:10,985 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:17,521 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:19,129 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:25,660 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:27,649 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:34,187 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:36,322 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:36,325 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture cup (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:27:42,858 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:45,287 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:45,290 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_to_named_position None (api_call={'method': 'POST', 'endpoint': '/api/move/named', 'body': {'name': '<position_name>'}}) — SSG updated, robot API skipped
+2026-04-13 00:27:51,801 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:53,241 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:27:59,841 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:02,133 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:02,136 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:28:08,689 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:11,030 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:11,033 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:28:17,783 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:19,733 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:26,421 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:28,493 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:28,497 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture cup (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:28:35,085 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:37,212 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:37,216 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:28:43,816 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:45,289 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:51,851 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:53,814 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:28:53,817 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:29:00,357 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:02,271 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:02,274 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:29:08,825 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:10,685 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:10,688 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:29:17,202 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:19,142 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:19,145 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:29:25,695 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:27,865 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:34,390 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:36,582 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:36,585 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_to_named_position None (api_call={'method': 'POST', 'endpoint': '/api/move/named', 'body': {'name': '<position_name>'}}) — SSG updated, robot API skipped
+2026-04-13 00:29:43,219 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:44,773 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:51,339 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:53,210 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:29:59,876 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:01,540 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:08,152 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:09,818 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:16,275 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:17,855 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:24,330 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:25,807 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:32,360 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:33,709 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:40,223 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:41,948 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:48,479 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:50,299 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:56,929 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:30:58,350 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:04,903 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:06,567 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:13,150 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:14,188 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:20,671 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:22,498 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:28,991 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:30,304 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:36,814 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:38,329 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:44,798 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:46,407 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:52,937 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:31:54,299 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:00,842 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:02,490 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:08,955 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:10,399 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:16,867 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:18,168 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:24,585 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:26,204 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:32,645 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:34,085 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:40,755 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:42,530 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:49,170 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:51,069 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:57,614 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:32:59,549 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:06,093 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:07,946 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:14,502 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:16,061 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:22,624 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:24,289 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:30,869 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:32,979 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:39,498 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:41,287 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:47,823 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:49,845 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:56,389 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:33:58,238 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:04,790 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:06,628 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:13,197 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:14,769 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:21,335 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:23,489 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:30,077 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:31,856 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:38,628 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:40,560 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:47,334 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:48,979 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:55,688 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:34:57,181 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:03,926 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:05,723 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:12,585 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:14,550 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:21,293 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:23,176 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:30,012 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:31,835 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:38,663 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:40,425 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:47,217 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:49,078 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:55,882 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:35:58,047 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:04,683 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:08,834 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:08,838 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_roller_to_workplace roller (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_roller_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:36:15,574 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:17,375 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:24,099 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:25,765 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:32,401 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:34,435 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:41,123 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:43,422 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:50,083 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:51,942 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:36:58,716 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:00,301 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:07,133 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:08,700 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:15,371 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:17,057 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:23,829 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:25,541 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:32,303 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:33,938 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:40,613 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:42,193 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:48,861 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:50,539 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:57,279 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:37:59,005 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:05,438 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:07,682 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:07,686 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: place_cup_on_scale cup (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:38:14,403 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:16,132 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:22,745 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:24,505 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:31,190 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:32,973 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:39,726 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:41,626 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:48,227 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:49,999 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:56,699 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:38:58,434 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:05,161 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:07,115 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:13,761 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:15,448 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:22,043 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:23,663 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:30,384 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:32,325 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:38,909 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:40,713 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:47,263 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:49,015 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:55,682 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:39:57,507 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:04,133 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:05,614 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:12,177 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:13,548 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:20,103 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:21,569 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:28,127 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:29,520 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:36,080 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:38,264 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:44,798 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:46,498 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:53,026 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:40:54,721 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:01,261 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:02,982 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:09,502 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:11,204 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:17,806 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:19,699 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:26,224 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:27,886 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:34,414 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:36,205 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:42,758 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:44,516 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:51,007 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:53,232 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:41:59,710 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:01,071 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:07,568 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:09,000 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:15,555 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:17,298 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:23,796 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:25,367 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:31,890 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:34,018 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:40,646 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:42,025 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:48,631 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:50,604 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:57,500 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:42:59,532 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:07,546 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:09,357 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:15,813 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:17,533 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:23,999 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:25,870 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:32,441 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:34,240 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:40,883 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:42,898 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:49,815 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:51,557 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:58,331 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:43:59,704 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:06,539 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:08,322 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:15,115 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:16,773 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:23,562 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:25,702 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:25,705 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:44:32,475 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:34,074 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:40,856 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:42,332 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:49,179 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:51,410 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:51,414 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:44:58,195 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:44:59,733 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:06,532 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:08,090 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:14,926 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:16,569 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:23,366 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:25,689 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:25,693 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_hardener_to_workplace hardener_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_hardener_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:45:32,552 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:34,225 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:40,944 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:42,570 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:49,358 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:51,095 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:45:57,807 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:00,074 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:00,077 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_hardener_to_workplace None (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_hardener_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:46:06,817 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:08,791 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:15,630 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:17,181 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:23,980 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:25,429 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:32,192 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:33,939 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:40,701 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:42,130 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:48,919 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:50,457 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:57,130 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:46:59,096 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:05,597 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:07,416 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:13,964 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:16,439 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:16,442 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture cup (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:47:22,916 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:25,237 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:25,241 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_to_named_position None (api_call={'method': 'POST', 'endpoint': '/api/move/named', 'body': {'name': '<position_name>'}}) — SSG updated, robot API skipped
+2026-04-13 00:47:31,846 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:33,724 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:33,728 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture cup (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:47:40,345 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:43,153 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:43,156 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:47:49,627 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:51,104 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:47:59,150 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:01,970 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:01,974 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture cup (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:48:08,760 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:11,119 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:11,122 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:48:17,676 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:19,469 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:26,201 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:28,049 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:34,745 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:36,849 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:36,852 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:48:43,568 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:46,091 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:46,094 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: weigh_mixture None (api_call=None) — SSG updated, robot API skipped
+2026-04-13 00:48:53,011 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:48:54,666 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:01,466 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:03,452 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:10,045 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:12,507 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:12,511 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:49:19,417 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:21,681 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:28,546 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:30,546 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:37,350 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:39,961 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:39,964 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_hardener_to_workplace hardener_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_hardener_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:49:46,839 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:49,511 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:56,307 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:49:58,300 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:05,131 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:07,027 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:13,746 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:15,600 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:22,326 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:24,431 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:31,281 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:33,082 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:39,938 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:41,955 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:48,725 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:50,623 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:50:57,420 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:02,071 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:02,075 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: gripper_close resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/gripper', 'body': {'action': 'close'}}) — SSG updated, robot API skipped
+2026-04-13 00:51:08,928 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:10,947 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:17,954 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:20,388 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:27,406 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:29,792 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:29,796 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: gripper_close resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/gripper', 'body': {'action': 'close'}}) — SSG updated, robot API skipped
+2026-04-13 00:51:36,736 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:39,218 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:46,108 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:54,870 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:51:54,871 - aura.brain.decision_engine - ERROR - LLM reasoning error: Unterminated string starting at: line 7 column 16 (char 143)
+2026-04-13 00:52:01,786 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:10,246 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:10,249 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: gripper_close resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/gripper', 'body': {'action': 'close'}}) — SSG updated, robot API skipped
+2026-04-13 00:52:17,195 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:20,448 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:20,451 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: gripper_close resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/gripper', 'body': {'action': 'close'}}) — SSG updated, robot API skipped
+2026-04-13 00:52:27,288 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:29,305 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:36,223 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:38,402 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:45,355 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:47,626 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:54,518 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:52:57,036 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:03,956 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:05,592 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:12,441 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:14,551 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:21,380 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:23,120 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:29,980 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:31,684 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:38,485 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:40,007 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:46,823 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:48,774 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:55,623 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:53:57,223 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:03,898 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:05,579 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:12,480 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:15,574 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:15,577 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:54:22,257 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:23,741 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:30,489 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:32,152 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:39,042 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:41,221 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:47,797 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:49,334 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:55,971 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:54:57,888 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:04,463 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:06,131 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:12,694 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:14,271 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:20,909 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:22,513 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:28,934 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:30,979 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:37,486 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:39,002 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:45,515 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:46,882 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:53,435 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:55:55,269 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:01,857 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:03,748 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:10,364 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:11,732 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:18,342 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:19,676 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:26,261 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:27,751 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:34,349 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:35,588 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:42,261 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:43,949 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:50,515 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:52,450 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:56:59,048 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:00,693 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:07,295 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:09,050 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:15,709 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:17,178 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:23,794 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:25,732 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:32,405 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:33,892 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:40,445 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:42,953 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:57:42,956 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-04-13 00:58:30,878 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-04-13 00:59:06,354 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-13 00:59:06,372 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-13 00:59:06,373 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-13 00:59:06,393 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-13 00:59:06,414 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4  1920x1080 @ 30.0 fps  7093 frames (236.5s)  skip=30  max=None
+2026-04-13 00:59:07,098 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded system-sourced state vars from prompt: {'robot_active_program', 'robot_state'}
+2026-04-13 00:59:07,398 - aura.monitors.intent_monitor - INFO - Prompt logger session: logs/intent_monitor/session_20260413_005907
+2026-04-13 00:59:07,398 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:59:13,909 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:13,923 - aura.brain.decision_engine - INFO - Decision prompt logger session: logs/decision_engine/session_20260413_005913
+2026-04-13 00:59:13,923 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: Qwen/Qwen3.5-4B, backend: sglang
+2026-04-13 00:59:13,923 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-04-13 00:59:13,924 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (2 system-sourced)
+2026-04-13 00:59:13,924 - aura.brain.decision_engine - INFO - Initialized 20 state variables
+2026-04-13 00:59:13,924 - aura.brain.skill_registry - INFO - Loaded 15 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-04-13 00:59:13,924 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-04-13 00:59:15,390 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:22,132 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:23,660 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:30,219 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:32,054 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:38,836 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:40,418 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:47,141 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:48,542 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:55,275 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 00:59:56,825 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:03,503 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:05,440 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:12,437 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:14,109 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:21,047 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:22,716 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:29,508 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:31,656 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:00:31,659 - aura.workflow.nodes - WARNING - Reached max cycles (10), stopping workflow
+2026-04-13 01:02:24,582 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/default.yaml
+2026-04-13 01:02:24,585 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-04-13 01:02:24,585 - aura.core.scene_graph.graph - INFO - Initialized task state with 16 variables (2 system-sourced)
+2026-04-13 01:02:24,586 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-04-13 01:02:24,604 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'])
+2026-04-13 01:02:24,675 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/sorting/perception_demo_input.mp4  1920x1080 @ 30.0 fps  903 frames (30.1s)  skip=30  max=None
+2026-04-13 01:02:31,190 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:02:32,673 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:02:39,177 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:02:41,730 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:02:41,733 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_to_named_position None (api_call={'method': 'POST', 'endpoint': '/api/move/named', 'body': {'name': '<position_name>'}}) — SSG updated, robot API skipped
+2026-04-13 01:02:48,308 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:02:50,103 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:02:56,749 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:02:58,719 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:05,367 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:06,977 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:13,644 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:15,484 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:22,123 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:24,412 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:31,097 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:32,362 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:39,147 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:41,031 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:47,939 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:49,679 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:56,513 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:03:58,468 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:05,343 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:07,674 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:14,465 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:16,195 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:23,017 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:24,890 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:31,688 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:33,755 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:40,604 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:42,399 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:49,119 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:50,839 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:57,718 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:04:59,269 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:06,091 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:07,696 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:14,530 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:16,213 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:23,040 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:24,500 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:31,261 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:32,809 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:39,706 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:41,176 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:47,993 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:49,717 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:56,605 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:05:58,110 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:06:04,944 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-13 01:06:06,674 - httpx - INFO - HTTP Request: POST http://localhost:8100/v1/chat/completions "HTTP/1.1 200 OK"

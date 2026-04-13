@@ -93,6 +93,8 @@ class AuraGraphState(TypedDict, total=False):
 
     # ── frame / video state ────────────────────────────────────────────
     frames_buffer: List[Any]           # recent cv2 images (numpy arrays)
+    frames_buffer_timestamps: List[float]  # video timestamps for each frame in buffer
+    frames_buffer_frame_nums: List[int]    # frame numbers for each frame in buffer
     current_frame_num: int
     current_timestamp_sec: float
 

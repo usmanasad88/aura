@@ -395,3 +395,4 @@ class BodyPoseOutput(MonitorOutput):
     persons: List[PersonBodyPose] = field(default_factory=list)
     num_persons: int = 0
     inference_time_sec: float = 0.0
+    mesh_paths: List[str] = field(default_factory=list)  # PLY files saved by server

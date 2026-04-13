@@ -1,0 +1,635 @@
+/* AURA Launcher Styles — same palette as monitoring dashboard */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-dark: #0f0f1a;
+    --bg-panel: #161625;
+    --bg-panel-alt: #1c1c30;
+    --bg-input: #1a1a2e;
+    --border: #2a2a4a;
+    --border-focus: #00d9ff;
+    --cyan: #00d9ff;
+    --cyan-dim: #00d9ff40;
+    --green: #00ff88;
+    --green-dim: #00ff8840;
+    --yellow: #ffc107;
+    --yellow-dim: #ffc10740;
+    --red: #ff4444;
+    --red-dim: #ff444440;
+    --purple: #b388ff;
+    --text: #e8e8f0;
+    --text-dim: #8888aa;
+    --text-muted: #555570;
+    --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace;
+    --radius: 8px;
+    --radius-sm: 4px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+
+header {
+    background: var(--bg-panel);
+    padding: 0.6rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 0.15em;
+}
+
+.header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+}
+
+.subtitle {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-idle {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.status-running {
+    color: var(--green);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* ── Main Layout ────────────────────────────────────────────── */
+
+main {
+    flex: 1;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+#config-form {
+    width: 100%;
+    max-width: 780px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* ── Config Card ────────────────────────────────────────────── */
+
+.config-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+}
+
+.config-card h2 {
+    color: var(--cyan);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* ── Field ──────────────────────────────────────────────────── */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.field label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.field-row {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+}
+
+.field-row:last-child {
+    margin-bottom: 0;
+}
+
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+
+.align-center {
+    align-items: center;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────── */
+
+select,
+input[type="text"],
+input[type="number"] {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 0.85rem;
+    padding: 0.5rem 0.6rem;
+    font-family: var(--mono);
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238888aa'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    padding-right: 2rem;
+}
+
+input::placeholder {
+    color: var(--text-muted);
+}
+
+select:focus,
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 1px var(--cyan-dim);
+}
+
+select:disabled,
+input:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Range Slider ───────────────────────────────────────────── */
+
+.range-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+input[type="range"] {
+    flex: 1;
+    height: 4px;
+    appearance: none;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    cursor: pointer;
+    border: 2px solid var(--bg-dark);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    cursor: pointer;
+    border: 2px solid var(--bg-dark);
+}
+
+.range-value {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--cyan);
+    min-width: 3em;
+    text-align: right;
+}
+
+/* ── Source Tabs ─────────────────────────────────────────────── */
+
+.source-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0.8rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.tab {
+    flex: 1;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: none;
+    background: var(--bg-input);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-right: 1px solid var(--border);
+}
+
+.tab:last-child {
+    border-right: none;
+}
+
+.tab:hover {
+    background: var(--bg-panel-alt);
+    color: var(--text);
+}
+
+.tab.active {
+    background: var(--cyan-dim);
+    color: var(--cyan);
+}
+
+/* ── Source Panels ───────────────────────────────────────────── */
+
+.source-panel {
+    display: none;
+}
+
+.source-panel.active {
+    display: block;
+}
+
+/* ── Toggle Switch ──────────────────────────────────────────── */
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border-radius: 10px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: var(--text-dim);
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.toggle-label input:checked + .toggle-switch {
+    background: var(--cyan-dim);
+}
+
+.toggle-label input:checked + .toggle-switch::after {
+    left: 18px;
+    background: var(--cyan);
+}
+
+.toggle-label.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Radio Group ────────────────────────────────────────────── */
+
+.radio-group {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.radio-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 120px;
+    text-align: center;
+}
+
+.radio-option input[type="radio"] {
+    display: none;
+}
+
+.radio-option:hover {
+    border-color: var(--text-dim);
+}
+
+.radio-option.selected {
+    border-color: var(--cyan);
+    background: var(--cyan-dim);
+}
+
+.radio-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.radio-desc {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+}
+
+.radio-option.selected .radio-label {
+    color: var(--cyan);
+}
+
+.radio-group.disabled .radio-option {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ── Hint / Info ────────────────────────────────────────────── */
+
+.hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+.info-banner {
+    background: var(--yellow-dim);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--yellow);
+    margin-top: 0.6rem;
+}
+
+.error-text {
+    color: var(--red);
+    font-size: 0.75rem;
+    margin-top: 0.4rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ── Preview Area ───────────────────────────────────────────── */
+
+.preview-area {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border);
+}
+
+#preview-container {
+    margin-top: 0.6rem;
+    position: relative;
+    background: #000;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    max-width: 480px;
+}
+
+#preview-container img {
+    width: 100%;
+    display: block;
+}
+
+.preview-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 0.3rem 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: #fff;
+    text-align: right;
+}
+
+/* ── Overrides Details ──────────────────────────────────────── */
+
+.overrides-details {
+    margin-top: 0.6rem;
+}
+
+.overrides-details summary {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    user-select: none;
+    padding: 0.3rem 0;
+}
+
+.overrides-details summary:hover {
+    color: var(--text);
+}
+
+.overrides-details[open] summary {
+    margin-bottom: 0.6rem;
+    color: var(--cyan);
+}
+
+.overrides-content {
+    padding-left: 0.4rem;
+    border-left: 2px solid var(--border);
+    padding-top: 0.2rem;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+
+.btn {
+    padding: 0.5rem 1.2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.btn-secondary {
+    background: var(--bg-input);
+    color: var(--text-dim);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-panel-alt);
+    color: var(--text);
+    border-color: var(--text-dim);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--cyan-dim), rgba(0, 255, 136, 0.15));
+    color: var(--cyan);
+    border-color: var(--cyan);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.3), rgba(0, 255, 136, 0.25));
+    box-shadow: 0 0 16px var(--cyan-dim);
+}
+
+.btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-large {
+    padding: 0.75rem 2.5rem;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+}
+
+/* ── Launch Actions ─────────────────────────────────────────── */
+
+.launch-actions {
+    display: flex;
+    justify-content: center;
+    padding: 0.6rem 0 1rem;
+}
+
+/* ── Overlay ────────────────────────────────────────────────── */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 26, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.overlay-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.overlay-content h2 {
+    color: var(--cyan);
+    font-size: 1.2rem;
+}
+
+.overlay-content p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+
+footer {
+    background: var(--bg-panel);
+    padding: 0.3rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+    .field-row {
+        flex-direction: column;
+    }
+    .source-tabs {
+        flex-wrap: wrap;
+    }
+    .tab {
+        flex: 1 1 45%;
+    }
+    .radio-group {
+        flex-direction: column;
+    }
+    .radio-option {
+        min-width: 0;
+    }
+}

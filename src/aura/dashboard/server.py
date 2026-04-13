@@ -5,6 +5,11 @@ Publishes workflow state via Server-Sent Events (SSE) so the
 browser dashboard refreshes in real time.
 
 Also serves video frames as JPEG snapshots via ``/api/frame``.
+
+When started in **launcher mode** (``launcher_mode=True``), the
+server also serves a configuration UI at ``/`` that lets the user
+pick task, source, model, etc. and launch the workflow from the
+browser.
 """
 
 from __future__ import annotations
@@ -18,11 +23,11 @@ import threading
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Generator, Optional
+from typing import Any, Callable, Dict, Generator, Optional
 
 import cv2
 import numpy as np
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, Response, jsonify, redirect, render_template, request
 from flask_cors import CORS
 
 logger = logging.getLogger(__name__)
@@ -50,12 +55,34 @@ class DashboardServer:
         dash.publish("run_gesture", {...})  # from workflow nodes
         dash.set_frame(numpy_image)      # latest camera frame
         dash.stop()
+
+    Launcher mode::
+
+        dash = DashboardServer(port=5555, launcher_mode=True,
+                               project_root="/path/to/aura")
+        dash.set_launch_callback(my_callback)
+        dash.start()
+        # User configures and clicks Launch in the browser
     """
 
-    def __init__(self, port: int = 5555, host: str = "0.0.0.0") -> None:
+    def __init__(
+        self,
+        port: int = 5555,
+        host: str = "0.0.0.0",
+        *,
+        launcher_mode: bool = False,
+        project_root: Path | str | None = None,
+    ) -> None:
         global _instance
         self.port = port
         self.host = host
+
+        # Launcher mode state
+        self._launcher_mode = launcher_mode
+        self._project_root = Path(project_root) if project_root else None
+        self._workflow_running = False
+        self._workflow_thread: Optional[threading.Thread] = None
+        self._launch_callback: Optional[Callable[[dict], None]] = None
 
         self.app = Flask(
             __name__,
@@ -97,6 +124,25 @@ class DashboardServer:
 
         self._register_routes()
         _instance = self
+
+    # ── Launcher configuration ─────────────────────────────────
+
+    def set_launch_callback(self, callback: Callable[[dict], None]) -> None:
+        """Set the callback invoked when the user clicks Launch.
+
+        The callback receives a config dict and is called in a
+        background thread.  It should block until the workflow
+        completes.
+        """
+        self._launch_callback = callback
+
+    @property
+    def workflow_running(self) -> bool:
+        return self._workflow_running
+
+    @workflow_running.setter
+    def workflow_running(self, value: bool) -> None:
+        self._workflow_running = value
 
     # ── Publishing API (called from workflow nodes) ─────────────────
 
@@ -208,9 +254,94 @@ class DashboardServer:
     def _register_routes(self) -> None:
         app = self.app
 
+        # ── Page routes ─────────────────────────────────────────
+
         @app.route("/")
         def index():
+            if self._launcher_mode and not self._workflow_running:
+                return render_template("launcher.html")
             return render_template("dashboard.html")
+
+        @app.route("/monitor")
+        def monitor():
+            return render_template("dashboard.html")
+
+        # ── Launcher API ────────────────────────────────────────
+
+        @app.route("/api/tasks")
+        def api_tasks():
+            tasks = []
+            if self._project_root:
+                tasks_dir = self._project_root / "tasks"
+                if tasks_dir.exists():
+                    for d in sorted(tasks_dir.iterdir()):
+                        if d.is_dir() and (d / "config").exists():
+                            tasks.append(d.name)
+            return jsonify(tasks)
+
+        @app.route("/api/videos")
+        def api_videos():
+            videos = []
+            if self._project_root:
+                demo_dir = self._project_root / "demo_data"
+                if demo_dir.exists():
+                    for ext in ("*.mp4", "*.avi", "*.mov", "*.mkv"):
+                        for f in demo_dir.rglob(ext):
+                            videos.append(str(f.relative_to(self._project_root)))
+            return jsonify(sorted(videos))
+
+        @app.route("/api/preview", methods=["POST"])
+        def api_preview():
+            config = request.json or {}
+            try:
+                frame = self._grab_preview_frame(config)
+            except Exception as exc:
+                return jsonify({"error": str(exc)}), 500
+            if frame is None:
+                return jsonify({"error": "Could not capture preview frame"}), 404
+            ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+            if ok:
+                return Response(buf.tobytes(), mimetype="image/jpeg")
+            return jsonify({"error": "JPEG encoding failed"}), 500
+
+        @app.route("/api/launch", methods=["POST"])
+        def api_launch():
+            if self._workflow_running:
+                return jsonify({"error": "Workflow is already running"}), 409
+            if self._launch_callback is None:
+                return jsonify({"error": "No launch callback configured"}), 500
+            config = request.json or {}
+
+            # Reset dashboard state for fresh run
+            self._reset_state()
+
+            # Start workflow in background thread
+            def _run():
+                self._workflow_running = True
+                try:
+                    self._launch_callback(config)
+                except Exception as e:
+                    logger.error("Workflow error: %s", e)
+                    self._state["error"] = str(e)
+                finally:
+                    self._workflow_running = False
+
+            self._workflow_thread = threading.Thread(
+                target=_run, daemon=True, name="aura-workflow",
+            )
+            self._workflow_thread.start()
+            return jsonify({"status": "started", "monitor_url": "/monitor"})
+
+        @app.route("/api/workflow-status")
+        def api_workflow_status():
+            return jsonify({
+                "running": self._workflow_running,
+                "cycle_count": self._state.get("cycle_count", 0),
+                "is_complete": self._state.get("is_complete", False),
+                "error": self._state.get("error"),
+            })
+
+        # ── Monitoring API (existing) ───────────────────────────
 
         @app.route("/api/state")
         def api_state():
@@ -280,6 +411,90 @@ class DashboardServer:
                     "X-Accel-Buffering": "no",
                 },
             )
+
+    # ── Preview frame grabbing ─────────────────────────────────────
+
+    def _grab_preview_frame(self, config: dict) -> np.ndarray | None:
+        """Grab a single frame from the selected source for preview."""
+        source = config.get("source_type", "video")
+
+        if source == "video":
+            video_rel = config.get("video_path", "")
+            if not video_rel or not self._project_root:
+                return None
+            full_path = self._project_root / video_rel
+            if not full_path.exists():
+                raise FileNotFoundError(f"Video not found: {video_rel}")
+            cap = cv2.VideoCapture(str(full_path))
+            try:
+                ok, frame = cap.read()
+                return frame if ok else None
+            finally:
+                cap.release()
+
+        elif source == "webcam":
+            device = config.get("webcam_device", 0)
+            cap = cv2.VideoCapture(int(device))
+            try:
+                if not cap.isOpened():
+                    raise RuntimeError(f"Cannot open webcam device {device}")
+                ok, frame = cap.read()
+                return frame if ok else None
+            finally:
+                cap.release()
+
+        elif source == "screen":
+            try:
+                import mss
+            except ImportError:
+                raise RuntimeError("mss package required for screen capture (pip install mss)")
+            monitor_idx = config.get("screen_monitor", 1)
+            with mss.mss() as sct:
+                if monitor_idx >= len(sct.monitors):
+                    raise ValueError(f"Monitor {monitor_idx} not available (found {len(sct.monitors) - 1})")
+                mon = sct.monitors[int(monitor_idx)]
+                region = config.get("screen_region")
+                if region and len(region) == 4:
+                    mon = {
+                        "left": region[0], "top": region[1],
+                        "width": region[2], "height": region[3],
+                    }
+                img = sct.grab(mon)
+                frame = np.array(img)
+                return cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+
+        elif source == "gopro":
+            raise RuntimeError(
+                "GoPro preview requires an active UDP stream. "
+                "Use the GoPro app to verify the connection first."
+            )
+
+        return None
+
+    # ── State reset ────────────────────────────────────────────────
+
+    def _reset_state(self) -> None:
+        """Reset dashboard state for a fresh workflow run."""
+        self._state = {
+            "cycle_count": 0,
+            "current_frame_num": 0,
+            "current_timestamp_sec": 0.0,
+            "gesture": {},
+            "intent": {},
+            "ssg": {},
+            "task_state": {},
+            "decision": {},
+            "actions": [],
+            "action_log": [],
+            "completed_steps": [],
+            "object_locations": {},
+            "human_requesting_help": False,
+            "is_complete": False,
+            "error": None,
+            "config": {},
+            "node_timings": {},
+        }
+        self._frame_jpeg = None
 
     # ── Lifecycle ───────────────────────────────────────────────────
 

@@ -196,14 +196,18 @@ class AURAIntentMonitor:
         realtime: bool = False,
         llm_backend: str = "gemini",
         sglang_base_url: str = "http://localhost:8100/v1",
+        max_tokens: int = 4096,
     ):
         self.realtime = realtime
         self.llm_backend = llm_backend
+        self.max_tokens = max_tokens
 
-        if realtime:
-            if llm_backend == "gemini" and model == "gemini-3.1-pro-preview":
-                model = "gemini-3.1-flash-lite-preview"
+        if realtime:           
             max_frames = min(max_frames, 3)
+            max_image_dimension = min(max_image_dimension, 768)
+
+        if llm_backend == "sglang":
+            max_frames = min(max_frames, 2)
             max_image_dimension = min(max_image_dimension, 768)
 
         self.model = model
@@ -263,6 +267,7 @@ class AURAIntentMonitor:
         self.state_format_string = json.dumps(self._build_output_format(), indent=2)
 
         self.previous_state: Optional[Dict[str, Any]] = None
+        self._previous_state_timestamp: Optional[float] = None
         self.history: List[IntentResult] = []
 
         # Unified LLM client (supports Gemini, SGLang, vLLM, etc.)
@@ -335,6 +340,7 @@ class AURAIntentMonitor:
         timestamp: float,
         frame_num: int,
         window_duration_sec: float = 0.0,
+        previous_state_timestamp: Optional[float] = None,
     ) -> str:
         prev_state_str = json.dumps(previous_state, indent=2) if previous_state else "{}"
 
@@ -366,7 +372,7 @@ Your goal is to update the state variables based on the provided task graph, sta
 {window_desc}
 Your task is to update the state variables based on the images and the schemas above.
 
-The state of the system at the start of this window is:
+The state of the system as previously estimated{f" at {previous_state_timestamp:.2f} seconds ({timestamp - previous_state_timestamp:.1f}s ago)" if previous_state_timestamp is not None else ""}:
 ```json
 {prev_state_str}
 ```
@@ -418,13 +424,21 @@ Here are the frames:
         window_duration_sec: float = 0.0,
     ) -> IntentResult:
         """Run a synchronous RCWPS prediction on the given frames."""
+        original_num_frames = len(frames)
         pil_frames = self._prepare_frames(frames)
+        
+        effective_window_duration = window_duration_sec
+        if window_duration_sec > 0 and original_num_frames > 1 and len(pil_frames) < original_num_frames:
+            frame_interval = window_duration_sec / (original_num_frames - 1)
+            effective_window_duration = frame_interval * (len(pil_frames) - 1)
+
         prompt_text = self._build_prompt(
             num_frames=len(pil_frames),
             previous_state=self.previous_state,
             timestamp=timestamp,
             frame_num=frame_num,
-            window_duration_sec=window_duration_sec,
+            window_duration_sec=effective_window_duration,
+            previous_state_timestamp=self._previous_state_timestamp,
         )
 
         result = IntentResult(timestamp=timestamp, frame_num=frame_num)
@@ -444,7 +458,7 @@ Here are the frames:
                         images=pil_frames,
                         temperature=self.temperature,
                         json_mode=True,
-                        max_tokens=4096,
+                        max_tokens=self.max_tokens,
                     )
                     break
                 except Exception as e:
@@ -488,6 +502,7 @@ Here are the frames:
             result.reasoning = parsed.get("reasoning", "")
 
             self.previous_state = parsed.copy()
+            self._previous_state_timestamp = timestamp
         else:
             result.reasoning = "Failed to parse Gemini response"
 
@@ -590,6 +605,10 @@ class IntentMonitor(BaseMonitor):
         self.model = config.model if config else "gemini-3.1-pro-preview"
         llm_backend = getattr(config, "llm_backend", "gemini") if config else "gemini"
         sglang_url = getattr(config, "sglang_base_url", "http://localhost:8100/v1") if config else "http://localhost:8100/v1"
+
+        if llm_backend == "sglang":
+            self.max_frames = min(self.max_frames, 2)
+            self.max_image_dimension = min(self.max_image_dimension, 768)
 
         self._llm_client = None
         self.client = None  # legacy Gemini client for backward compat

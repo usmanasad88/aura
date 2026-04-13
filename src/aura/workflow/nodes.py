@@ -24,7 +24,7 @@ import time
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, TYPE_CHECKING, cast
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from aura.core.scene_graph import SemanticSceneGraph
@@ -51,6 +51,26 @@ _video_sources: Dict[str, Any] = {}
 _robot_clients: Dict[str, Any] = {}
 _ssg_instances: Dict[str, Any] = {}
 _ground_truth_data_cache: Dict[str, Any] = {}
+
+# Audio bridge singleton — set externally by run_aura.py when audio is enabled.
+# The bridge is NOT part of LangGraph state (it's not serialisable); it lives
+# here as a module-level reference that nodes can access.
+_audio_bridge: Any = None
+
+
+def set_audio_bridge(bridge) -> None:
+    """Register the AudioWorkflowBridge for use by workflow nodes.
+
+    Called once from run_aura.py after the bridge and sound monitor
+    are initialised.
+    """
+    global _audio_bridge
+    _audio_bridge = bridge
+
+
+def get_audio_bridge():
+    """Get the registered AudioWorkflowBridge (or None)."""
+    return _audio_bridge
 
 
 def _get_ssg(state: AuraGraphState) -> "SemanticSceneGraph":
@@ -86,6 +106,7 @@ def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
             enable_logging=True,
             llm_backend=intent_backend,
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
+            max_tokens=config.get("intent_max_tokens", 4096),
         )
     return _intent_monitors[config_dir]
 
@@ -160,6 +181,7 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
             gemini_model=decision_model,
             enable_llm_reasoning=(decision_mode in ("llm", "hybrid")),
             proactive_threshold=0.6,
+            max_completion_tokens=config.get("decision_max_tokens", 1024),
             llm_backend=decision_backend,
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
             task_system_instruction=task_profile.get("system_instruction", ""),
@@ -459,11 +481,19 @@ def capture_frame_node(state: AuraGraphState) -> dict:
     if frame_obj is None:
         return {"is_complete": True}
 
-    # Keep a rolling buffer of the last 10 images
+    # Keep a rolling buffer of the last 10 images (with parallel timestamp/frame-num lists)
     buf: list = list(state.get("frames_buffer") or [])
+    ts_buf: list = list(state.get("frames_buffer_timestamps") or [])
+    fn_buf: list = list(state.get("frames_buffer_frame_nums") or [])
+
     buf.append(frame_obj.image)
+    ts_buf.append(frame_obj.timestamp)
+    fn_buf.append(frame_obj.frame_number)
+
     if len(buf) > 10:
         buf = buf[-10:]
+        ts_buf = ts_buf[-10:]
+        fn_buf = fn_buf[-10:]
 
     # Stream frame to Gemini Live session (if active) for continuous
     # visual context between generate() calls.
@@ -471,6 +501,8 @@ def capture_frame_node(state: AuraGraphState) -> dict:
 
     return {
         "frames_buffer": buf,
+        "frames_buffer_timestamps": ts_buf,
+        "frames_buffer_frame_nums": fn_buf,
         "current_frame_num": frame_obj.frame_number,
         "current_timestamp_sec": frame_obj.timestamp,
     }
@@ -583,25 +615,26 @@ def run_intent_node(state: AuraGraphState) -> dict:
     try:
         monitor = _get_intent_monitor(state)
 
-        # Compute the time span the frame window covers.
-        # Each buffer slot is one workflow cycle, separated by
-        # frame_skip source frames (non-realtime) or predict_interval
-        # wall-clock seconds (realtime / live sources).
+        # Use at most max_frames from the tail of the buffer.
         frames_to_send = buf[-5:]
-        source = _get_video_source(state)
-        source_fps = source.fps
-        frame_skip = getattr(source, "_frame_skip", None)
-        if frame_skip and source_fps:
-            window_duration = len(frames_to_send) * frame_skip / source_fps
-        elif source.is_live:
-            window_duration = len(frames_to_send) * predict_interval
+        ts_buf = list(state.get("frames_buffer_timestamps") or [])[-5:]
+        fn_buf = list(state.get("frames_buffer_frame_nums") or [])[-5:]
+
+        # Window duration = actual timestamp span of the selected frames.
+        if len(ts_buf) >= 2:
+            window_duration = ts_buf[-1] - ts_buf[0]
+        elif ts_buf:
+            window_duration = ts_buf[-1]
         else:
             window_duration = 0.0
+
+        # Report the frame number of the last frame in the window.
+        last_frame_num = fn_buf[-1] if fn_buf else state.get("current_frame_num", 0)
 
         result = monitor.predict(
             frames=frames_to_send,
             timestamp=state.get("current_timestamp_sec", 0.0),
-            frame_num=state.get("current_frame_num", 0),
+            frame_num=last_frame_num,
             window_duration_sec=window_duration,
         )
     except Exception as e:
@@ -688,6 +721,52 @@ def update_ssg_node(state: AuraGraphState) -> dict:
         if detected_locs:
             ssg.set_task_state("detected_bottle_locations", detected_locs)
 
+    # ── Sync audio events into SSG ───────────────────────────────
+    # Drain events from the AudioWorkflowBridge (if active).
+    # The sound monitor runs as a background task and pushes events
+    # into thread-safe queues; we consume them here, once per cycle.
+    audio_bridge = get_audio_bridge()
+    sound_dict = {}
+    if audio_bridge is not None and audio_bridge.is_active:
+        # 1. Utterances → SSG task_state["recent_utterances"]
+        utterance_events = audio_bridge.drain_utterances()
+        if utterance_events:
+            recent: list = list(ssg.task_state.get("recent_utterances", []))
+            for evt in utterance_events:
+                recent.append({
+                    "text": evt.data.get("text", ""),
+                    "speaker": evt.data.get("speaker", "human"),
+                    "timestamp": evt.timestamp,
+                })
+            ssg.set_task_state("recent_utterances", recent[-20:])
+            sound_dict["utterances"] = [e.data for e in utterance_events]
+
+        # 2. SSG updates from human speech (e.g. "the resin is on the table")
+        ssg_updates = audio_bridge.drain_ssg_updates()
+        for evt in ssg_updates:
+            key = evt.data.get("key", "")
+            value = evt.data.get("value", "")
+            if key:
+                parts = key.split(".")
+                if len(parts) == 2 and parts[1] == "location":
+                    try:
+                        ssg.set_location(parts[0], value)
+                    except Exception:
+                        pass
+                ssg.set_task_state(key, value)
+                logger.info("Audio SSG update: %s = %s", key, value)
+
+        # 3. Context messages → SSG task_state["human_context_messages"]
+        context_events = audio_bridge.drain_context_messages()
+        if context_events:
+            existing = list(ssg.task_state.get("human_context_messages", []))
+            for evt in context_events:
+                existing.append({
+                    "text": evt.data.get("text", ""),
+                    "timestamp": evt.timestamp,
+                })
+            ssg.set_task_state("human_context_messages", existing[-10:])
+
     # ── Update flat tracking fields ────────────────────────────────
     completed_steps = list(set(state.get("completed_steps") or []))
     if intent:
@@ -704,11 +783,16 @@ def update_ssg_node(state: AuraGraphState) -> dict:
 
     ssg.take_snapshot()
 
+    monitor_out = state.get("monitor_outputs") or {}
+    if sound_dict:
+        monitor_out = {**monitor_out, "sound": sound_dict}
+
     return {
         "ssg": ssg.to_dict(),
         "task_state": dict(ssg.task_state),
         "completed_steps": completed_steps,
         "object_locations": obj_locs,
+        "monitor_outputs": monitor_out,
     }
 
 
@@ -717,6 +801,10 @@ async def decide_action_node(state: AuraGraphState) -> dict:
 
     Queries the Brain ``DecisionEngine`` which reasons over the current
     state, DAG, monitors, and robot_skills.json to select actions.
+
+    If the decision engine decides to communicate with the human
+    (``decision == "ask"`` or ``"communicate"``), the message is
+    pushed to the AudioWorkflowBridge for the SoundMonitor to speak.
     """
     intent_result = state.get("intent_result")
     if not intent_result:
@@ -732,28 +820,42 @@ async def decide_action_node(state: AuraGraphState) -> dict:
         reasoning_parts.append("Human requesting help (gesture detected)")
 
     # ── Brain decision engine ───────────────────────────────────────
+    speech_message: Optional[str] = None
     try:
         engine = _get_decision_engine(state)
         prediction = await engine.decide_action(current_time_sec=timestamp)
         if prediction:
-            actions.append({
-                "action_type": prediction.action_id,
-                "object_name": prediction.target_id,
-                "trigger_step": "brain",
-                "reason": prediction.reasoning,
-                "confidence": prediction.confidence,
-                "timestamp": timestamp,
-            })
-            reasoning_parts.append(
-                f"Brain: {prediction.action_id}"
-            )
+            # Check if this is a communication action (ask/communicate)
+            if prediction.action_id in ("ask_preference", "ask_question",
+                                         "communicate", "speak"):
+                speech_message = prediction.reasoning
+                reasoning_parts.append(f"Brain: communicate — {prediction.reasoning[:80]}")
+            else:
+                actions.append({
+                    "action_type": prediction.action_id,
+                    "object_name": prediction.target_id,
+                    "trigger_step": "brain",
+                    "reason": prediction.reasoning,
+                    "confidence": prediction.confidence,
+                    "timestamp": timestamp,
+                })
+                reasoning_parts.append(
+                    f"Brain: {prediction.action_id}"
+                )
     except Exception as e:
         logger.warning("Brain engine error: %s", e)
+
+    # ── Push speech to human via audio bridge ─────────────────────
+    audio_bridge = get_audio_bridge()
+    if speech_message and audio_bridge is not None and audio_bridge.is_active:
+        audio_bridge.push_speech(speech_message)
+        logger.info("Decision engine → human: %s", speech_message[:100])
 
     decision_record = {
         "timestamp_sec": timestamp,
         "frame_num": state.get("current_frame_num", 0),
         "actions": actions,
+        "speech_message": speech_message,
         "reasoning": " | ".join(reasoning_parts) or "No action needed",
         "decided_at": datetime.now().isoformat(),
     }

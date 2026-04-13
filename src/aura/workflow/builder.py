@@ -34,6 +34,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+import yaml
+
 logger = logging.getLogger(__name__)
 
 # Lazy LangGraph imports for environments without it
@@ -117,6 +119,14 @@ def build_task_graph(
     }
 
     # ── Merge runtime config ─────────────────────────────────────────
+    # Load per-backend defaults (intent_max_tokens, decision_max_tokens, …)
+    # from config/default.yaml so callers don't have to pass them manually.
+    llm_backend = (extra_config or {}).get("llm_backend", wf_cfg.get("llm_backend", "gemini"))
+    _repo_root = Path(__file__).resolve().parent.parent.parent.parent
+    _default_yaml = _repo_root / "config" / "default.yaml"
+    _default_cfg = yaml.safe_load(_default_yaml.read_text()) if _default_yaml.exists() else {}
+    _backend_defaults: Dict[str, Any] = _default_cfg.get("backend_defaults", {}).get(llm_backend, {})
+
     runtime_config = {
         "task_name": task_profile.get("task_name", config_dir.parent.name),
         "config_dir": str(config_dir),
@@ -133,6 +143,7 @@ def build_task_graph(
         "predict_interval": wf_cfg.get("predict_interval_sec", 3.0),
         "resume_gestures": wf_cfg.get("resume_gestures", ["Thumb_Up"]),
         "max_cycles": wf_cfg.get("max_cycles_sec", 500),
+        **_backend_defaults,
         **(extra_config or {}),
     }
 
@@ -147,6 +158,8 @@ def build_task_graph(
         "task_state": task_state,
         "monitor_outputs": {},
         "frames_buffer": [],
+        "frames_buffer_timestamps": [],
+        "frames_buffer_frame_nums": [],
         "current_frame_num": 0,
         "current_timestamp_sec": 0.0,
         "intent_result": None,

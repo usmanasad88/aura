@@ -130,7 +130,7 @@ class RealtimeVideoSource(FrameSource):
             image=image,
             timestamp=actual_ts,
             source_name=f"realtime-file:{Path(self._path).name}",
-            frame_number=self._delivered,
+            frame_number=actual_pos,
             width=self._width,
             height=self._height,
         )

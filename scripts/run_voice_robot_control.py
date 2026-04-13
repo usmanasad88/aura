@@ -34,30 +34,62 @@ async def run_voice_control(
     sample_rate: int,
     voice_name: str,
     system_instruction: str,
+    task: str | None = None,
 ):
-    from aura.interfaces.robot_control_client import RobotControlClient
-    from aura.interfaces.voice_action_bridge import VoiceActionBridge
     from aura.monitors.sound_monitor import SoundMonitor
+    from pathlib import Path
 
-    # ── Connect to robot API ──────────────────────────────────────────
-    print(f"Connecting to robot API at {robot_url} …")
-    client = RobotControlClient(robot_url)
+    _project_root = Path(__file__).resolve().parent.parent
 
-    if client.is_available():
-        print("✓ Robot API is reachable")
-        summary = client.get_commands_summary()
-        print(summary)
+    # ── Decide which bridge to use ────────────────────────────────────
+    # If --task is given, use SkillActionBridge (generic, reads robot_skills.json)
+    # Otherwise fall back to VoiceActionBridge (UR5-specific, discovers from API)
+    if task:
+        from aura.brain.skill_registry import SkillRegistry
+        from aura.interfaces.skill_action_bridge import SkillActionBridge
+
+        config_dir = _project_root / "tasks" / task / "config"
+        skills = SkillRegistry()
+        skills_path = config_dir / "robot_skills.json"
+        if skills_path.exists():
+            skills.load_from_file(str(skills_path))
+            print(f"Loaded {len(skills.list_skills())} skills from {skills_path.name}")
+        else:
+            print(f"Warning: {skills_path} not found — no skills loaded")
+
+        def on_action(entry):
+            status = "OK" if entry.success else "FAIL"
+            print(f"\n  [{status}] {entry.function_name}({entry.args}) -> {entry.response.get('message', '')}")
+
+        bridge = SkillActionBridge(
+            skills=skills,
+            robot_url=robot_url,
+            dry_run=False,
+            on_action=on_action,
+        )
     else:
-        print("⚠  Robot API is not reachable — commands will fail at dispatch time.")
-        print("   Make sure external_control_api.py is running in another terminal.\n")
+        from aura.interfaces.robot_control_client import RobotControlClient
+        from aura.interfaces.voice_action_bridge import VoiceActionBridge
 
-    # ── Build voice bridge ────────────────────────────────────────────
-    def on_action(entry):
-        status = "✓" if entry.success else "✗"
-        print(f"\n  [{status}] {entry.function_name}({entry.args}) → {entry.response.get('message', '')}")
+        # ── Connect to robot API ──────────────────────────────────
+        print(f"Connecting to robot API at {robot_url} ...")
+        client = RobotControlClient(robot_url)
 
-    bridge = VoiceActionBridge(client, on_action=on_action)
+        if client.is_available():
+            print("Robot API is reachable")
+            summary = client.get_commands_summary()
+            print(summary)
+        else:
+            print("Robot API is not reachable -- commands will fail at dispatch time.")
+            print("Make sure external_control_api.py is running in another terminal.\n")
 
+        def on_action(entry):
+            status = "OK" if entry.success else "FAIL"
+            print(f"\n  [{status}] {entry.function_name}({entry.args}) -> {entry.response.get('message', '')}")
+
+        bridge = VoiceActionBridge(client, on_action=on_action)
+
+    # ── Build sound config ────────────────────────────────────────────
     config = bridge.build_sound_config(
         system_instruction=system_instruction,
         voice_name=voice_name,
@@ -77,10 +109,11 @@ async def run_voice_control(
     )
 
     # ── Run ───────────────────────────────────────────────────────────
-    print("\n" + "=" * 55)
-    print("  Voice Robot Control — speak to command the robot")
-    print("  Type 'q' to quit, or type a text command.")
-    print("=" * 55 + "\n")
+    mode = f"task={task}" if task else "UR5 direct"
+    print(f"\n{'=' * 55}")
+    print(f"  Voice Robot Control ({mode})")
+    print("  Speak to command the robot, type 'q' to quit.")
+    print(f"{'=' * 55}\n")
 
     try:
         await monitor.start_listening()
@@ -98,7 +131,7 @@ async def run_voice_control(
         await monitor.stop_listening()
         print("\nAction log:")
         for entry in bridge.get_action_log():
-            s = "✓" if entry["success"] else "✗"
+            s = "OK" if entry["success"] else "FAIL"
             print(f"  {entry['timestamp']}  [{s}] {entry['function']}({entry['args']})")
 
 
@@ -121,13 +154,18 @@ RULES:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Voice-controlled UR5 robot interface (Gemini Live + External Control API)",
+        description="Voice-controlled robot interface (Gemini Live + skill execution)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
     parser.add_argument(
+        "--task", default=None,
+        help="Task name (directory under tasks/) — uses SkillActionBridge with robot_skills.json. "
+             "If omitted, falls back to UR5-specific VoiceActionBridge via the live API.",
+    )
+    parser.add_argument(
         "--robot-url", default="http://localhost:5050",
-        help="URL of the UR5 External Control API (default: http://localhost:5050)",
+        help="URL of the robot External Control API (default: http://localhost:5050)",
     )
     parser.add_argument("--input-device", default=None, help="Substring of input audio device name")
     parser.add_argument("--output-device", default=None, help="Substring of output audio device name")
@@ -146,6 +184,7 @@ def main():
         sample_rate=args.rate,
         voice_name=args.voice,
         system_instruction=args.system_instruction,
+        task=args.task,
     ))
 
 

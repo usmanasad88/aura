@@ -97,6 +97,9 @@ class BodyPoseMonitor(BaseMonitor):
 
         Expected keyword arguments:
             frame: np.ndarray  — BGR image (H, W, 3), uint8
+            generate_mesh: bool — if True, server saves PLY meshes (default False)
+            mesh_output_dir: str — directory for saved meshes
+            mesh_prefix: str — filename prefix for saved meshes
         """
         frame = inputs.get("frame")
         if frame is None:
@@ -110,11 +113,25 @@ class BodyPoseMonitor(BaseMonitor):
         if not ok:
             return BodyPoseOutput(is_valid=False, error="JPEG encode failed")
 
+        # --- Build request payload ---
+        generate_mesh = inputs.get("generate_mesh", False)
+        if generate_mesh:
+            import msgpack as _msgpack
+            packed = _msgpack.packb({
+                "jpeg": jpg_buf.tobytes(),
+                "generate_mesh": True,
+                "mesh_output_dir": inputs.get("mesh_output_dir", ""),
+                "mesh_prefix": inputs.get("mesh_prefix", "mesh"),
+            }, use_bin_type=True)
+            payload: bytes = packed if packed is not None else b""
+        else:
+            payload = jpg_buf.tobytes()
+
         # --- Send / receive in a thread to avoid blocking the loop ---
         t0 = time.monotonic()
         try:
             result = await asyncio.get_running_loop().run_in_executor(
-                None, self._roundtrip, jpg_buf.tobytes()
+                None, self._roundtrip, payload
             )
         except Exception as e:
             self._reset_socket()
@@ -197,6 +214,7 @@ class BodyPoseMonitor(BaseMonitor):
             persons=persons,
             num_persons=len(persons),
             inference_time_sec=data.get("inference_time_sec", elapsed),
+            mesh_paths=data.get("mesh_paths", []),
         )
 
     # ------------------------------------------------------------------

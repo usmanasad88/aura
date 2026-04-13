@@ -72,6 +72,7 @@ function updateAll(s) {
 function updateStatusBadge(s) {
     const badge = document.getElementById("status-badge");
     const cycleEl = document.getElementById("cycle-counter");
+    const launcherLink = document.getElementById("launcher-link");
 
     cycleEl.textContent = `Cycle: ${s.cycle_count || 0}`;
 
@@ -90,6 +91,15 @@ function updateStatusBadge(s) {
     } else {
         badge.className = "badge badge-idle";
         badge.textContent = "IDLE";
+    }
+
+    // Show launcher link when workflow is done or errored
+    if (launcherLink) {
+        if (s.is_complete || s.error) {
+            launcherLink.classList.remove("hidden");
+        } else {
+            launcherLink.classList.add("hidden");
+        }
     }
 }
 

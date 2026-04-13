@@ -160,6 +160,7 @@ class DecisionEngineConfig:
     # LLM backend: "gemini", "openai", "sglang", "vllm", "ollama"
     llm_backend: str = "gemini"
     sglang_base_url: str = "http://localhost:8100/v1"
+    max_completion_tokens: int = 1024
 
     # Logging
     enable_logging: bool = True
@@ -520,6 +521,7 @@ Respond with ONLY the JSON object, no other text."""
                     prompt,
                     temperature=0.3,
                     json_mode=True,
+                    max_tokens=self.config.max_completion_tokens,
                 ),
                 timeout=self.config.max_reasoning_time_sec,
             )

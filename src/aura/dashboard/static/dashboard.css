@@ -96,6 +96,20 @@ header h1 {
     color: var(--text-dim);
 }
 
+.launcher-link {
+    font-size: 0.75rem;
+    color: var(--cyan);
+    text-decoration: none;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--cyan-dim);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.launcher-link:hover {
+    background: var(--cyan-dim);
+}
+
 /* ── Main Layout ─────────────────────────────────────────────── */
 
 main {

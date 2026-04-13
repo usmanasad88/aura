@@ -16,6 +16,9 @@ Usage
 -----
 ::
 
+    # Launch the web UI (recommended — no CLI args needed)
+    uv run python scripts/run_aura.py --ui
+
     # Video file, dry-run, with dashboard
     uv run python scripts/run_aura.py \\
         --task hand_layup \\
@@ -43,6 +46,11 @@ Usage
         --llm-backend sglang \\
         --model Qwen/Qwen3.5-VL-4B-Instruct \\
         --sglang-url http://localhost:8100/v1
+
+    # With voice control (Gemini Live audio alongside visual workflow)
+    uv run python scripts/run_aura.py \\
+        --task hand_layup --webcam 0 --live \\
+        --audio --audio-input-device USB --audio-output-device Analog
 """
 
 from __future__ import annotations
@@ -120,6 +128,100 @@ def _print_actions(actions: list) -> None:
         )
 
 
+# ─── Audio monitor setup ───────────────────────────────────────────────────
+
+async def _start_audio_monitor(
+    config_dir: Path,
+    robot_url: str,
+    dry_run: bool,
+    task_profile: dict,
+    input_device: str | None,
+    output_device: str | None,
+    sample_rate: int,
+    voice_name: str,
+) -> tuple:
+    """Initialise and start the SoundMonitor as a background async task.
+
+    Returns ``(AudioWorkflowBridge, SoundMonitor)`` on success, or
+    ``(None, None)`` if audio initialisation fails.
+    """
+    try:
+        from aura.brain.skill_registry import SkillRegistry
+        from aura.interfaces.audio_workflow_bridge import AudioWorkflowBridge
+        from aura.interfaces.skill_action_bridge import SkillActionBridge
+        from aura.monitors.sound_monitor import SoundMonitor
+        from aura.workflow.nodes import set_audio_bridge, _get_ssg
+
+        # Load skills from the task's robot_skills.json
+        skills = SkillRegistry()
+        skills_path = config_dir / "robot_skills.json"
+        if skills_path.exists():
+            skills.load_from_file(str(skills_path))
+        else:
+            logger.warning("No robot_skills.json found at %s", skills_path)
+
+        # Create the bridge and skill action handler
+        bridge = AudioWorkflowBridge()
+
+        skill_bridge = SkillActionBridge(
+            skills=skills,
+            robot_url=robot_url,
+            dry_run=dry_run,
+            ssg=None,  # Will be set after first SSG init in the graph
+            on_action=lambda entry: logger.info(
+                "[VoiceAction] %s → %s", entry.function_name, "OK" if entry.success else "FAIL"
+            ),
+            on_ssg_update=bridge.on_ssg_update,
+            on_context_message=bridge.on_context_message,
+        )
+        # Stash reference so we can print the action log on exit
+        bridge._skill_bridge = skill_bridge  # type: ignore[attr-defined]
+
+        # Build system instruction from task profile
+        task_instruction = task_profile.get("system_instruction", "")
+        system_instruction = (
+            f"{task_instruction}\n\n"
+            "You are a voice interface for a robot assistant. "
+            "The human is working on a task and may ask you to execute "
+            "robot skills, tell you about the scene, or ask about task "
+            "progress. You can also relay context to the decision engine."
+        )
+
+        sound_config = skill_bridge.build_sound_config(
+            system_instruction=system_instruction,
+            voice_name=voice_name,
+            enable_speech_output=True,
+            input_device_name=input_device,
+            output_device_name=output_device,
+            input_sample_rate=sample_rate,
+        )
+
+        def on_response(text: str):
+            bridge.on_robot_utterance(text)
+            logger.info("[Gemini Voice]: %s", text[:100])
+
+        monitor = SoundMonitor(
+            config=sound_config,
+            on_response=on_response,
+            tool_handlers=skill_bridge.tool_handlers,
+        )
+
+        # Start listening (opens Gemini Live session + audio streams)
+        await monitor.start_listening()
+
+        # Register bridge with the workflow nodes module
+        loop = asyncio.get_running_loop()
+        bridge.set_sound_monitor(monitor, loop)
+        set_audio_bridge(bridge)
+
+        logger.info("Audio monitor started successfully")
+        return bridge, monitor
+
+    except Exception as e:
+        logger.error("Failed to start audio monitor: %s", e)
+        return None, None
+
+
 # ─── Main workflow runner ───────────────────────────────────────────────────
 
 async def run_workflow(
@@ -148,11 +250,27 @@ async def run_workflow(
     intent_model: str | None = None,
     decision_backend: str | None = None,
     decision_model: str | None = None,
+    intent_max_tokens: int | None = None,
+    dashboard: object | None = None,
+    # Audio / voice control
+    enable_audio: bool = False,
+    audio_input_device: str | None = None,
+    audio_output_device: str | None = None,
+    audio_sample_rate: int = 16000,
+    audio_voice: str = "Zephyr",
 ) -> None:
     """Build and run the LangGraph workflow loop."""
     from aura.workflow.builder import build_task_graph
+    from aura.utils.config import load_config
 
     config_dir = _project_root / "tasks" / task_name / "config"
+
+    # Resolve backend-specific defaults from config/default.yaml
+    if intent_max_tokens is None:
+        aura_cfg = load_config()
+        effective_backend = intent_backend or llm_backend
+        backend_defs = aura_cfg.backend_defaults.get(effective_backend, {})
+        intent_max_tokens = backend_defs.get("intent_max_tokens", 4096)
 
     extra = {
         "realtime": realtime,
@@ -171,6 +289,7 @@ async def run_workflow(
         "intent_model": intent_model or model,
         "decision_backend": decision_backend or llm_backend,
         "decision_model": decision_model or model,
+        "intent_max_tokens": intent_max_tokens,
     }
     if max_cycles is not None:
         extra["max_cycles"] = max_cycles
@@ -187,17 +306,35 @@ async def run_workflow(
     )
 
     # ── Start dashboard ──────────────────────────────────────────────
-    dash = None
-    if not no_dashboard:
+    dash = dashboard  # Use existing dashboard if provided (launcher mode)
+    owns_dashboard = False
+    if dash is None and not no_dashboard:
         try:
             from aura.dashboard import DashboardServer
             dash = DashboardServer(port=dashboard_port)
             dash.start()
-            # Publish initial config
-            dash.publish("init", {"config": initial_state.get("config", {})})
+            owns_dashboard = True
         except Exception as e:
             logger.warning("Dashboard failed to start: %s", e)
             dash = None
+
+    if dash:
+        dash.publish("init", {"config": initial_state.get("config", {})})
+
+    # ── Start audio / voice monitor (background) ────────────────────
+    audio_bridge = None
+    sound_monitor = None
+    if enable_audio:
+        audio_bridge, sound_monitor = await _start_audio_monitor(
+            config_dir=config_dir,
+            robot_url=robot_url,
+            dry_run=dry_run,
+            task_profile=initial_state.get("task_profile", {}),
+            input_device=audio_input_device,
+            output_device=audio_output_device,
+            sample_rate=audio_sample_rate,
+            voice_name=audio_voice,
+        )
 
     task_display = initial_state["config"].get("task_name", task_name)
 
@@ -221,7 +358,9 @@ async def run_workflow(
         print(f"  GoPro Stream: {gopro_ip}")
     elif webcam_device is not None:
         print(f"  Webcam: {webcam_device}")
-    if dash:
+    if enable_audio:
+        print(f"  Audio: {'ACTIVE' if sound_monitor else 'FAILED'}")
+    if dash and owns_dashboard:
         print(f"  Dashboard: http://localhost:{dashboard_port}")
     print("  Press Ctrl+C to stop")
     print("=" * 60 + "\n")
@@ -271,14 +410,121 @@ async def run_workflow(
     except KeyboardInterrupt:
         print("\nInterrupted.")
     finally:
-        if dash:
+        # Stop audio monitor
+        if sound_monitor is not None:
+            try:
+                await sound_monitor.stop_listening()
+            except Exception as e:
+                logger.debug("Audio monitor cleanup: %s", e)
+        if dash and owns_dashboard:
             dash.stop()
 
     # ── Summary ──────────────────────────────────────────────────────
     print("\n" + "=" * 60)
     print(f"  AURA Workflow — Summary")
     print(f"  Cycles: {last_cycle}")
+    if audio_bridge:
+        from aura.interfaces.skill_action_bridge import SkillActionBridge
+        # Print voice action log if any actions were dispatched
+        for entry in (audio_bridge._skill_bridge.get_action_log()
+                      if hasattr(audio_bridge, '_skill_bridge') else []):
+            s = "OK" if entry["success"] else "FAIL"
+            print(f"  Voice [{s}] {entry['function']}({entry['args']})")
     print("=" * 60)
+
+
+# ─── UI Launcher ──────────────────────────────────────────────────────────
+
+def run_launcher(dashboard_port: int = 5555) -> None:
+    """Start the web-based launcher UI.
+
+    Opens a browser-accessible configuration page at
+    http://localhost:<port> where the user can select task, source,
+    model, etc. and launch the workflow with a single click.
+    """
+    from aura.dashboard.server import DashboardServer
+
+    server = DashboardServer(
+        port=dashboard_port,
+        launcher_mode=True,
+        project_root=_project_root,
+    )
+
+    def launch_callback(config: dict) -> None:
+        """Map launcher UI config to run_workflow kwargs."""
+        source = config.get("source_type", "video")
+
+        video_path = None
+        webcam_device = None
+        screen_capture = False
+        gopro_stream = False
+
+        if source == "video":
+            rel = config.get("video_path", "")
+            if rel:
+                video_path = str(_project_root / rel)
+        elif source == "webcam":
+            webcam_device = config.get("webcam_device", 0)
+        elif source == "screen":
+            screen_capture = True
+        elif source == "gopro":
+            gopro_stream = True
+
+        asyncio.run(
+            run_workflow(
+                task_name=config.get("task", "hand_layup"),
+                video_path=video_path,
+                webcam_device=webcam_device,
+                screen_capture=screen_capture,
+                screen_monitor=config.get("screen_monitor", 1),
+                screen_region=config.get("screen_region"),
+                gopro_stream=gopro_stream,
+                gopro_ip=config.get("gopro_ip", "172.29.170.51"),
+                gopro_lens=config.get("gopro_lens", "front"),
+                robot_url=config.get("robot_url", "http://localhost:5050"),
+                speed=config.get("speed", 1.0),
+                model=config.get("model", "gemini-3.1-pro-preview"),
+                dry_run=config.get("dry_run", True),
+                no_dashboard=True,  # Don't create a second dashboard
+                realtime=config.get("realtime", True),
+                frame_skip=config.get("frame_skip", 30),
+                max_cycles=config.get("max_cycles"),
+                use_ground_truth_robot_status=config.get(
+                    "use_ground_truth_robot_status", False
+                ),
+                llm_backend=config.get("llm_backend", "gemini"),
+                sglang_base_url=config.get(
+                    "sglang_url", "http://localhost:8100/v1"
+                ),
+                intent_backend=config.get("intent_backend"),
+                intent_model=config.get("intent_model"),
+                decision_backend=config.get("decision_backend"),
+                decision_model=config.get("decision_model"),
+                intent_max_tokens=config.get("intent_max_tokens"),
+                dashboard=server,  # Reuse the launcher's server
+                enable_audio=config.get("enable_audio", False),
+                audio_input_device=config.get("audio_input_device"),
+                audio_output_device=config.get("audio_output_device"),
+                audio_sample_rate=config.get("audio_sample_rate", 16000),
+                audio_voice=config.get("audio_voice", "Zephyr"),
+            )
+        )
+
+    server.set_launch_callback(launch_callback)
+    server.start()
+
+    print("\n" + "=" * 60)
+    print(f"  AURA Launcher")
+    print(f"  Open http://localhost:{dashboard_port} to configure and launch")
+    print("  Press Ctrl+C to stop")
+    print("=" * 60 + "\n")
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nShutting down.")
+        server.stop()
 
 
 # ─── CLI ────────────────────────────────────────────────────────────────────
@@ -288,7 +534,11 @@ def main() -> None:
         description="AURA Unified Workflow — LangGraph + SSG runtime",
     )
     parser.add_argument(
-        "--task", required=True,
+        "--ui", action="store_true",
+        help="Launch the web-based configuration UI (no other args needed)",
+    )
+    parser.add_argument(
+        "--task", default=None,
         help="Task name (directory under tasks/)",
     )
     parser.add_argument("--video", default=None, help="Path to video file")
@@ -384,7 +634,41 @@ def main() -> None:
         "--decision-model", default=None,
         help="Model for decision engine only (overrides --model)",
     )
+    parser.add_argument(
+        "--intent-max-tokens", type=int, default=None,
+        help="Max completion tokens for intent monitor (default from config/default.yaml per backend)",
+    )
+    # Audio / voice control
+    parser.add_argument(
+        "--audio", action="store_true", default=False,
+        help="Enable voice control via Gemini Live (microphone + speaker)",
+    )
+    parser.add_argument(
+        "--audio-input-device", default=None,
+        help="Substring of input audio device name (e.g. 'C310', 'USB')",
+    )
+    parser.add_argument(
+        "--audio-output-device", default=None,
+        help="Substring of output audio device name (e.g. 'Line Out', 'Analog')",
+    )
+    parser.add_argument(
+        "--audio-rate", type=int, default=16000,
+        help="Audio input sample rate (default: 16000)",
+    )
+    parser.add_argument(
+        "--audio-voice", default="Zephyr",
+        help="Gemini voice name for spoken responses (default: Zephyr)",
+    )
     args = parser.parse_args()
+
+    # ── UI launcher mode ────────────────────────────────────────────
+    if args.ui:
+        run_launcher(dashboard_port=args.dashboard_port)
+        return
+
+    # ── CLI mode (requires --task) ──────────────────────────────────
+    if not args.task:
+        parser.error("--task is required (or use --ui for the web launcher)")
 
     webcam_dev: int | str | None = None
     if args.webcam is not None:
@@ -420,6 +704,12 @@ def main() -> None:
             intent_model=args.intent_model,
             decision_backend=args.decision_backend,
             decision_model=args.decision_model,
+            intent_max_tokens=args.intent_max_tokens,
+            enable_audio=args.audio,
+            audio_input_device=args.audio_input_device,
+            audio_output_device=args.audio_output_device,
+            audio_sample_rate=args.audio_rate,
+            audio_voice=args.audio_voice,
         )
     )
 

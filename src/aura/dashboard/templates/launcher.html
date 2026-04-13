@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA Launcher</title>
+<link rel="stylesheet" href="/static/launcher.css">
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>AURA</h1>
+    <span class="subtitle">Launcher</span>
+  </div>
+  <div class="header-right">
+    <span id="status-text" class="status-idle">Ready</span>
+  </div>
+</header>
+
+<main>
+  <form id="config-form" autocomplete="off">
+
+    <!-- ── Task Selection ──────────────────────────────────────── -->
+    <section class="config-card">
+      <h2>Task</h2>
+      <div class="field">
+        <label for="task">Task profile</label>
+        <select id="task"><option value="">Loading...</option></select>
+      </div>
+    </section>
+
+    <!-- ── Source Selection ─────────────────────────────────────── -->
+    <section class="config-card">
+      <h2>Source</h2>
+      <div class="source-tabs" role="tablist">
+        <button type="button" role="tab" data-source="video" class="tab active" aria-selected="true">Video File</button>
+        <button type="button" role="tab" data-source="webcam" class="tab">Webcam</button>
+        <button type="button" role="tab" data-source="screen" class="tab">Screen Capture</button>
+        <button type="button" role="tab" data-source="gopro" class="tab">GoPro</button>
+      </div>
+
+      <!-- Video Panel -->
+      <div id="panel-video" class="source-panel active" role="tabpanel">
+        <div class="field-row">
+          <div class="field flex-2">
+            <label for="video-path">Video file</label>
+            <select id="video-path"><option value="">Loading...</option></select>
+          </div>
+          <div class="field flex-1">
+            <label for="speed">Speed</label>
+            <div class="range-group">
+              <input type="range" id="speed" min="0.1" max="5.0" step="0.1" value="1.0">
+              <span id="speed-display" class="range-value">1.0x</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Webcam Panel -->
+      <div id="panel-webcam" class="source-panel" role="tabpanel">
+        <div class="field" style="max-width:200px">
+          <label for="webcam-device">Device index</label>
+          <input type="number" id="webcam-device" value="0" min="0" max="10">
+        </div>
+      </div>
+
+      <!-- Screen Capture Panel -->
+      <div id="panel-screen" class="source-panel" role="tabpanel">
+        <div class="field-row">
+          <div class="field">
+            <label for="screen-monitor">Monitor</label>
+            <select id="screen-monitor">
+              <option value="0">All monitors</option>
+              <option value="1" selected>Primary (1)</option>
+              <option value="2">Secondary (2)</option>
+              <option value="3">Monitor 3</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">Optional: crop to a sub-region (leave blank for full monitor)</p>
+        <div class="field-row">
+          <div class="field">
+            <label for="screen-left">Left</label>
+            <input type="number" id="screen-left" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="screen-top">Top</label>
+            <input type="number" id="screen-top" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="screen-width">Width</label>
+            <input type="number" id="screen-width" placeholder="Full">
+          </div>
+          <div class="field">
+            <label for="screen-height">Height</label>
+            <input type="number" id="screen-height" placeholder="Full">
+          </div>
+        </div>
+      </div>
+
+      <!-- GoPro Panel -->
+      <div id="panel-gopro" class="source-panel" role="tabpanel">
+        <div class="field-row">
+          <div class="field">
+            <label for="gopro-ip">IP address</label>
+            <input type="text" id="gopro-ip" value="172.29.170.51">
+          </div>
+          <div class="field">
+            <label for="gopro-lens">Lens</label>
+            <select id="gopro-lens">
+              <option value="front" selected>Front (ultrawide)</option>
+              <option value="back">Back</option>
+              <option value="both">Both (dual-fisheye)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-area">
+        <button type="button" id="preview-btn" class="btn btn-secondary">Preview Source</button>
+        <div id="preview-container" class="hidden">
+          <img id="preview-img" alt="Source preview">
+          <span id="preview-info" class="preview-info"></span>
+        </div>
+        <div id="preview-error" class="error-text hidden"></div>
+      </div>
+    </section>
+
+    <!-- ── Timing ──────────────────────────────────────────────── -->
+    <section class="config-card" id="timing-section">
+      <h2>Timing</h2>
+      <div class="field-row align-center">
+        <label class="toggle-label">
+          <input type="checkbox" id="realtime" checked>
+          <span class="toggle-switch"></span>
+          Realtime
+        </label>
+        <div class="field" id="frame-skip-group" style="max-width:160px">
+          <label for="frame-skip">Frame skip</label>
+          <input type="number" id="frame-skip" value="30" min="1" max="300">
+        </div>
+      </div>
+      <p id="timing-hint" class="hint hidden">Non-realtime: processes video as fast as possible, yielding every N-th frame</p>
+    </section>
+
+    <!-- ── Robot Mode ──────────────────────────────────────────── -->
+    <section class="config-card">
+      <h2>Robot</h2>
+      <div class="field-row align-center">
+        <div class="radio-group" id="robot-mode-group">
+          <label class="radio-option selected">
+            <input type="radio" name="robot-mode" value="dry-run" checked>
+            <span class="radio-label">Dry Run</span>
+            <span class="radio-desc">Log actions only</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="robot-mode" value="live">
+            <span class="radio-label">Live</span>
+            <span class="radio-desc">Execute robot commands</span>
+          </label>
+        </div>
+      </div>
+      <div id="robot-url-group" class="field hidden" style="margin-top:0.6rem">
+        <label for="robot-url">Robot API URL</label>
+        <input type="text" id="robot-url" value="http://localhost:5050">
+      </div>
+      <div id="robot-forced-info" class="info-banner hidden">
+        Non-realtime pre-recorded source &mdash; robot commands disabled (forced dry-run)
+      </div>
+    </section>
+
+    <!-- ── Model Configuration ─────────────────────────────────── -->
+    <section class="config-card">
+      <h2>Model</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="llm-backend">Backend</label>
+          <select id="llm-backend">
+            <option value="gemini" selected>Gemini</option>
+            <option value="openai">OpenAI</option>
+            <option value="sglang">SGLang</option>
+            <option value="vllm">vLLM</option>
+            <option value="ollama">Ollama</option>
+            <option value="local">Local</option>
+          </select>
+        </div>
+        <div class="field flex-2">
+          <label for="model">Model</label>
+          <select id="model"></select>
+        </div>
+      </div>
+      <div id="sglang-url-group" class="field hidden">
+        <label for="sglang-url">SGLang / OpenAI-compatible URL</label>
+        <input type="text" id="sglang-url" value="http://localhost:8100/v1">
+      </div>
+      <details class="overrides-details">
+        <summary>Per-component overrides</summary>
+        <div class="overrides-content">
+          <div class="field-row">
+            <div class="field">
+              <label for="intent-backend">Intent backend</label>
+              <select id="intent-backend">
+                <option value="" selected>Use shared</option>
+                <option value="gemini">Gemini</option>
+                <option value="openai">OpenAI</option>
+                <option value="sglang">SGLang</option>
+                <option value="vllm">vLLM</option>
+                <option value="ollama">Ollama</option>
+                <option value="local">Local</option>
+              </select>
+            </div>
+            <div class="field flex-2">
+              <label for="intent-model">Intent model</label>
+              <select id="intent-model"></select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="decision-backend">Decision backend</label>
+              <select id="decision-backend">
+                <option value="" selected>Use shared</option>
+                <option value="gemini">Gemini</option>
+                <option value="openai">OpenAI</option>
+                <option value="sglang">SGLang</option>
+                <option value="vllm">vLLM</option>
+                <option value="ollama">Ollama</option>
+                <option value="local">Local</option>
+              </select>
+            </div>
+            <div class="field flex-2">
+              <label for="decision-model">Decision model</label>
+              <select id="decision-model"></select>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── Advanced ────────────────────────────────────────────── -->
+    <section class="config-card">
+      <h2>Advanced</h2>
+      <div class="field-row align-center">
+        <div class="field" style="max-width:180px">
+          <label for="max-cycles">Max cycles</label>
+          <input type="number" id="max-cycles" placeholder="Unlimited" min="1">
+        </div>
+        <label class="toggle-label">
+          <input type="checkbox" id="ground-truth">
+          <span class="toggle-switch"></span>
+          Ground truth robot status
+        </label>
+      </div>
+    </section>
+
+    <!-- ── Launch ──────────────────────────────────────────────── -->
+    <div class="launch-actions">
+      <button type="submit" id="launch-btn" class="btn btn-primary btn-large">
+        Launch AURA
+      </button>
+    </div>
+  </form>
+</main>
+
+<!-- Launch Overlay -->
+<div id="launch-overlay" class="overlay hidden">
+  <div class="overlay-content">
+    <div class="spinner"></div>
+    <h2>Launching AURA...</h2>
+    <p>Starting workflow, redirecting to dashboard...</p>
+  </div>
+</div>
+
+<footer>
+  <span>AURA Launcher</span>
+</footer>
+
+<script src="/static/launcher.js"></script>
+</body>
+</html>

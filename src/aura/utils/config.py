@@ -43,6 +43,7 @@ class IntentMonitorConfig(MonitorConfig):
     # LLM backend selection: "gemini", "openai", "sglang", "vllm", "ollama"
     llm_backend: str = "gemini"
     sglang_base_url: str = "http://localhost:8100/v1"
+    max_tokens: int = 4096  # Max completion tokens (reduce for small models)
     # Task graph configuration
     dag_file: Optional[str] = None  # Path to DAG JSON file
     state_file: Optional[str] = None  # Path to state schema JSON file
@@ -188,6 +189,9 @@ class AuraConfig(BaseModel):
         default_factory=lambda: os.getenv("GEMINI_API_KEY")
     )
     
+    # Backend-specific defaults (keyed by llm_backend name)
+    backend_defaults: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+
     # Sub-configurations
     monitors: MonitorsConfig = Field(default_factory=MonitorsConfig)
     brain: BrainConfig = Field(default_factory=BrainConfig)
