@@ -13,8 +13,7 @@ from typing import Optional, List, Dict, Any, Set, Tuple, Iterator
 from pathlib import Path
 
 from .nodes import (
-    NodeType, SSGNode, ObjectNode, AgentNode, RegionNode,
-    ObjectState, AgentState, Affordance, PredictedAction
+    NodeType, SSGNode, ObjectNode, AgentNode, RegionNode, AgentState
 )
 from .edges import (
     EdgeType, SpatialRelation, SemanticRelation, SSGEdge
@@ -239,35 +238,6 @@ class SemanticSceneGraph:
     # Semantic Convenience Methods
     # =========================================================================
     
-    def set_agent_target(self, agent_id: str, target_id: str, 
-                         confidence: float = 1.0, reasoning: str = "") -> None:
-        """Set what an agent is targeting/intending to interact with."""
-        # Remove old target edges
-        for edge in self.get_edges(source_id=agent_id):
-            if edge.relation == SemanticRelation.TARGETS.value:
-                self.remove_edge(edge.source_id, edge.target_id, edge.relation)
-        
-        # Add new target edge
-        self.add_edge(SSGEdge.semantic(
-            agent_id, target_id, SemanticRelation.TARGETS,
-            confidence=confidence, 
-            is_predicted=True,
-            reasoning=reasoning
-        ))
-        
-        # Update agent's attention target
-        agent = self.get_node(agent_id)
-        if isinstance(agent, AgentNode):
-            agent.attention_target = target_id
-    
-    def get_agent_target(self, agent_id: str) -> Optional[str]:
-        """Get what an agent is currently targeting."""
-        edges = self.get_edges(source_id=agent_id, 
-                               relation=SemanticRelation.TARGETS.value)
-        if edges:
-            return edges[0].target_id
-        return None
-    
     def set_blocks(self, blocker_id: str, blocked_id: str, 
                    reasoning: str = "") -> None:
         """Mark that one object blocks access to another."""
@@ -312,16 +282,20 @@ class SemanticSceneGraph:
 
         Args:
             schema: Dict with 'state_variables' containing variable definitions.
-                    Variables with ``"source": "system"`` are tracked in
-                    ``_system_state_vars`` so that ``update_from_intent_result``
-                    skips them (they are managed by the robot API / ground truth).
+                    Variables with an externally-managed ``source``
+                    (``"system"`` — robot API / ground truth, or
+                    ``"perception"`` — task-specific perception monitor)
+                    are tracked in ``_system_state_vars`` so that
+                    ``update_from_intent_result`` does not overwrite them
+                    with the vision LLM's (missing / hallucinated) output.
         """
         state_vars = schema.get("state_variables", schema)
         self._system_state_vars: Set[str] = set()
+        _external_sources = {"system", "perception"}
         for var_name, var_def in state_vars.items():
             if isinstance(var_def, dict):
                 default = var_def.get("default")
-                if var_def.get("source") == "system":
+                if var_def.get("source") in _external_sources:
                     self._system_state_vars.add(var_name)
             else:
                 default = var_def
@@ -489,10 +463,6 @@ class SemanticSceneGraph:
             for agent in agents:
                 state = agent.state.name if hasattr(agent.state, 'name') else agent.state
                 lines.append(f"- **{agent.name}** ({agent.agent_type}): {state}")
-                if agent.attention_target:
-                    lines.append(f"  - Attending to: {agent.attention_target}")
-                # if agent.capabilities:
-                #     lines.append(f"  - Capabilities: {', '.join(agent.capabilities)}")
         
         # Regions
         regions = self.get_regions()
@@ -505,15 +475,6 @@ class SemanticSceneGraph:
         
         # Objects
         objects = self.get_objects()
-        # if objects:
-        #     lines.append("\n### Objects")
-        #     for obj in objects:
-        #         state = obj.state.name if hasattr(obj.state, 'name') else obj.state
-        #         loc = self.get_location(obj.id) or "unknown"
-        #         lines.append(f"- **{obj.name}**: {state}, at {loc}")
-        #         if obj.affordances:
-        #             aff_names = [a.name for a in obj.affordances]
-        #             lines.append(f"  - Affordances: {', '.join(aff_names)}")
         
         # Key Relationships
         lines.append("\n### Key Relationships")

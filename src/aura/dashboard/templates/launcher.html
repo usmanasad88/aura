@@ -238,6 +238,61 @@
       </details>
     </section>
 
+    <!-- ── Monitors ─────────────────────────────────────────────── -->
+    <section class="config-card" id="monitors-section">
+      <h2>Monitors</h2>
+      <p class="hint">Intent runs every cycle. Gesture / perception run inside the graph; audio runs alongside it.</p>
+      <div class="monitors-grid">
+        <label class="toggle-label">
+          <input type="checkbox" id="enable-gesture" checked>
+          <span class="toggle-switch"></span>
+          Gesture
+          <span id="status-gesture" class="monitor-pill pill-idle">from profile</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="enable-perception">
+          <span class="toggle-switch"></span>
+          Perception
+          <span id="status-perception" class="monitor-pill pill-idle">idle</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="enable-audio">
+          <span class="toggle-switch"></span>
+          Audio / Voice
+          <span id="status-audio" class="monitor-pill pill-idle">idle</span>
+        </label>
+      </div>
+
+      <div id="audio-options" class="audio-options hidden">
+        <div class="field-row">
+          <div class="field">
+            <label for="audio-input-device">Input device (substring)</label>
+            <input type="text" id="audio-input-device" placeholder="e.g. USB, C310">
+          </div>
+          <div class="field">
+            <label for="audio-output-device">Output device (substring)</label>
+            <input type="text" id="audio-output-device" placeholder="e.g. Analog, Line Out">
+          </div>
+          <div class="field" style="max-width:160px">
+            <label for="audio-voice">Voice</label>
+            <select id="audio-voice">
+              <option value="Zephyr" selected>Zephyr</option>
+              <option value="Aoede">Aoede</option>
+              <option value="Charon">Charon</option>
+              <option value="Fenrir">Fenrir</option>
+              <option value="Kore">Kore</option>
+              <option value="Puck">Puck</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="preinit-actions">
+        <button type="button" id="preinit-btn" class="btn btn-secondary">Pre-load Monitors</button>
+        <span id="preinit-msg" class="hint"></span>
+      </div>
+    </section>
+
     <!-- ── Advanced ────────────────────────────────────────────── -->
     <section class="config-card">
       <h2>Advanced</h2>

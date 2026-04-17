@@ -58,6 +58,7 @@ function trackFps() {
 
 function updateAll(s) {
     updateStatusBadge(s);
+    updateMonitorsStrip(s);
     updateFrameInfo(s);
     updateGesture(s);
     updateIntent(s);
@@ -65,6 +66,21 @@ function updateAll(s) {
     updateDecision(s);
     updateActionLog(s);
     updateFooter();
+}
+
+// ── Monitors Strip ──────────────────────────────────────────────
+
+function updateMonitorsStrip(s) {
+    const el = document.getElementById("monitors-strip");
+    if (!el) return;
+    const active = s.active_monitors || (s.config && s.config.active_monitors) || [];
+    const enableAudio = s.config && s.config.enable_audio;
+    const items = ["intent", "gesture", "perception"].map(m => {
+        const on = active.includes(m);
+        return `<span class="mon-chip ${on ? "mon-on" : "mon-off"}">${m}</span>`;
+    });
+    items.push(`<span class="mon-chip ${enableAudio ? "mon-on" : "mon-off"}">audio</span>`);
+    el.innerHTML = items.join("");
 }
 
 // ── Status Badge ────────────────────────────────────────────────
@@ -99,6 +115,15 @@ function updateStatusBadge(s) {
             launcherLink.classList.remove("hidden");
         } else {
             launcherLink.classList.add("hidden");
+        }
+    }
+
+    const stopBtn = document.getElementById("stop-workflow-btn");
+    if (stopBtn) {
+        if (!s.is_complete && !s.error) {
+            stopBtn.classList.remove("hidden");
+        } else {
+            stopBtn.classList.add("hidden");
         }
     }
 }
@@ -238,6 +263,31 @@ function updateDecision(s) {
     setText("pending-count", String(actions.length));
     setText("decision-reasoning", dec.reasoning || "--");
 
+    // BT trail / branch
+    const branch = dec.bt_branch || "--";
+    setText("bt-branch", branch);
+    const llmFlag = document.getElementById("bt-llm-flag");
+    if (llmFlag) {
+        if (dec.bt_llm_invoked) {
+            llmFlag.classList.remove("hidden");
+        } else {
+            llmFlag.classList.add("hidden");
+        }
+    }
+    const trailEl = document.getElementById("bt-trail");
+    if (trailEl) {
+        const trail = (dec.bt_trail || "").trim();
+        if (trail && trail !== "no_branch") {
+            const steps = trail.split("|").map(s => s.trim()).filter(Boolean);
+            trailEl.innerHTML = steps.map(step => {
+                const kind = step.split(":", 1)[0];
+                return `<span class="bt-step bt-${escHtml(kind)}">${escHtml(step)}</span>`;
+            }).join('<span class="bt-arrow">→</span>');
+        } else {
+            trailEl.innerHTML = '<span class="bt-empty">no_branch</span>';
+        }
+    }
+
     if (actions.length > 0) {
         dot.className = "dot active";
     } else {
@@ -331,4 +381,20 @@ function escHtml(str) {
 document.addEventListener("DOMContentLoaded", () => {
     fpsTimer = performance.now();
     connect();
+
+    const stopBtn = document.getElementById("stop-workflow-btn");
+    if (stopBtn) {
+        stopBtn.addEventListener("click", async () => {
+            const prev = stopBtn.textContent;
+            stopBtn.textContent = "Stopping...";
+            stopBtn.disabled = true;
+            try {
+                await fetch("/api/stop", { method: "POST" });
+            } catch (e) {
+                console.error("Stop failed", e);
+                stopBtn.textContent = prev;
+                stopBtn.disabled = false;
+            }
+        });
+    }
 });

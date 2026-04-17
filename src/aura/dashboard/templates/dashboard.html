@@ -14,8 +14,10 @@
     <span class="subtitle">Proactive Robotic Assistant</span>
   </div>
   <div class="header-right">
+    <button id="stop-workflow-btn" class="hidden" style="margin-right: 15px; padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px;">Stop Workflow</button>
     <a id="launcher-link" href="/" class="launcher-link hidden">Back to Launcher</a>
     <span id="status-badge" class="badge badge-idle">IDLE</span>
+    <span id="monitors-strip" class="monitors-strip"></span>
     <span id="cycle-counter" class="counter">Cycle: 0</span>
     <span id="fps-counter" class="counter">0 fps</span>
   </div>
@@ -125,6 +127,15 @@
           <span class="stat-label">Mode</span>
           <span id="decision-mode" class="stat-value mono">--</span>
         </div>
+        <div class="stat-row">
+          <span class="stat-label">BT Branch</span>
+          <span id="bt-branch" class="stat-value mono">--</span>
+          <span id="bt-llm-flag" class="bt-flag hidden">LLM</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">BT Trail</span>
+        </div>
+        <div id="bt-trail" class="bt-trail-box"><span class="bt-empty">no_branch</span></div>
         <div class="stat-row">
           <span class="stat-label">Pending Actions</span>
           <span id="pending-count" class="stat-value">0</span>

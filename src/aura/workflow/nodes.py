@@ -46,11 +46,35 @@ logger = logging.getLogger(__name__)
 _intent_monitors: Dict[str, Any] = {}
 _gesture_monitors: Dict[str, Any] = {}
 _perception_monitors: Dict[str, Any] = {}
+_pose_monitors: Dict[str, Any] = {}
+_pose_failures: Dict[str, int] = {}
+_pose_disabled: Dict[str, bool] = {}
+_activity_gates: Dict[str, Any] = {}
 _decision_engines: Dict[str, Any] = {}
 _video_sources: Dict[str, Any] = {}
 _robot_clients: Dict[str, Any] = {}
 _ssg_instances: Dict[str, Any] = {}
 _ground_truth_data_cache: Dict[str, Any] = {}
+
+# Intent dispatcher state.
+#
+# The intent VLM call is slow (multi-second). To keep the fast perception loop
+# responsive in realtime mode we dispatch the call onto a single-worker thread
+# pool and let the LangGraph node return immediately. When the future resolves
+# the result is published to ``_intent_slot``; ``update_ssg_node`` drains it
+# and applies the change to the SSG.
+#
+# In offline / eval mode (``config["intent_blocking"]=True``) the same
+# dispatcher is used, but ``run_intent_node`` blocks on the future before
+# returning so every cycle has a fresh intent prediction — same code path,
+# different timing.
+import threading as _threading
+import concurrent.futures as _futures
+_intent_slot_lock = _threading.Lock()
+_intent_slot: Dict[str, Any] = {}   # {config_dir: intent_result_dict}
+_intent_executor = _futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="aura-intent")
+_intent_futures: Dict[str, "_futures.Future"] = {}
+_intent_last_dispatch: Dict[str, float] = {}
 
 # Audio bridge singleton — set externally by run_aura.py when audio is enabled.
 # The bridge is NOT part of LangGraph state (it's not serialisable); it lives
@@ -71,6 +95,24 @@ def set_audio_bridge(bridge) -> None:
 def get_audio_bridge():
     """Get the registered AudioWorkflowBridge (or None)."""
     return _audio_bridge
+
+
+# ── Background-intent slot accessors ────────────────────────────────────────
+
+def push_intent_result(config_dir: str, result: Dict[str, Any]) -> None:
+    """Publish a new intent_result dict from the background runner.
+
+    Called by :class:`BackgroundIntentRunner` after each ``predict()`` call.
+    The fast loop picks it up on the next ``update_ssg_node`` tick.
+    """
+    with _intent_slot_lock:
+        _intent_slot[config_dir] = result
+
+
+def pop_intent_result(config_dir: str) -> Optional[Dict[str, Any]]:
+    """Atomically take the latest pending intent_result (or None)."""
+    with _intent_slot_lock:
+        return _intent_slot.pop(config_dir, None)
 
 
 def _get_ssg(state: AuraGraphState) -> "SemanticSceneGraph":
@@ -164,6 +206,33 @@ def _create_perception_monitor(task_name: str, config: dict):
     return None
 
 
+def _get_pose_monitor(state: AuraGraphState):
+    """Lazy-init the SAM-3D-Body pose monitor (ZMQ client).
+
+    Returns ``None`` if pyzmq is unavailable or the server socket can't be
+    created — the fast loop then skips ``run_pose_node`` silently so the
+    rest of the graph keeps running.
+    """
+    from aura.monitors.body_pose_monitor import BodyPoseMonitor, BodyPoseMonitorConfig
+
+    config = state.get("config", {})
+    key = config.get("config_dir", "default")
+    if key not in _pose_monitors:
+        endpoint = config.get("pose_server_endpoint", "tcp://localhost:5556")
+        try:
+            _pose_monitors[key] = BodyPoseMonitor(BodyPoseMonitorConfig(
+                server_endpoint=endpoint,
+                # Short timeout so a missing pose server doesn't stall the
+                # fast perception loop — on failure we disable the gate
+                # and fall back to always-run intent (see run_pose_node).
+                timeout_sec=float(config.get("pose_timeout_sec", 2.0)),
+            ))
+        except Exception as exc:
+            logger.warning("BodyPoseMonitor init failed: %s", exc)
+            _pose_monitors[key] = None
+    return _pose_monitors[key]
+
+
 def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
     """Lazy-init the Brain DecisionEngine with SSG + SkillRegistry."""
     from aura.brain.decision_engine import DecisionEngine, DecisionEngineConfig
@@ -177,6 +246,12 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
         decision_backend = config.get("decision_backend") or config.get("llm_backend", "gemini")
         decision_model = config.get("decision_model") or config.get("model", "gemini-2.5-pro-preview-06-05")
         task_profile = state.get("task_profile", {})
+        # decision_mode may also be set inside task_profile.workflow_config;
+        # if that override exists and the caller didn't supply one, use it.
+        wf_mode = (task_profile.get("workflow_config") or {}).get("decision_mode")
+        if wf_mode in ("llm", "bt", "hybrid"):
+            decision_mode = wf_mode
+
         engine_config = DecisionEngineConfig(
             gemini_model=decision_model,
             enable_llm_reasoning=(decision_mode in ("llm", "hybrid")),
@@ -185,6 +260,7 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
             llm_backend=decision_backend,
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
             task_system_instruction=task_profile.get("system_instruction", ""),
+            decision_mode=decision_mode,
         )
         engine = DecisionEngine(config_dir=config_dir, config=engine_config)
 
@@ -481,7 +557,12 @@ def capture_frame_node(state: AuraGraphState) -> dict:
     if frame_obj is None:
         return {"is_complete": True}
 
-    # Keep a rolling buffer of the last 10 images (with parallel timestamp/frame-num lists)
+    # Keep a rolling buffer sized for the slowest consumer (the background
+    # intent runner, which may sample frames spread across ~frame_skip * N
+    # frames). The default of 300 covers ~10 s at 30 fps; override via the
+    # ``frame_buffer_size`` runtime config.
+    config = state.get("config", {})
+    buf_cap = int(config.get("frame_buffer_size", 300))
     buf: list = list(state.get("frames_buffer") or [])
     ts_buf: list = list(state.get("frames_buffer_timestamps") or [])
     fn_buf: list = list(state.get("frames_buffer_frame_nums") or [])
@@ -490,10 +571,10 @@ def capture_frame_node(state: AuraGraphState) -> dict:
     ts_buf.append(frame_obj.timestamp)
     fn_buf.append(frame_obj.frame_number)
 
-    if len(buf) > 10:
-        buf = buf[-10:]
-        ts_buf = ts_buf[-10:]
-        fn_buf = fn_buf[-10:]
+    if len(buf) > buf_cap:
+        buf = buf[-buf_cap:]
+        ts_buf = ts_buf[-buf_cap:]
+        fn_buf = fn_buf[-buf_cap:]
 
     # Stream frame to Gemini Live session (if active) for continuous
     # visual context between generate() calls.
@@ -539,7 +620,6 @@ def run_gesture_node(state: AuraGraphState) -> dict:
         and getattr(gesture_output, "dominant_gesture", None) in resume_gestures
     )
 
-    monitor_out = state.get("monitor_outputs") or {}
     gesture_dict = {
         "dominant_gesture": getattr(gesture_output, "dominant_gesture", None),
         "safety_triggered": getattr(gesture_output, "safety_triggered", False),
@@ -547,7 +627,7 @@ def run_gesture_node(state: AuraGraphState) -> dict:
 
     return {
         "human_requesting_help": is_help_requested,
-        "monitor_outputs": {**monitor_out, "gesture": gesture_dict},
+        "monitor_outputs": {"gesture": gesture_dict},
     }
 
 
@@ -576,73 +656,141 @@ def run_perception_node(state: AuraGraphState) -> dict:
     if not result:
         return {}
 
-    # Merge perception-derived locations (only overwrite when definitive).
-    # Monitors may return locations under "object_locations" or
-    # task-specific keys like "bottle_locations".
+    # Merge perception-derived locations into a single generic dict.
+    # Any key ending in "_locations" that maps to a {str: str} dict is
+    # treated as object-location data — monitors use task-specific names
+    # (e.g. "bottle_locations", "tool_locations") and this handles them
+    # all without enumerating them here.
     obj_locs = dict(state.get("object_locations") or {})
-    for key in ("object_locations", "bottle_locations"):
-        for obj_id, region in result.get(key, {}).items():
-            if region != "unknown":
-                obj_locs[obj_id] = region
+    for key, val in result.items():
+        if key.endswith("_locations") and isinstance(val, dict):
+            for obj_id, region in val.items():
+                if region != "unknown":
+                    obj_locs[obj_id] = region
 
-    monitor_out = state.get("monitor_outputs") or {}
     return {
         "object_locations": obj_locs,
-        "monitor_outputs": {**monitor_out, "perception": result},
+        "monitor_outputs": {"perception": result},
     }
 
 
-def run_intent_node(state: AuraGraphState) -> dict:
-    """Run RCWPS intent prediction using ``AURAIntentMonitor.predict()``.
+_POSE_FAIL_LIMIT = 2  # after this many consecutive failures, stop invoking
 
-    Runs on a time-based throttle (``predict_interval`` seconds between
-    calls) to avoid excessive LLM usage.  When the interval has not
-    elapsed, returns the existing ``intent_result`` unchanged.
+
+def run_pose_node(state: AuraGraphState) -> dict:
+    """Run SAM-3D-Body pose inference on the latest frame.
+
+    Writes summary stats into ``monitor_outputs["pose"]``. Activity
+    detection (whether a human is present, etc.) lives in
+    ``run_activity_node``, which consumes this output.
+
+    When the pose server is unreachable or repeatedly times out, the
+    node marks the monitor as unavailable and stops invoking it. In
+    that case ``monitor_outputs["pose"]["available"]`` becomes False
+    and the activity / intent gate treats pose as disabled — i.e. the
+    intent monitor runs regardless, rather than being blocked forever.
     """
-    config = state.get("config", {})
-    predict_interval = config.get("predict_interval", 3.0)
-    last_predict = state.get("last_predict_time", 0.0)
-    now = time.time()
-
-    if (now - last_predict) < predict_interval:
-        # Keep existing intent_result; not time to predict yet
-        return {}
-
     buf = state.get("frames_buffer") or []
     if not buf:
-        return {"intent_result": None}
+        return {}
 
+    config = state.get("config", {}) or {}
+    key = config.get("config_dir", "default")
+
+    if _pose_disabled.get(key):
+        return {
+            "monitor_outputs": {
+                "pose": {
+                    "available": False,
+                    "num_persons": 0,
+                    "error": "pose server unavailable — activity gate bypassed",
+                },
+            },
+        }
+
+    monitor = _get_pose_monitor(state)
+    if monitor is None:
+        _pose_disabled[key] = True
+        logger.warning("Pose monitor could not be constructed — disabling pose gate")
+        return {
+            "monitor_outputs": {
+                "pose": {"available": False, "num_persons": 0, "error": "init failed"},
+            },
+        }
+
+    latest_frame = buf[-1]
+    error_msg: Optional[str] = None
+    result = None
     try:
-        monitor = _get_intent_monitor(state)
+        try:
+            result = asyncio.get_event_loop().run_until_complete(
+                monitor.update(frame=latest_frame)
+            )
+        except RuntimeError:
+            result = asyncio.run(monitor.update(frame=latest_frame))
+    except Exception as exc:
+        error_msg = str(exc)
+        logger.debug("Pose monitor call failed: %s", exc)
 
-        # Use at most max_frames from the tail of the buffer.
-        frames_to_send = buf[-5:]
-        ts_buf = list(state.get("frames_buffer_timestamps") or [])[-5:]
-        fn_buf = list(state.get("frames_buffer_frame_nums") or [])[-5:]
+    is_valid = result is not None and getattr(result, "is_valid", False)
+    if not is_valid and error_msg is None and result is not None:
+        error_msg = getattr(result, "error", "invalid pose result")
 
-        # Window duration = actual timestamp span of the selected frames.
-        if len(ts_buf) >= 2:
-            window_duration = ts_buf[-1] - ts_buf[0]
-        elif ts_buf:
-            window_duration = ts_buf[-1]
-        else:
-            window_duration = 0.0
+    if not is_valid:
+        fails = _pose_failures.get(key, 0) + 1
+        _pose_failures[key] = fails
+        if fails >= _POSE_FAIL_LIMIT:
+            _pose_disabled[key] = True
+            logger.warning(
+                "Pose monitor failed %d times (last error: %s) — disabling pose gate; "
+                "intent monitor will run without pose pre-check",
+                fails, error_msg,
+            )
+        return {
+            "monitor_outputs": {
+                "pose": {
+                    "available": not _pose_disabled.get(key, False),
+                    "num_persons": 0,
+                    "error": error_msg or "unknown pose error",
+                    "consecutive_failures": fails,
+                },
+            },
+        }
 
-        # Report the frame number of the last frame in the window.
-        last_frame_num = fn_buf[-1] if fn_buf else state.get("current_frame_num", 0)
+    _pose_failures[key] = 0
+    assert result is not None  # narrowed by is_valid
 
-        result = monitor.predict(
-            frames=frames_to_send,
-            timestamp=state.get("current_timestamp_sec", 0.0),
-            frame_num=last_frame_num,
-            window_duration_sec=window_duration,
-        )
-    except Exception as e:
-        logger.error("Intent prediction failed: %s", e)
-        return {"intent_result": None, "error": f"Intent error: {e}"}
+    persons_summary = []
+    for p in result.persons:
+        bbox = p.bbox
+        try:
+            if hasattr(bbox, "shape") and len(bbox.shape) > 1:
+                bbox = bbox[0]
+            person_data: Dict[str, Any] = {
+                "bbox": [float(v) for v in bbox[:4]],
+            }
+            # Include 2D keypoints so the activity gate can track motion.
+            kpts_2d = p.keypoints_2d
+            if kpts_2d is not None:
+                if len(kpts_2d.shape) == 3:
+                    kpts_2d = kpts_2d[0]
+                person_data["keypoints_2d"] = kpts_2d
+            persons_summary.append(person_data)
+        except Exception:
+            continue
 
-    # Serialise IntentResult to dict
-    result_dict = {
+    pose_dict = {
+        "available": True,
+        "num_persons": int(result.num_persons),
+        "persons": persons_summary,
+        "inference_time_sec": float(getattr(result, "inference_time_sec", 0.0) or 0.0),
+    }
+    return {"monitor_outputs": {"pose": pose_dict}}
+
+
+def _serialise_intent_result(result: Any) -> Dict[str, Any]:
+    """Convert an :class:`IntentResult` dataclass into a plain dict."""
+    return {
         "timestamp": result.timestamp,
         "frame_num": result.frame_num,
         "state": result.state,
@@ -658,12 +806,210 @@ def run_intent_node(state: AuraGraphState) -> dict:
         "generation_time_sec": result.generation_time_sec,
     }
 
-    monitor_out = state.get("monitor_outputs") or {}
-    return {
-        "intent_result": result_dict,
-        "last_predict_time": now,
-        "monitor_outputs": {**monitor_out, "intent": result_dict},
+
+def _drain_intent_future(key: str) -> Optional[Dict[str, Any]]:
+    """If a dispatched intent future has finished, push its result to the slot."""
+    fut = _intent_futures.get(key)
+    if fut is None or not fut.done():
+        return None
+    _intent_futures.pop(key, None)
+    try:
+        result = fut.result()
+    except Exception as exc:
+        logger.warning("Intent prediction failed: %s", exc)
+        return None
+    if result is None:
+        return None
+    serialised = _serialise_intent_result(result)
+    push_intent_result(key, serialised)
+    return serialised
+
+
+def _get_activity_gate(state: AuraGraphState):
+    """Lazy-init the per-config ActivityGate."""
+    from .activity_gate import ActivityGate
+
+    config = state.get("config", {}) or {}
+    key = config.get("config_dir", "default")
+    if key not in _activity_gates:
+        threshold = float(config.get("activity_keypoint_threshold", 15.0))
+        _activity_gates[key] = ActivityGate(threshold_px=threshold)
+    return _activity_gates[key]
+
+
+def run_activity_node(state: AuraGraphState) -> dict:
+    """Decide whether there is significant human activity.
+
+    Delegates to :class:`~aura.workflow.activity_gate.ActivityGate`
+    which tracks 2D keypoint displacement across cycles:
+
+    * **First detection** — any human presence triggers activity.
+    * **Subsequent cycles** — mean keypoint displacement must exceed
+      ``activity_keypoint_threshold`` (default 15 px) to count as
+      significant motion worth running intent on.
+    * **Pose unavailable** — gate is bypassed so intent keeps running.
+    """
+    monitor_outs = state.get("monitor_outputs") or {}
+    pose_out = monitor_outs.get("pose") or {}
+
+    gate = _get_activity_gate(state)
+    result = gate.evaluate(pose_out)
+
+    activity_dict: Dict[str, Any] = {
+        "detected": result.detected,
+        "reason": result.reason,
+        "kind": result.kind,
     }
+    if result.displacement_px is not None:
+        activity_dict["keypoint_displacement_px"] = result.displacement_px
+    if result.threshold_px is not None:
+        activity_dict["threshold_px"] = result.threshold_px
+
+    return {
+        "activity_detected": result.detected,
+        "monitor_outputs": {"activity": activity_dict},
+    }
+
+
+def run_intent_node(state: AuraGraphState) -> dict:
+    """Run RCWPS intent prediction without stalling the fast loop.
+
+    A single-worker thread pool owns the actual ``predict()`` call. Each
+    invocation:
+
+    1. Drains the previous future if it has finished, publishing the result
+       to the shared slot (consumed by ``update_ssg_node``).
+    2. If no call is currently in flight and the gate + min-interval
+       throttle agree, samples frames and dispatches a new ``predict()``.
+    3. In **realtime** mode (default) returns immediately — the fast loop
+       continues while the VLM thinks; the result lands a few cycles later
+       via the slot and ``update_ssg_node``.
+    4. In **eval** mode (``config["intent_blocking"]=True``) blocks on the
+       in-flight future before returning, so every cycle has a fresh
+       prediction. Same code path; the only difference is the wait.
+
+    The node returns a small status dict for the dashboard but never writes
+    to ``intent_result`` directly — that remains the SSG single-writer's
+    responsibility (``update_ssg_node``).
+    """
+    from .intent_gate import sample_intent_frames, should_run_intent
+
+    config = state.get("config", {}) or {}
+    key = config.get("config_dir", "default")
+    realtime = bool(config.get("realtime", True))
+    blocking = bool(config.get("intent_blocking", not realtime))
+
+    # 1. Pick up any completed future (so the slot has the freshest result).
+    drained = _drain_intent_future(key)
+
+    # 2. Maybe dispatch a new call.
+    in_flight = key in _intent_futures
+    dispatched = False
+    skip_reason = ""
+    if not in_flight:
+        run_now, gate_reason = should_run_intent(state)
+        if not run_now:
+            skip_reason = gate_reason
+        else:
+            min_interval = float(config.get("predict_interval", 0.0) or 0.0)
+            now = time.monotonic()
+            last_ts = _intent_last_dispatch.get(key, 0.0)
+            if min_interval > 0 and (now - last_ts) < min_interval:
+                skip_reason = (
+                    f"throttled ({(now - last_ts):.1f}s < {min_interval:.1f}s)"
+                )
+            else:
+                frames, frame_nums, timestamps = sample_intent_frames(
+                    state.get("frames_buffer") or [],
+                    state.get("frames_buffer_frame_nums") or [],
+                    state.get("frames_buffer_timestamps") or [],
+                    n=int(config.get("intent_num_frames", 5)),
+                    frame_skip=int(config.get("frame_skip", 30)),
+                    realtime=realtime,
+                )
+                if not frames:
+                    skip_reason = "no frames sampled"
+                else:
+                    try:
+                        monitor = _get_intent_monitor(state)
+                    except Exception as exc:
+                        logger.warning("Intent monitor init failed: %s", exc)
+                        monitor = None
+                    if monitor is not None:
+                        window_duration = (
+                            timestamps[-1] - timestamps[0] if len(timestamps) >= 2
+                            else (timestamps[-1] if timestamps else 0.0)
+                        )
+                        last_frame_num = (
+                            frame_nums[-1] if frame_nums
+                            else state.get("current_frame_num", 0)
+                        )
+                        last_ts_val = (
+                            timestamps[-1] if timestamps
+                            else state.get("current_timestamp_sec", 0.0)
+                        )
+                        # Inject externally-sourced state (robot status,
+                        # perception results) so the intent monitor's RCWPS
+                        # context includes them in its prompt.
+                        task_state_snap: Dict[str, Any] = dict(
+                            state.get("task_state") or {}
+                        )
+                        external_vars = monitor.collect_external_state_from_workflow(
+                            robot_state=task_state_snap.get("robot_state"),
+                            robot_active_program=task_state_snap.get(
+                                "robot_active_program"
+                            ),
+                            object_locations=dict(
+                                state.get("object_locations") or {}
+                            ),
+                        )
+                        if external_vars:
+                            monitor.inject_external_state(external_vars)
+                            logger.debug(
+                                "Intent monitor external state injected: %s",
+                                list(external_vars.keys()),
+                            )
+
+                        _intent_last_dispatch[key] = now
+                        _intent_futures[key] = _intent_executor.submit(
+                            monitor.predict,
+                            frames=frames,
+                            timestamp=last_ts_val,
+                            frame_num=last_frame_num,
+                            window_duration_sec=window_duration,
+                        )
+                        dispatched = True
+                        logger.info(
+                            "run_intent_node dispatched — %d frames, span=%.2fs (gate: %s)",
+                            len(frames), window_duration, gate_reason,
+                        )
+
+    # 3. Eval mode: wait for the in-flight call so this cycle sees fresh intent.
+    if blocking and key in _intent_futures:
+        fut = _intent_futures[key]
+        try:
+            result = fut.result()
+            if result is not None:
+                drained = _serialise_intent_result(result)
+                push_intent_result(key, drained)
+        except Exception as exc:
+            logger.warning("Intent prediction failed (blocking): %s", exc)
+        finally:
+            _intent_futures.pop(key, None)
+
+    status = {
+        "in_flight": key in _intent_futures,
+        "dispatched_this_cycle": dispatched,
+        "drained_this_cycle": drained is not None,
+        "skip_reason": skip_reason,
+        "blocking": blocking,
+    }
+    update: Dict[str, Any] = {
+        "monitor_outputs": {"intent_status": status},
+    }
+    if dispatched:
+        update["last_predict_time"] = time.time()
+    return update
 
 
 def update_ssg_node(state: AuraGraphState) -> dict:
@@ -678,8 +1024,12 @@ def update_ssg_node(state: AuraGraphState) -> dict:
     """
     ssg = _get_ssg(state)
 
+    # ── Drain any new intent_result from the background runner ───────
+    config_dir = state.get("config", {}).get("config_dir", "")
+    bg_intent = pop_intent_result(config_dir) if config_dir else None
+    intent = bg_intent if bg_intent is not None else state.get("intent_result")
+
     # ── Sync intent result into SSG ────────────────────────────────
-    intent = state.get("intent_result")
     if intent:
         ssg.update_from_intent_result(intent)
 
@@ -710,16 +1060,60 @@ def update_ssg_node(state: AuraGraphState) -> dict:
                     AgentState.BUSY if robot_status["robot_state"] == "busy"
                     else AgentState.IDLE)
 
+        # Apply deferred skill effects once the robot has completed
+        # the dispatched program. A completion is: we observed the
+        # executor busy at least once since dispatch, and it is now
+        # idle. Pending effects were recorded by execute_action_node
+        # and withheld until this point.
+        pending = list(ssg.task_state.get("pending_skill_effects") or [])
+        if pending:
+            if robot_status["robot_state"] == "busy":
+                for entry in pending:
+                    entry["observed_busy"] = True
+                ssg.set_task_state("pending_skill_effects", pending)
+            elif robot_status["robot_state"] == "idle":
+                ready = [e for e in pending if e.get("observed_busy")]
+                remaining = [e for e in pending if not e.get("observed_busy")]
+                for entry in ready:
+                    for effect_key, effect_val in (entry.get("effects") or {}).items():
+                        parts = effect_key.split(".")
+                        if len(parts) == 2 and parts[1] == "location" and ssg.has_node(parts[0]):
+                            ssg.set_location(parts[0], effect_val)
+                if ready:
+                    ssg.set_task_state("pending_skill_effects", remaining)
+
     # ── Sync perception-detected object locations ──────────────────
-    # Task-specific perception monitors return detected locations
-    # (e.g. bottle_0 → storage).  Store them in SSG task_state so the
-    # decision engine can see them even though perception cannot
-    # distinguish semantically named objects (resin vs hardener).
-    perception_output = (state.get("monitor_outputs") or {}).get("perception")
-    if isinstance(perception_output, dict):
-        detected_locs = perception_output.get("bottle_locations")
-        if detected_locs:
-            ssg.set_task_state("detected_bottle_locations", detected_locs)
+    # The perception node consolidates all monitor location outputs into
+    # state["object_locations"] (a generic {obj_id: region} dict).
+    # That is the sole source written here — task-specific key names
+    # never appear in this file.
+    #
+    # Perception is the sole authority for task_state location variables
+    # (source: "perception" in state_schema).  Skill effects do NOT write
+    # here — a mismatch between what the robot intended and what the camera
+    # sees is meaningful signal (skill failure, object still in motion).
+    # Monitors should emit "unknown" for any object they are responsible
+    # for but did not detect this frame, so task_state never retains a
+    # stale confident-but-outdated value.
+    object_locations = state.get("object_locations") or {}
+    for obj_id, region in object_locations.items():
+        # Only known SSG nodes get mirrored to state-schema vars.
+        # Generic fallback ids (emitted before identity is resolved) are
+        # present in the raw monitor output but not registered as nodes.
+        if obj_id not in ssg._nodes:
+            continue
+        ssg.set_task_state(f"{obj_id}_location", region)
+        # SSG location edges only updated when detection is confident.
+        # "unknown" leaves the edge at its last known value so graph
+        # reasoner queries remain usable during momentary occlusions.
+        if region != "unknown":
+            try:
+                ssg.set_location(obj_id, region)
+            except Exception as exc:
+                logger.debug(
+                    "Could not set SSG location for %s → %s: %s",
+                    obj_id, region, exc,
+                )
 
     # ── Sync audio events into SSG ───────────────────────────────
     # Drain events from the AudioWorkflowBridge (if active).
@@ -783,16 +1177,85 @@ def update_ssg_node(state: AuraGraphState) -> dict:
 
     ssg.take_snapshot()
 
-    monitor_out = state.get("monitor_outputs") or {}
+    # Only add slots this node produced — the monitor_outputs reducer will
+    # merge them on top of whatever the parallel sensing branches wrote.
+    new_monitor_slots: Dict[str, Any] = {}
     if sound_dict:
-        monitor_out = {**monitor_out, "sound": sound_dict}
+        new_monitor_slots["sound"] = sound_dict
+    # If a fresh intent result came in via the slot, mirror it into
+    # monitor_outputs so the dashboard sees the latest prediction.
+    if bg_intent is not None:
+        new_monitor_slots["intent"] = bg_intent
 
-    return {
+    updates: Dict[str, Any] = {
         "ssg": ssg.to_dict(),
         "task_state": dict(ssg.task_state),
         "completed_steps": completed_steps,
         "object_locations": obj_locs,
-        "monitor_outputs": monitor_out,
+    }
+    if new_monitor_slots:
+        updates["monitor_outputs"] = new_monitor_slots
+    # Propagate freshly drained intent into flat state so decide_action
+    # reads it on the same cycle.
+    if bg_intent is not None:
+        updates["intent_result"] = bg_intent
+        print(f"  [update_ssg_node] Returning intent_result: current_action={bg_intent.get('current_action')}, state keys={list(bg_intent.keys())}")
+    else:
+        print(f"  [update_ssg_node] No bg_intent drained, returning: {list(updates.keys())}")
+    return updates
+
+
+def _ssg_change_digest(state: AuraGraphState) -> str:
+    """Return a stable hash over the fields that should trigger a decision.
+
+    Hashing the full SSG is noisy (timestamps, snapshot counters). Instead
+    we digest a curated slice: object locations, robot state, completed
+    steps, and the current intent phase/action. That keeps change detection
+    meaningful without over-firing on cosmetic updates.
+    """
+    import hashlib
+    ssg_dict = state.get("ssg") or {}
+    ts = ssg_dict.get("task_state") or {}
+    intent = state.get("intent_result") or {}
+
+    payload = {
+        "object_locations": dict(state.get("object_locations") or {}),
+        "completed_steps": sorted(state.get("completed_steps") or []),
+        "robot_state": ts.get("robot_state"),
+        "robot_active_program": ts.get("robot_active_program"),
+        # intent — include every field so any meaningful change triggers a decision.
+        # List fields are sorted for stable hashing; everything else is kept as-is.
+        **{
+            k: (sorted(v) if isinstance(v, list) else v)
+            for k, v in intent.items()
+        },
+        "human_requesting_help": bool(state.get("human_requesting_help")),
+        "activity_detected": bool(state.get("activity_detected")),
+    }
+    # DEBUG PRINT: Print the payload being hashed so the user can inspect it
+    # print(f"  [_ssg_change_digest] Payload generating hash:\n    {payload}")
+    blob = json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
+    return hashlib.blake2b(blob, digest_size=16).hexdigest()
+
+
+def check_ssg_change_node(state: AuraGraphState) -> dict:
+    """Compute whether the SSG has changed since the last cycle.
+
+    Writes ``ssg_changed`` + refreshed ``last_ssg_hash`` so the router can
+    decide whether to run ``decide_action`` this tick. The first cycle is
+    always treated as a change so the initial decision runs.
+    """
+    new_hash = _ssg_change_digest(state)
+    prev_hash = state.get("last_ssg_hash") or ""
+    changed = (new_hash != prev_hash)
+    
+    # print(f"  [check_ssg_change_node] prev_hash={prev_hash}, new_hash={new_hash}, changed={changed}") # DEBUG PRINT: Show the previous and new hash values and whether a change was detected
+    # if not changed:
+    #     print(f"  [check_ssg_change_node] No SSG change detected. Skipping decide_action.")
+        
+    return {
+        "ssg_changed": changed,
+        "last_ssg_hash": new_hash,
     }
 
 
@@ -807,7 +1270,9 @@ async def decide_action_node(state: AuraGraphState) -> dict:
     pushed to the AudioWorkflowBridge for the SoundMonitor to speak.
     """
     intent_result = state.get("intent_result")
+    print(f"  [decide_action_node] Called. intent_result present: {intent_result is not None}, keys: {list(intent_result.keys()) if intent_result else 'N/A'}")
     if not intent_result:
+        print(f"  [decide_action_node] No intent_result; returning empty dict")
         return {}
 
     timestamp = state.get("current_timestamp_sec", 0.0)
@@ -821,6 +1286,7 @@ async def decide_action_node(state: AuraGraphState) -> dict:
 
     # ── Brain decision engine ───────────────────────────────────────
     speech_message: Optional[str] = None
+    engine = None
     try:
         engine = _get_decision_engine(state)
         prediction = await engine.decide_action(current_time_sec=timestamp)
@@ -851,6 +1317,16 @@ async def decide_action_node(state: AuraGraphState) -> dict:
         audio_bridge.push_speech(speech_message)
         logger.info("Decision engine → human: %s", speech_message[:100])
 
+    # Surface Behaviour-Tree tick state so the dashboard can show it.
+    bt_info: Dict[str, Any] = {}
+    if engine is not None:
+        bt_info = {
+            "decision_mode": getattr(engine.config, "decision_mode", "hybrid"),
+            "bt_trail": getattr(engine, "_last_bt_reasoning", "") or "",
+            "bt_branch": getattr(engine, "_last_bt_branch", "") or "",
+            "bt_llm_invoked": bool(getattr(engine, "_last_bt_llm_invoked", False)),
+        }
+
     decision_record = {
         "timestamp_sec": timestamp,
         "frame_num": state.get("current_frame_num", 0),
@@ -858,6 +1334,7 @@ async def decide_action_node(state: AuraGraphState) -> dict:
         "speech_message": speech_message,
         "reasoning": " | ".join(reasoning_parts) or "No action needed",
         "decided_at": datetime.now().isoformat(),
+        **bt_info,
     }
 
     return {
@@ -962,34 +1439,31 @@ def execute_action_node(state: AuraGraphState) -> dict:
                 result["success"] = False
                 result["error"] = str(e)
 
-        # Update object locations from skill effects on success
-        if result.get("success") and skill:
-            for effect_key, effect_val in skill.effects.items():
-                # Effects like "resin_bottle.location": "workplace"
-                parts = effect_key.split(".")
-                if len(parts) == 2 and parts[1] == "location":
-                    obj_locs[parts[0]] = effect_val
+        # Live mode: defer skill effects until the robot program
+        # actually completes. Record them as pending on the SSG; the
+        # next update_ssg_node cycle applies them once the poll
+        # observes the executor returning to idle.
+        # Dry-run: do NOT apply effects at all — perception on the
+        # input video is the sole authority for object locations.
+        if not dry_run and result.get("success") and skill and skill.effects:
+            pending = list(ssg.task_state.get("pending_skill_effects") or [])
+            pending.append({
+                "action_type": action_type,
+                "effects": dict(skill.effects),
+            })
+            ssg.set_task_state("pending_skill_effects", pending)
 
         executed.append(result)
 
-    # ── Sync execution results back into live SSG ─────────────
-    # Apply skill effects to SSG (e.g., "resin_bottle.location": "workplace")
-    for ex in executed:
-        if not ex.get("success"):
-            continue
-        ex_skill = skills.get(ex.get("action_type", ""))
-        if not ex_skill:
-            continue
-        for effect_key, effect_val in ex_skill.effects.items():
-            parts = effect_key.split(".")
-            if len(parts) == 2 and parts[1] == "location" and ssg.has_node(parts[0]):
-                ssg.set_location(parts[0], effect_val)
-
-    # Reset robot state after execution
-    _last_active_program = ""
-    if robot_node and isinstance(robot_node, AgentNode):
-        robot_node.state = AgentState.IDLE
-        robot_node.current_action = None
+    # In live mode, leave robot BUSY so the next _robot_status_from_api
+    # poll is authoritative (avoids a stale-IDLE window before the
+    # motion has physically finished). In dry-run, flip back to IDLE
+    # since there is no poll to correct it.
+    if dry_run:
+        _last_active_program = ""
+        if robot_node and isinstance(robot_node, AgentNode):
+            robot_node.state = AgentState.IDLE
+            robot_node.current_action = None
 
     ssg.take_snapshot()
 

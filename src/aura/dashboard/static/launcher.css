@@ -431,6 +431,43 @@ input[type="range"]::-moz-range-thumb {
     display: none !important;
 }
 
+/* ── Monitors Section ───────────────────────────────────────── */
+
+.monitors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.6rem 1.2rem;
+    margin-top: 0.6rem;
+}
+
+.audio-options {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border);
+}
+
+.preinit-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+}
+
+.monitor-pill {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    margin-left: 0.4rem;
+    font-family: var(--mono);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+}
+
+.pill-idle     { background: transparent; color: var(--text-muted); }
+.pill-loading  { background: var(--yellow-dim); color: var(--yellow); border-color: var(--yellow); }
+.pill-ready    { background: var(--green-dim); color: var(--green); border-color: var(--green); }
+.pill-error    { background: var(--red-dim); color: var(--red); border-color: var(--red); }
+
 /* ── Preview Area ───────────────────────────────────────────── */
 
 .preview-area {

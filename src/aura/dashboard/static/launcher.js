@@ -22,6 +22,7 @@ const MODELS_BY_BACKEND = {
         "gemini-2.5-pro-preview-05-06",
         "gemini-2.5-flash-preview-04-17",
         "gemini-2.0-flash",
+        "gemma-4-26b-a4b-it",
     ],
     openai: [
         "gpt-4.1",
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupRobotMode();
     setupBackendVisibility();
     setupPreview();
+    setupMonitors();
     setupLaunch();
     applyLogicRules();
 });
@@ -76,8 +78,27 @@ async function loadTasks() {
         sel.innerHTML = tasks.map(
             t => `<option value="${esc(t)}">${esc(t)}</option>`
         ).join("");
+        sel.addEventListener("change", syncMonitorsFromProfile);
+        syncMonitorsFromProfile();
     } catch (e) {
         console.error("Failed to load tasks:", e);
+    }
+}
+
+async function syncMonitorsFromProfile() {
+    const task = val("task");
+    if (!task) return;
+    try {
+        const resp = await fetch(`/api/task-profile?task=${encodeURIComponent(task)}`);
+        if (!resp.ok) return;
+        const profile = await resp.json();
+        const active = (profile.workflow_config || {}).active_monitors || ["intent", "gesture"];
+        document.getElementById("enable-gesture").checked = active.includes("gesture");
+        document.getElementById("enable-perception").checked = active.includes("perception");
+        // Audio is not part of active_monitors; leave user-controlled.
+        applyLogicRules();
+    } catch (e) {
+        console.warn("Could not sync monitors from profile:", e);
     }
 }
 
@@ -326,6 +347,90 @@ function hidePreview() {
     document.getElementById("preview-error").classList.add("hidden");
 }
 
+// ── Monitors / Pre-init ─────────────────────────────────────────
+
+function setupMonitors() {
+    const audioCb = document.getElementById("enable-audio");
+    audioCb.addEventListener("change", () => {
+        toggleEl("audio-options", audioCb.checked);
+    });
+    document.getElementById("preinit-btn").addEventListener("click", preinitMonitors);
+}
+
+async function preinitMonitors() {
+    const btn = document.getElementById("preinit-btn");
+    const msg = document.getElementById("preinit-msg");
+    const cfg = {
+        task: val("task"),
+        enable_perception: document.getElementById("enable-perception").checked,
+        enable_audio: document.getElementById("enable-audio").checked,
+        audio_input_device: val("audio-input-device") || null,
+        audio_output_device: val("audio-output-device") || null,
+        audio_voice: val("audio-voice") || "Zephyr",
+    };
+    if (!cfg.enable_perception && !cfg.enable_audio) {
+        msg.textContent = "Enable perception or audio first.";
+        return;
+    }
+    btn.disabled = true;
+    msg.textContent = "Pre-loading...";
+    setPill("perception", cfg.enable_perception ? "loading" : "idle", "");
+    setPill("audio", cfg.enable_audio ? "loading" : "idle", "");
+    try {
+        const resp = await fetch("/api/initialize-monitors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cfg),
+        });
+        if (!resp.ok) {
+            const data = await resp.json().catch(() => ({}));
+            throw new Error(data.error || `HTTP ${resp.status}`);
+        }
+        pollPreinitStatus();
+    } catch (e) {
+        msg.textContent = "Pre-load failed: " + e.message;
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function pollPreinitStatus() {
+    const msg = document.getElementById("preinit-msg");
+    const deadline = Date.now() + 120000; // 2 min timeout
+    while (Date.now() < deadline) {
+        try {
+            const resp = await fetch("/api/initialize-status");
+            const status = await resp.json();
+            setPill("perception", status.perception.state, status.perception.detail);
+            setPill("audio", status.audio.state, status.audio.detail);
+            const states = [status.perception.state, status.audio.state];
+            const pending = states.some(s => s === "loading");
+            if (!pending) {
+                msg.textContent = "Pre-load complete.";
+                return;
+            }
+        } catch (e) {
+            // Ignore transient errors and keep polling.
+        }
+        await new Promise(r => setTimeout(r, 1000));
+    }
+    msg.textContent = "Pre-load timed out.";
+}
+
+function setPill(name, state, detail) {
+    const el = document.getElementById("status-" + name);
+    if (!el) return;
+    const label = {
+        idle: "idle",
+        loading: "loading…",
+        ready: "ready",
+        error: "error",
+    }[state] || state;
+    el.textContent = label;
+    el.className = "monitor-pill pill-" + state;
+    if (detail) el.title = detail;
+}
+
 // ── Launch ──────────────────────────────────────────────────────
 
 function setupLaunch() {
@@ -389,6 +494,12 @@ function collectConfig() {
         decision_model: val("decision-model") || null,
         max_cycles: intVal("max-cycles") || null,
         use_ground_truth_robot_status: document.getElementById("ground-truth").checked,
+        enable_gesture: document.getElementById("enable-gesture").checked,
+        enable_perception: document.getElementById("enable-perception").checked,
+        enable_audio: document.getElementById("enable-audio").checked,
+        audio_input_device: val("audio-input-device") || null,
+        audio_output_device: val("audio-output-device") || null,
+        audio_voice: val("audio-voice") || "Zephyr",
     };
 
     // Source-specific fields

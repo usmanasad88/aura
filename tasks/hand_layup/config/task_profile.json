@@ -1,6 +1,11 @@
 {
     "task_name": "Hand Layup",
     "system_instruction": "You are a robot assistant helping with a fiberglass hand layup task. Your aim is to monitor and proactively assist the human operator.",
+    "anchor_image": {
+        "enabled": true,
+        "path": "demo_data/layup_demo/anchor_image_layup_stationary.png",
+        "description": "Reference image of the hand-layup workspace with all task objects visible and labelled spatial layout. Use it to ground your understanding of object identities and scene geometry."
+    },
     "environment": {
         "movable_objects": [
             "weigh_scale", "resin_bottle", "hardener_bottle",
@@ -40,7 +45,7 @@
         }
     ],
     "workflow_config": {
-        "active_monitors": ["intent"],
+        "active_monitors": ["intent", "perception", "pose", "gesture"],
         "decision_mode": "hybrid",
         "graph_topology": "sense_decide_act",
         "predict_interval_sec": 3.0,

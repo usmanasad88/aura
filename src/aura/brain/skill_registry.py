@@ -48,6 +48,13 @@ class RobotSkill:
     parameters: List[SkillParameter] = field(default_factory=list)
     preconditions: Dict[str, Any] = field(default_factory=dict)
     effects: Dict[str, Any] = field(default_factory=dict)
+    # DAG steps whose imminent execution should trigger this skill
+    # (e.g. a delivery skill triggers when its consuming step is next).
+    trigger_steps: List[str] = field(default_factory=list)
+    # DAG steps whose completion should trigger this skill
+    # (e.g. a return-to-storage skill triggers after the last step
+    # that used the object is done).
+    trigger_after_steps: List[str] = field(default_factory=list)
     estimated_duration_sec: float = 5.0
     can_interrupt: bool = True
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -88,6 +95,8 @@ class RobotSkill:
             ],
             "preconditions": self.preconditions,
             "effects": self.effects,
+            "trigger_steps": self.trigger_steps,
+            "trigger_after_steps": self.trigger_after_steps,
             "estimated_duration_sec": self.estimated_duration_sec,
             "can_interrupt": self.can_interrupt,
             "metadata": self.metadata,
@@ -120,6 +129,8 @@ class RobotSkill:
             parameters=params,
             preconditions=data.get("preconditions", {}),
             effects=data.get("effects", {}),
+            trigger_steps=list(data.get("trigger_steps", []) or []),
+            trigger_after_steps=list(data.get("trigger_after_steps", []) or []),
             estimated_duration_sec=data.get("estimated_duration_sec", 5.0),
             can_interrupt=data.get("can_interrupt", True),
             metadata=metadata,

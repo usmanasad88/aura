@@ -25,7 +25,8 @@ from aura.core.scene_graph import (
     SSGEdge, SpatialRelation, SemanticRelation,
     NodeType, EdgeType
 )
-from aura.core.scene_graph.nodes import ObjectState, AgentState, Affordance
+from aura.core.scene_graph.nodes import AgentState
+from aura.core.types import Affordance
 from aura.core import (
     MonitorOutput, PerceptionOutput, IntentOutput,
     MotionOutput, SoundOutput, TrackedObject
@@ -156,6 +157,10 @@ class DecisionEngineConfig:
     enable_explainability: bool = True
     proactive_threshold: float = 0.7  # Min confidence for proactive actions
     timing_prediction_enabled: bool = True
+    # "llm"     — every cycle routed to the LLM (legacy behaviour)
+    # "bt"      — BT only, no LLM; ambiguity escalates to the human
+    # "hybrid"  — BT with LLM fallback on ambiguity (default)
+    decision_mode: str = "hybrid"
 
     # LLM backend: "gemini", "openai", "sglang", "vllm", "ollama"
     llm_backend: str = "gemini"
@@ -233,9 +238,18 @@ class DecisionEngine:
         # LLM client (unified abstraction)
         self._llm_client = None
 
+        # BT policy — built lazily in load_task() once configs are loaded.
+        self._bt_policy = None
+        self._bt_ctx = None
+
+        # Last BT tick introspection (surfaced on the dashboard).
+        self._last_bt_reasoning: str = ""
+        self._last_bt_llm_invoked: bool = False
+        self._last_bt_branch: str = ""
+
         logger.info(
-            "DecisionEngine initialized — model: %s, backend: %s",
-            self.config.gemini_model, self.config.llm_backend,
+            "DecisionEngine initialized — model: %s, backend: %s, mode: %s",
+            self.config.gemini_model, self.config.llm_backend, self.config.decision_mode,
         )
 
     @property
@@ -279,13 +293,6 @@ class DecisionEngine:
                 node = ObjectNode(
                     id=obj.id,
                     name=obj.name,
-                    node_type=NodeType.OBJECT,
-                    category=obj.category,
-                    bbox=(obj.bbox.x_min, obj.bbox.y_min,
-                          obj.bbox.x_max, obj.bbox.y_max) if obj.bbox else None,
-                    confidence=obj.confidence,
-                    position=(obj.pose.x, obj.pose.y, obj.pose.z) if obj.pose else None,
-                    state=ObjectState.AVAILABLE,
                 )
                 self.graph.add_node(node)
     
@@ -390,20 +397,19 @@ class DecisionEngine:
     
     async def decide_action(self, current_time_sec: float = None) -> Optional[ActionPrediction]:
         """Decide what action the robot should take (if any).
-        
-        Args:
-            current_time_sec: Current time in the task
-        
-        Returns:
-            ActionPrediction if robot should act, None otherwise
+
+        Delegates to the compiled BT policy (built by ``load_task``).
+        The BT decides — deterministic branches fire first (safety,
+        reactive, scheduled deliveries), and only escalate to the LLM
+        fallback on ambiguity. See ``aura.brain.bt_policy`` for the
+        full topology.
         """
         if current_time_sec is not None:
             self.current_video_time_sec = current_time_sec
-        
-        # Get available actions from reasoner
+
+        # Ensure robot agent exists in the SSG (legacy invariant).
         robot = self.graph.get_node("robot")
         if not robot:
-            # Create robot agent if not exists
             robot = AgentNode(
                 id="robot",
                 name="Robot Assistant",
@@ -412,24 +418,165 @@ class DecisionEngine:
                 capabilities=self.skills.list_skill_ids(),
             )
             self.graph.add_node(robot)
-        
-        available_actions = self.reasoner.get_available_actions("robot")
-        proactive_opportunities = self.reasoner.get_proactive_opportunities("robot")
-        
-        # If LLM reasoning enabled, use it to select action
-        if self.config.enable_llm_reasoning and self.llm_client:
-            return await self._llm_decide_action(
-                available_actions, 
-                proactive_opportunities,
-                current_time_sec
-            )
+
+        # If BT not built (no task loaded), fall back to legacy LLM path.
+        if self._bt_policy is None:
+            if self.config.enable_llm_reasoning and self.llm_client:
+                return await self._llm_decide_action([], [], current_time_sec or 0.0)
+            return self._rule_based_decide([], [], current_time_sec or 0.0)
+
+        # Gather tick inputs from SSG / task_state.
+        task_state = dict(self.graph.task_state)
+        intent = {
+            "current_phase": task_state.get("current_phase", ""),
+            "current_action": task_state.get("current_action", ""),
+            "predicted_next_action": task_state.get("predicted_next_action", ""),
+            "prediction_confidence": task_state.get("prediction_confidence", 0.0),
+        }
+        steps_completed = list(task_state.get("steps_completed") or [])
+        # Intent monitor also writes steps_completed onto the SSG via
+        # update_from_intent_result; but the BT also accepts it from the
+        # graph snapshot directly when present.
+        if not steps_completed:
+            steps_completed = list(getattr(self.graph, "_steps_completed", []) or [])
+        human_help = bool(task_state.get("human_requesting_help", False))
+
+        # Run the async LLM-fallback through the BT's sync bridge.
+        self._bt_pending_current_time = current_time_sec or 0.0
+
+        t0 = time.monotonic()
+        prediction, reasoning, llm_invoked = self._bt_policy.tick(
+            current_time_sec=current_time_sec or 0.0,
+            intent=intent,
+            task_state=task_state,
+            steps_completed=steps_completed,
+            human_requesting_help=human_help,
+        )
+        generation_time = time.monotonic() - t0
+
+        # Log the decision to disk
+        self.prompt_logger.log_call(
+            prompt_text=json.dumps({
+                "intent": intent,
+                "task_state": task_state,
+                "steps_completed": steps_completed,
+                "human_requesting_help": human_help
+            }, indent=2, default=str),
+            response_text=reasoning,
+            parsed_response={
+                "decision": prediction.action_id if prediction else "wait",
+                "target": prediction.target_id if prediction else None,
+                "parameters": prediction.parameters if prediction else {},
+                "confidence": prediction.confidence if prediction else 1.0,
+                "reasoning": reasoning
+            },
+            model="BehaviorTree+LLM" if llm_invoked else "BehaviorTree",
+            generation_time_sec=generation_time,
+            timestamp_sec=current_time_sec or 0.0,
+            decision=prediction.action_id if prediction else "wait",
+            ssg_snapshot=self.graph.to_dict(),
+        )
+
+        # Cache the trail so the dashboard can display BT state.
+        self._last_bt_reasoning = reasoning
+        self._last_bt_llm_invoked = bool(llm_invoked)
+        # Branch = prefix of the first trail entry (e.g. "safety", "delivery",
+        # "timer", "reactive", "llm_fallback", "escalate_human", "wait").
+        first = reasoning.split(" | ", 1)[0] if reasoning else ""
+        self._last_bt_branch = first.split(":", 1)[0] if first else ""
+
+        # Record the decision with the BT reasoning trail.
+        if self.config.enable_explainability:
+            if prediction is not None:
+                self.explainer.record_decision(DecisionRecord(
+                    timestamp=datetime.now(),
+                    decision_type="action" if prediction.action_id not in (
+                        "ask_question", "speak", "abort"
+                    ) else prediction.action_id,
+                    action_id=prediction.action_id,
+                    target=prediction.target_id,
+                    parameters=prediction.parameters,
+                    reasoning=f"{reasoning} — {prediction.reasoning}",
+                    confidence=prediction.confidence,
+                ))
+            else:
+                self.explainer.record_decision(DecisionRecord(
+                    timestamp=datetime.now(),
+                    decision_type="wait",
+                    reasoning=reasoning,
+                    confidence=1.0,
+                ))
+
+        if llm_invoked:
+            logger.debug("BT tick invoked LLM fallback: %s", reasoning)
         else:
-            # Rule-based fallback
-            return self._rule_based_decide(
-                available_actions,
-                proactive_opportunities,
-                current_time_sec
-            )
+            logger.debug("BT tick resolved deterministically: %s", reasoning)
+
+        return prediction
+
+    # -------------------------------------------------------------------
+    # BT construction & LLM-fallback adapter
+    # -------------------------------------------------------------------
+
+    def _build_bt_policy(self) -> None:
+        """Compile the BT from the loaded task configs.
+
+        Must be called after ``load_task`` so ``skills``, ``graph`` and
+        ``self._task_profile`` are populated.
+        """
+        from aura.brain.bt_policy import BTContext, BTPolicy
+
+        dag: List[Dict[str, Any]] = []
+        try:
+            parsed = json.loads(self.task_graph_string)
+            if isinstance(parsed, list):
+                dag = [s for s in parsed if isinstance(s, dict)]
+            elif isinstance(parsed, dict):
+                dag = [s for s in parsed.get("steps", []) if isinstance(s, dict)]
+        except Exception:
+            dag = []
+
+        ctx = BTContext(
+            ssg=self.graph,
+            skills=self.skills,
+            task_profile=getattr(self, "_task_profile", {}) or {},
+            dag=dag,
+            explainer=self.explainer,
+            decision_mode=self.config.decision_mode,
+            proactive_threshold=self.config.proactive_threshold,
+            llm_fallback=self._bt_llm_fallback_hook,
+        )
+        self._bt_ctx = ctx
+        self._bt_policy = BTPolicy(ctx, decision_mode=self.config.decision_mode)
+        logger.info(
+            "BT policy compiled (mode=%s, %d safety rules, %d timers, %d scheduled skills)",
+            self.config.decision_mode,
+            len(ctx.task_profile.get("safety_rules", []) or []),
+            len(ctx.task_profile.get("timers", []) or []),
+            sum(
+                1 for s in self.skills.list_skills()
+                if s.trigger_steps or s.trigger_after_steps
+            ),
+        )
+
+    async def _bt_llm_fallback_hook(self, reason: str, ctx) -> Optional[ActionPrediction]:
+        """Async hook invoked by the BT's LLM fallback leaf.
+
+        Reuses the legacy LLM prompt verbatim; ``reason`` is prepended
+        to the reasoning trail so the dashboard/A-Score pipeline can
+        see why the LLM was called.
+        """
+        if not (self.config.enable_llm_reasoning and self.llm_client):
+            return None
+
+        available = self.reasoner.get_available_actions("robot")
+        proactive = self.reasoner.get_proactive_opportunities("robot")
+        prediction = await self._llm_decide_action(
+            available, proactive, ctx.current_time_sec
+        )
+        if prediction is not None:
+            prediction.reasoning = f"[llm_fallback:{reason}] {prediction.reasoning}"
+        return prediction
     
     def _format_recent_decisions(self, n: int = 5) -> str:
         """Format the last *n* decisions for inclusion in the LLM prompt."""
@@ -653,6 +800,35 @@ Respond with ONLY the JSON object, no other text."""
             with open(initial_scene_path, 'r') as f:
                 scene_data = json.load(f)
             self._initialize_scene(scene_data)
+
+        # Load task profile (safety_rules, timers) so the BT can compile.
+        profile_path = self.config_dir / "task_profile.json"
+        if profile_path.exists():
+            try:
+                with open(profile_path, "r", encoding="utf-8") as f:
+                    self._task_profile = json.load(f)
+            except Exception as exc:
+                logger.warning("Failed to parse task_profile.json: %s", exc)
+                self._task_profile = {}
+        else:
+            self._task_profile = {}
+
+        # Sync decision_mode from task_profile if the engine config
+        # still has the default. Workflow-level plumbing may have
+        # already set it — but this allows a task to override.
+        wf = (self._task_profile.get("workflow_config") or {}) if isinstance(
+            self._task_profile, dict
+        ) else {}
+        tp_mode = wf.get("decision_mode")
+        if tp_mode in ("llm", "bt", "hybrid"):
+            self.config.decision_mode = tp_mode
+
+        # Compile the BT now that skills, SSG and task_profile are loaded.
+        try:
+            self._build_bt_policy()
+        except Exception as exc:
+            logger.exception("Failed to compile BT policy: %s", exc)
+            self._bt_policy = None
     
     def _initialize_scene(self, scene_data: Dict[str, Any]) -> None:
         """Initialize scene graph from scene definition."""

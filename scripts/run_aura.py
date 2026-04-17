@@ -55,6 +55,11 @@ Usage
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from aura.dashboard.server import DashboardServer
+
 import argparse
 import asyncio
 import json
@@ -251,13 +256,22 @@ async def run_workflow(
     decision_backend: str | None = None,
     decision_model: str | None = None,
     intent_max_tokens: int | None = None,
-    dashboard: object | None = None,
+    dashboard: "DashboardServer | None" = None,
     # Audio / voice control
     enable_audio: bool = False,
     audio_input_device: str | None = None,
     audio_output_device: str | None = None,
     audio_sample_rate: int = 16000,
     audio_voice: str = "Zephyr",
+    # Monitor toggles — ``None`` means "use task_profile default".
+    enable_gesture: bool | None = None,
+    enable_perception: bool | None = None,
+    enable_pose: bool | None = None,
+    enable_activity: bool | None = None,
+    intent_blocking: bool | None = None,
+    pose_endpoint: str = "tcp://localhost:5556",
+    intent_num_frames: int = 5,
+    frame_buffer_size: int = 300,
 ) -> None:
     """Build and run the LangGraph workflow loop."""
     from aura.workflow.builder import build_task_graph
@@ -290,9 +304,55 @@ async def run_workflow(
         "decision_backend": decision_backend or llm_backend,
         "decision_model": decision_model or model,
         "intent_max_tokens": intent_max_tokens,
+        "pose_server_endpoint": pose_endpoint,
+        "intent_num_frames": intent_num_frames,
+        "frame_buffer_size": frame_buffer_size,
+        # Default: realtime → non-blocking intent; offline → blocking. Override
+        # explicitly via --intent-blocking / --no-intent-blocking.
+        "intent_blocking": (
+            intent_blocking if intent_blocking is not None else (not realtime)
+        ),
     }
     if max_cycles is not None:
         extra["max_cycles"] = max_cycles
+
+    # Surface audio flag so the dashboard header can show it.
+    extra["enable_audio"] = bool(enable_audio)
+
+    # Build active_monitors override from per-monitor toggles. Intent is
+    # always on; gesture/perception follow the flags. Audio lives outside
+    # the LangGraph and is toggled separately via ``enable_audio``.
+    if (
+        enable_gesture is not None
+        or enable_perception is not None
+        or enable_pose is not None
+        or enable_activity is not None
+    ):
+        profile_path = config_dir / "task_profile.json"
+        try:
+            wf_profile = json.loads(profile_path.read_text()).get("workflow_config", {})
+            profile_monitors = set(wf_profile.get("active_monitors", ["intent", "gesture"]))
+        except Exception:
+            profile_monitors = {"intent", "gesture"}
+        monitors = {"intent"}
+        want_gesture = enable_gesture if enable_gesture is not None else ("gesture" in profile_monitors)
+        want_perception = enable_perception if enable_perception is not None else ("perception" in profile_monitors)
+        want_pose = enable_pose if enable_pose is not None else ("pose" in profile_monitors)
+        # Activity auto-enables when pose is on (it's the cheap classifier on
+        # top of pose that gates the intent branch). Explicit flag overrides.
+        if enable_activity is None:
+            want_activity = want_pose or ("activity" in profile_monitors)
+        else:
+            want_activity = enable_activity
+        if want_gesture:
+            monitors.add("gesture")
+        if want_perception:
+            monitors.add("perception")
+        if want_pose:
+            monitors.add("pose")
+        if want_activity:
+            monitors.add("activity")
+        extra["active_monitors_override"] = sorted(monitors)
 
     compiled_graph, initial_state = build_task_graph(
         config_dir=config_dir,
@@ -304,6 +364,22 @@ async def run_workflow(
         model=model,
         extra_config=extra,
     )
+
+    # ── Export LangGraph graph visualization ─────────────────────────
+    graph_image_path = _project_root / "logs" / f"graph_{task_name}.png"
+    try:
+        graph_image_path.parent.mkdir(parents=True, exist_ok=True)
+        png_bytes = compiled_graph.get_graph().draw_mermaid_png()
+        graph_image_path.write_bytes(png_bytes)
+        logger.info("Graph image written to %s", graph_image_path)
+    except Exception as e:
+        logger.warning("Failed to render graph image: %s", e)
+        try:
+            mermaid_path = graph_image_path.with_suffix(".mmd")
+            mermaid_path.write_text(compiled_graph.get_graph().draw_mermaid())
+            logger.info("Graph mermaid source written to %s", mermaid_path)
+        except Exception as e2:
+            logger.warning("Failed to render graph mermaid source: %s", e2)
 
     # ── Start dashboard ──────────────────────────────────────────────
     dash = dashboard  # Use existing dashboard if provided (launcher mode)
@@ -358,6 +434,9 @@ async def run_workflow(
         print(f"  GoPro Stream: {gopro_ip}")
     elif webcam_device is not None:
         print(f"  Webcam: {webcam_device}")
+    active_mon_summary = extra.get("active_monitors_override")
+    if active_mon_summary:
+        print(f"  Monitors: {', '.join(active_mon_summary)}")
     if enable_audio:
         print(f"  Audio: {'ACTIVE' if sound_monitor else 'FAILED'}")
     if dash and owns_dashboard:
@@ -372,10 +451,24 @@ async def run_workflow(
         "recursion_limit": 2000,
     }
 
+    # ── Run the LangGraph fast perception loop ───────────────────────
+    # Intent prediction is a real graph node now (``run_intent_node``)
+    # but it dispatches the slow VLM call to a worker thread and returns
+    # immediately in realtime mode — so the parallel sensing branches
+    # (pose / activity / intent, perception, gesture) all converge at
+    # ``update_ssg`` without stalling on the LLM. In offline / eval mode
+    # the intent node blocks (``intent_blocking=True``) so each cycle has
+    # a fresh prediction.
     last_cycle = 0
     try:
         async for event in compiled_graph.astream(initial_state, thread_config, stream_mode="updates"):
             for node_name, node_state in event.items():
+                print(f"[LangGraph] Node executed: {node_name}")
+                # LangGraph may emit events where the node returned ``None``
+                # or a non-dict payload; treat them as empty updates.
+                if not isinstance(node_state, dict):
+                    node_state = {}
+
                 # ── Publish to dashboard ─────────────────────────────
                 if dash:
                     dash.publish(node_name, node_state)
@@ -385,11 +478,14 @@ async def run_workflow(
                         if buf:
                             dash.set_frame(buf[-1])
 
-                # After intent node, print result
-                if node_name == "run_intent" and node_state.get("intent_result"):
-                    cycle = node_state.get("cycle_count", last_cycle)
-                    _print_intent(node_state["intent_result"], cycle)
-                    last_cycle = cycle
+                # Intent results land in the slot during run_intent and
+                # get applied to the SSG inside update_ssg_node — that's
+                # where the freshest serialised dict shows up.
+                if node_name == "update_ssg":
+                    intent_res = node_state.get("intent_result")
+                    if intent_res:
+                        cycle = node_state.get("cycle_count", last_cycle)
+                        _print_intent(intent_res, cycle)
 
                 # After execute, print actions
                 if node_name == "execute_action":
@@ -407,6 +503,13 @@ async def run_workflow(
                 if node_state.get("error"):
                     logger.error("Workflow error: %s", node_state["error"])
                     break
+
+            if dash and hasattr(dash, "stop_requested") and dash.stop_requested:
+                logger.info("Workflow stop requested from dashboard.")
+                dash._state["is_complete"] = True
+                dash._state["error"] = "Stopped by user"
+                dash.publish("system", {})
+                break
     except KeyboardInterrupt:
         print("\nInterrupted.")
     finally:
@@ -507,6 +610,14 @@ def run_launcher(dashboard_port: int = 5555) -> None:
                 audio_output_device=config.get("audio_output_device"),
                 audio_sample_rate=config.get("audio_sample_rate", 16000),
                 audio_voice=config.get("audio_voice", "Zephyr"),
+                enable_gesture=config.get("enable_gesture"),
+                enable_perception=config.get("enable_perception"),
+                enable_pose=config.get("enable_pose"),
+                enable_activity=config.get("enable_activity"),
+                intent_blocking=config.get("intent_blocking"),
+                pose_endpoint=config.get("pose_endpoint", "tcp://localhost:5556"),
+                intent_num_frames=config.get("intent_num_frames", 5),
+                frame_buffer_size=config.get("frame_buffer_size", 300),
             )
         )
 
@@ -659,6 +770,45 @@ def main() -> None:
         "--audio-voice", default="Zephyr",
         help="Gemini voice name for spoken responses (default: Zephyr)",
     )
+    # Body-pose monitor / intent gating
+    parser.add_argument(
+        "--enable-pose", dest="enable_pose", action="store_true", default=None,
+        help="Enable SAM-3D-Body pose monitor (gates the background intent runner)",
+    )
+    parser.add_argument(
+        "--no-pose", dest="enable_pose", action="store_false",
+        help="Disable pose monitor even if the task profile enables it",
+    )
+    parser.add_argument(
+        "--pose-endpoint", default="tcp://localhost:5556",
+        help="ZMQ endpoint for the SAM-3D-Body server (default: tcp://localhost:5556)",
+    )
+    parser.add_argument(
+        "--intent-num-frames", type=int, default=5,
+        help="Number of frames per intent prompt (default: 5)",
+    )
+    parser.add_argument(
+        "--frame-buffer-size", type=int, default=300,
+        help="Max frames kept in the rolling capture buffer (default: 300)",
+    )
+    parser.add_argument(
+        "--enable-activity", dest="enable_activity", action="store_true", default=None,
+        help="Enable the activity-detection node (gates the intent branch)",
+    )
+    parser.add_argument(
+        "--no-activity", dest="enable_activity", action="store_false",
+        help="Disable activity gate even if pose is on (intent fires unconditionally)",
+    )
+    parser.add_argument(
+        "--intent-blocking", dest="intent_blocking", action="store_true", default=None,
+        help="Force run_intent_node to block until the VLM call finishes "
+             "(use for offline / eval; defaults to True when --no-realtime).",
+    )
+    parser.add_argument(
+        "--no-intent-blocking", dest="intent_blocking", action="store_false",
+        help="Force non-blocking intent dispatch even in offline mode "
+             "(threadpool fire-and-forget; results land on later cycles).",
+    )
     args = parser.parse_args()
 
     # ── UI launcher mode ────────────────────────────────────────────
@@ -710,6 +860,12 @@ def main() -> None:
             audio_output_device=args.audio_output_device,
             audio_sample_rate=args.audio_rate,
             audio_voice=args.audio_voice,
+            enable_pose=args.enable_pose,
+            enable_activity=args.enable_activity,
+            intent_blocking=args.intent_blocking,
+            pose_endpoint=args.pose_endpoint,
+            intent_num_frames=args.intent_num_frames,
+            frame_buffer_size=args.frame_buffer_size,
         )
     )
 

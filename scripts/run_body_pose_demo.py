@@ -12,7 +12,7 @@ Usage::
     # ./run_aura_server.sh
 
     uv run python scripts/run_body_pose_demo.py \
-        --video demo_data/layup_demo/layup_gesture_demo.mp4 \
+        --video demo_data/layup_demo/layup_gesture_demo_stationary_no_gloves_with_overlay.mp4 \
         --server-endpoint tcp://localhost:5556 \
         --frame-skip 2
 
@@ -32,8 +32,10 @@ import sys
 import threading
 import time
 import webbrowser
+from collections import deque
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
+from typing import Deque, List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -112,6 +114,103 @@ def _publish_frame(vis_bgr: np.ndarray) -> None:
 
 # ── Main loop ────────────────────────────────────────────────────────
 
+# MHR70 keypoint indices for wrists (SAM-3D-Body format)
+_KPT_LEFT_WRIST = 62
+_KPT_RIGHT_WRIST = 41
+
+# Colors for left/right hand trails and velocity display
+_COLOR_LEFT = (255, 100, 50)    # blue-ish (BGR)
+_COLOR_RIGHT = (50, 100, 255)   # red-ish (BGR)
+_COLOR_BODY_VEL = (200, 200, 50)  # cyan-ish
+
+TRAIL_LEN = 5  # number of past predictions to keep
+
+
+def _extract_wrist_px(
+    kpts: Optional[np.ndarray],
+    w: int,
+    h: int,
+) -> Tuple[Optional[Tuple[int, int]], Optional[Tuple[int, int]]]:
+    """Return (left_wrist_px, right_wrist_px) from a [N,2] keypoints array."""
+    if kpts is None:
+        return None, None
+    if len(kpts.shape) == 3:
+        kpts = kpts[0]
+    if kpts.shape[0] <= max(_KPT_LEFT_WRIST, _KPT_RIGHT_WRIST):
+        return None, None
+    lw = kpts[_KPT_LEFT_WRIST]
+    rw = kpts[_KPT_RIGHT_WRIST]
+    lw_px = (int(np.clip(lw[0], 0, w - 1)), int(np.clip(lw[1], 0, h - 1)))
+    rw_px = (int(np.clip(rw[0], 0, w - 1)), int(np.clip(rw[1], 0, h - 1)))
+    return lw_px, rw_px
+
+
+def _body_centroid_px(
+    kpts: Optional[np.ndarray],
+) -> Optional[np.ndarray]:
+    """Return mean of all valid (non-zero) 2D keypoints as a float [x, y] array."""
+    if kpts is None:
+        return None
+    if len(kpts.shape) == 3:
+        kpts = kpts[0]
+    valid = kpts[(kpts[:, 0] > 0) | (kpts[:, 1] > 0)]
+    if len(valid) == 0:
+        return None
+    return valid.mean(axis=0)
+
+
+def _draw_trail(
+    vis: np.ndarray,
+    trail: Deque[Optional[Tuple[int, int]]],
+    color: Tuple[int, int, int],
+) -> None:
+    """Draw a fading polyline for the given trail of (x,y) pixel positions."""
+    pts = [p for p in trail if p is not None]
+    if len(pts) < 2:
+        if len(pts) == 1:
+            cv2.circle(vis, pts[0], 5, color, -1)
+        return
+    for i in range(1, len(pts)):
+        alpha = i / (len(pts) - 1)  # 0 → oldest, 1 → newest
+        faded = tuple(int(c * (0.25 + 0.75 * alpha)) for c in color)
+        thickness = max(1, int(1 + 3 * alpha))
+        cv2.line(vis, pts[i - 1], pts[i], faded, thickness)
+    # Bright dot at latest position
+    cv2.circle(vis, pts[-1], 6, color, -1)
+
+
+def _px_velocity(
+    trail: Deque[Optional[Tuple[int, int]]],
+    timestamps: Deque[float],
+) -> Optional[float]:
+    """Return pixel/s speed between the oldest and newest valid trail entries."""
+    valid = [(p, t) for p, t in zip(trail, timestamps) if p is not None]
+    if len(valid) < 2:
+        return None
+    (x0, y0), t0 = valid[0]
+    (x1, y1), t1 = valid[-1]
+    dt = t1 - t0
+    if dt < 1e-6:
+        return None
+    return float(np.hypot(x1 - x0, y1 - y0)) / dt
+
+
+def _body_velocity(
+    centroids: Deque[Optional[np.ndarray]],
+    timestamps: Deque[float],
+) -> Optional[float]:
+    """Return pixel/s speed of the body centroid between oldest and newest valid entry."""
+    valid = [(c, t) for c, t in zip(centroids, timestamps) if c is not None]
+    if len(valid) < 2:
+        return None
+    c0, t0 = valid[0]
+    c1, t1 = valid[-1]
+    dt = t1 - t0
+    if dt < 1e-6:
+        return None
+    return float(np.linalg.norm(c1 - c0)) / dt
+
+
 async def run_demo(
     video_path: str,
     server_endpoint: str,
@@ -146,6 +245,14 @@ async def run_demo(
         logger.info("Live visualization: %s", url)
         webbrowser.open(url)
 
+    # Per-person history: keyed by person index (0-based).
+    # Each entry holds deques of length TRAIL_LEN for left/right wrist positions,
+    # body centroids, and timestamps.
+    person_lw_trails: dict[int, Deque[Optional[Tuple[int, int]]]] = {}
+    person_rw_trails: dict[int, Deque[Optional[Tuple[int, int]]]] = {}
+    person_body_cents: dict[int, Deque[Optional[np.ndarray]]] = {}
+    person_timestamps: dict[int, Deque[float]] = {}
+
     frame_num = 0
     processed = 0
 
@@ -154,7 +261,7 @@ async def run_demo(
             ret, frame = cap.read()
             if not ret:
                 break
-            
+
             frame_num += 1
             if frame_num % frame_skip != 0:
                 continue
@@ -162,19 +269,15 @@ async def run_demo(
             timestamp = frame_num / fps
 
             t0 = time.perf_counter()
-            # Build keyword arguments for the monitor
             update_kwargs: dict = {"frame": frame}
             if generate_mesh:
                 update_kwargs["generate_mesh"] = True
                 update_kwargs["mesh_output_dir"] = mesh_output_dir
                 update_kwargs["mesh_prefix"] = f"frame_{frame_num:06d}"
 
-            # Depending on if the monitor implements `update` directly or `process`
-            # For BaseMonitor usually `update` is the intended API, wrapping `_process`
             try:
                 result = await monitor.update(**update_kwargs)
             except AttributeError:
-                # Fallback if the setup isn't exact
                 result = await monitor._process(**update_kwargs)
             dt = time.perf_counter() - t0
 
@@ -194,10 +297,16 @@ async def run_demo(
 
             vis = frame.copy()
 
-            # Draw persons
+            # Update trails and draw persons
             for p_idx, person in enumerate(result.persons):
-                # BBox is usually [minx, miny, maxx, maxy] or [N, 4]
-                # Assuming shape (4,) or (1, 4) from _numpy_to_list decoding
+                # Initialise deques on first appearance of this person
+                if p_idx not in person_lw_trails:
+                    person_lw_trails[p_idx] = deque(maxlen=TRAIL_LEN)
+                    person_rw_trails[p_idx] = deque(maxlen=TRAIL_LEN)
+                    person_body_cents[p_idx] = deque(maxlen=TRAIL_LEN)
+                    person_timestamps[p_idx] = deque(maxlen=TRAIL_LEN)
+
+                # BBox
                 bbox = person.bbox
                 if bbox is not None and len(bbox) > 0:
                     if len(bbox.shape) > 1:
@@ -210,14 +319,67 @@ async def run_demo(
                 # Keypoints (2D)
                 kpts = person.keypoints_2d
                 if kpts is not None:
-                    # Could be [N, 2] or [1, N, 2]
                     if len(kpts.shape) == 3:
                         kpts = kpts[0]
-                    for pt in kpts:
+                    for kpt_i, pt in enumerate(kpts):
                         x, y = int(pt[0]), int(pt[1])
-                        cv2.circle(vis, (x, y), 3, (0, 0, 255), -1)
+                        # Highlight wrist keypoints with larger circles
+                        if kpt_i == _KPT_LEFT_WRIST:
+                            cv2.circle(vis, (x, y), 6, _COLOR_LEFT, -1)
+                        elif kpt_i == _KPT_RIGHT_WRIST:
+                            cv2.circle(vis, (x, y), 6, _COLOR_RIGHT, -1)
+                        else:
+                            cv2.circle(vis, (x, y), 3, (0, 0, 255), -1)
 
-            # Add timing bar at bottom.
+                # Accumulate trail data
+                lw_px, rw_px = _extract_wrist_px(kpts, w, h)
+                centroid = _body_centroid_px(kpts)
+                person_lw_trails[p_idx].append(lw_px)
+                person_rw_trails[p_idx].append(rw_px)
+                person_body_cents[p_idx].append(centroid)
+                person_timestamps[p_idx].append(timestamp)
+
+                # Draw trails
+                _draw_trail(vis, person_lw_trails[p_idx], _COLOR_LEFT)
+                _draw_trail(vis, person_rw_trails[p_idx], _COLOR_RIGHT)
+
+                # Velocity metrics
+                lw_vel = _px_velocity(person_lw_trails[p_idx], person_timestamps[p_idx])
+                rw_vel = _px_velocity(person_rw_trails[p_idx], person_timestamps[p_idx])
+                body_vel = _body_velocity(person_body_cents[p_idx], person_timestamps[p_idx])
+
+                # Overlay velocity text near the person bounding box top-right
+                bbox_arr = person.bbox
+                if bbox_arr is not None and len(bbox_arr) > 0:
+                    if len(bbox_arr.shape) > 1:
+                        bbox_arr = bbox_arr[0]
+                    vx2, vy1 = int(bbox_arr[2]), int(bbox_arr[1])
+                else:
+                    vx2, vy1 = w - 10, 20
+
+                vel_lines = []
+                if lw_vel is not None:
+                    vel_lines.append((f"L.hand: {lw_vel:.0f} px/s", _COLOR_LEFT))
+                if rw_vel is not None:
+                    vel_lines.append((f"R.hand: {rw_vel:.0f} px/s", _COLOR_RIGHT))
+                if body_vel is not None:
+                    vel_lines.append((f"Body:   {body_vel:.0f} px/s", _COLOR_BODY_VEL))
+
+                for line_i, (text, color) in enumerate(vel_lines):
+                    ty = max(vy1 + line_i * 18, 15)
+                    # Shadow for readability
+                    cv2.putText(vis, text, (vx2 - 145, ty),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 3)
+                    cv2.putText(vis, text, (vx2 - 145, ty),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1)
+
+            # Legend
+            cv2.putText(vis, "L.hand trail", (10, 18),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, _COLOR_LEFT, 1)
+            cv2.putText(vis, "R.hand trail", (10, 36),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, _COLOR_RIGHT, 1)
+
+            # Timing bar at bottom
             info = (f"Frame {frame_num} | {timestamp:.1f}s | "
                     f"SAM3: {dt:.2f}s | "
                     f"persons: {result.num_persons}")

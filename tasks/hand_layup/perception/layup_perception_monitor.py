@@ -4,24 +4,28 @@ Tracks 2 tables and 2 bottles using SAM3 segmentation with generic
 visual prompts (``"table"`` and ``"bottle"``), then uses spatial
 heuristics to determine which table each bottle is currently on.
 
-Since the two bottles are visually identical (both black), this monitor
-does **not** try to distinguish resin vs hardener.  In standalone mode
-they are reported as ``bottle_0`` / ``bottle_1``.  When integrated with
-the full AURA workflow, the decision engine maps them to semantic IDs
-via action history (e.g. after ``move_resin_from_storage_to_workplace``
-the bottle that moved becomes ``resin_bottle``).
+The two bottles are visually identical (both black), so identity is
+assigned from their initial horizontal position in the frame:
+
+* the bottle starting on the **left** of the frame  → ``resin_bottle``
+* the bottle starting on the **right** of the frame → ``hardener_bottle``
+
+After the initial assignment, each bottle is tracked by spatial
+proximity (greedy nearest-neighbour against stored centroids) so that
+SAM3 detection-order changes across frames do not flip the identities.
 
 Table disambiguation uses a spatial prior derived from
 ``initial_scene.json``: bottles initially sit on the storage table, so
 on the first frame the table whose bbox contains the most bottle
-centroids is labelled storage.
+centroids is labelled ``storage_area``.
 
 Usage::
 
     monitor = LayupPerceptionMonitor()
     result = await monitor.process_frame(bgr_frame)
     print(result["bottle_locations"])
-    # {"bottle_0": "storage", "bottle_1": "storage"}
+    # {"resin_bottle": "storage_area", "hardener_bottle": "storage_area"}
+    print(result["resin_bottle_location"], result["hardener_bottle_location"])
 """
 
 from __future__ import annotations
@@ -34,6 +38,17 @@ import cv2
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+
+# Semantic bottle identities, ordered left → right in the initial frame.
+RESIN_BOTTLE_ID = "resin_bottle"
+HARDENER_BOTTLE_ID = "hardener_bottle"
+BOTTLE_IDS_LEFT_TO_RIGHT: Tuple[str, str] = (RESIN_BOTTLE_ID, HARDENER_BOTTLE_ID)
+
+# Region names — must match IDs declared in ``initial_scene.json`` and
+# the ``valid_values`` list in ``state_schema.json``.
+STORAGE_REGION = "storage_area"
+WORKPLACE_REGION = "workplace"
 
 
 @dataclass
@@ -61,8 +76,15 @@ class LayupPerceptionMonitor:
     Wraps ``PerceptionModule`` (composition) with generic SAM3 prompts
     and spatial heuristics for bottle→table assignment.
 
+    On the first frame where both bottles are visible, identity is
+    resolved by horizontal position (left → ``resin_bottle``, right →
+    ``hardener_bottle``) and the centroids are stored.  Subsequent
+    frames match detections to stored centroids by proximity so that
+    identities remain stable even if SAM3 returns the bottles in a
+    different detection order.
+
     Tables are disambiguated on the first frame using the prior that
-    bottles start on the storage table.
+    bottles start on the storage table, then matched spatially thereafter.
     """
 
     def __init__(self, config: Optional[LayupPerceptionConfig] = None) -> None:
@@ -74,6 +96,11 @@ class LayupPerceptionMonitor:
         # tracked so that detection-order changes don't flip labels.
         # Maps region name → bbox center (cx, cy) for spatial matching.
         self._table_positions: Optional[Dict[str, Tuple[float, float]]] = None
+
+        # Bottle identity — resolved on first frame with 2 bottles by
+        # horizontal position, then tracked spatially thereafter.
+        # Maps semantic bottle id → bbox center (cx, cy).
+        self._bottle_positions: Optional[Dict[str, Tuple[float, float]]] = None
 
     # ── Construction helpers ─────────────────────────────────────────
 
@@ -96,15 +123,27 @@ class LayupPerceptionMonitor:
         """Process a BGR frame and return bottle location assignments.
 
         Returns ``None`` when skipped (throttle) or on error.  Otherwise
-        returns a dict::
+        returns a dict with semantic bottle keys::
 
             {
-                "bottle_locations": {"bottle_0": "storage", ...},
-                "table_regions": {"table_0": "storage", "table_1": "workplace"},
+                "bottle_locations": {
+                    "resin_bottle":    "storage_area",
+                    "hardener_bottle": "storage_area",
+                },
+                "resin_bottle_location":    "storage_area",
+                "hardener_bottle_location": "storage_area",
+                "bottle_identities": {0: "resin_bottle", 1: "hardener_bottle"},
+                "table_regions": {"table_0": "storage_area", "table_1": "workplace"},
                 "tracked_objects": [TrackedObject, ...],
                 "tables": [...], "bottles": [...],
                 "detections": {"table": [...], "bottle": [...]},
             }
+
+        Before both bottles have been seen simultaneously, identities
+        remain unresolved and bottles are reported with the generic
+        fallback ids ``bottle_0`` / ``bottle_1``.  The semantic
+        ``*_location`` keys are only emitted once identities are
+        resolved.
         """
         self._call_count += 1
         if self._call_count % self.config.process_every_n != 0:
@@ -137,7 +176,6 @@ class LayupPerceptionMonitor:
 
         # ── Disambiguate tables ──────────────────────────────────────
         if self._table_positions is None and n_tables >= 2:
-            # First frame: resolve identity using bottle prior.
             idx_map = self._identify_tables(tables, bottles)
             self._table_positions = {}
             for idx, region in idx_map.items():
@@ -148,8 +186,8 @@ class LayupPerceptionMonitor:
         elif self._table_positions is None and n_tables == 1:
             tobj = tables[0]
             if tobj.bbox is not None:
-                self._table_positions = {"storage": tobj.bbox.center}
-            logger.info("Single table detected, assuming storage")
+                self._table_positions = {STORAGE_REGION: tobj.bbox.center}
+            logger.info("Single table detected, assuming %s", STORAGE_REGION)
 
         # Match current detections to known table positions by proximity.
         table_masks: Dict[str, Optional[np.ndarray]] = {}
@@ -157,25 +195,18 @@ class LayupPerceptionMonitor:
         table_regions: Dict[str, str] = {}
 
         if self._table_positions is not None and n_tables >= 2:
-            assigned = self._match_tables_by_position(tables)
+            assigned = self._match_by_position(
+                tables, self._table_positions, fallback_prefix="table",
+            )
             for i, region in assigned.items():
                 table_regions[f"table_{i}"] = region
                 table_masks[region] = tables[i].mask
                 table_bboxes[region] = tables[i].bbox
-                # Update stored position with exponential moving average.
                 if tables[i].bbox is not None:
-                    cx, cy = tables[i].bbox.center
-                    if region in self._table_positions:
-                        old_cx, old_cy = self._table_positions[region]
-                        alpha = 0.3  # Smoothing factor.
-                        self._table_positions[region] = (
-                            alpha * cx + (1 - alpha) * old_cx,
-                            alpha * cy + (1 - alpha) * old_cy,
-                        )
-                    else:
-                        self._table_positions[region] = (cx, cy)
+                    self._update_position(
+                        self._table_positions, region, tables[i].bbox.center,
+                    )
         elif self._table_positions is not None and n_tables == 1:
-            # Single detection — find closest known region.
             tobj = tables[0]
             if tobj.bbox is not None:
                 cx, cy = tobj.bbox.center
@@ -185,7 +216,7 @@ class LayupPerceptionMonitor:
                                    + (cy - self._table_positions[r][1]) ** 2),
                 )
             else:
-                best_region = "storage"
+                best_region = STORAGE_REGION
             table_regions["table_0"] = best_region
             table_masks[best_region] = tobj.mask
             table_bboxes[best_region] = tobj.bbox
@@ -196,17 +227,49 @@ class LayupPerceptionMonitor:
                 table_masks[region] = tobj.mask
                 table_bboxes[region] = tobj.bbox
 
-        # ── Assign each bottle to a table ────────────────────────────
+        # ── Resolve bottle identities ────────────────────────────────
+        # First frame with 2 bottles: left → resin, right → hardener.
+        if self._bottle_positions is None and n_bottles >= 2:
+            ordered = sorted(
+                [b for b in bottles if b.bbox is not None],
+                key=lambda b: b.bbox.center[0],  # ascending x (left first)
+            )
+            if len(ordered) >= 2:
+                self._bottle_positions = {
+                    BOTTLE_IDS_LEFT_TO_RIGHT[0]: ordered[0].bbox.center,
+                    BOTTLE_IDS_LEFT_TO_RIGHT[1]: ordered[1].bbox.center,
+                }
+                logger.info(
+                    "Bottle identity resolved by initial x-position: "
+                    "left=%s @ x=%.1f, right=%s @ x=%.1f",
+                    BOTTLE_IDS_LEFT_TO_RIGHT[0], ordered[0].bbox.center[0],
+                    BOTTLE_IDS_LEFT_TO_RIGHT[1], ordered[1].bbox.center[0],
+                )
+
+        # ── Assign each bottle to a table + resolve its identity ─────
+        bottle_identities: Dict[int, str] = {}
+        if self._bottle_positions is not None and n_bottles >= 1:
+            assigned = self._match_by_position(
+                bottles, self._bottle_positions, fallback_prefix="bottle",
+            )
+            for i, bid in assigned.items():
+                bottle_identities[i] = bid
+                if bottles[i].bbox is not None:
+                    self._update_position(
+                        self._bottle_positions, bid, bottles[i].bbox.center,
+                    )
+
         bottle_locations: Dict[str, str] = {}
         for i, bobj in enumerate(bottles):
-            bid = f"bottle_{i}"
+            bid = bottle_identities.get(i, f"bottle_{i}")
             region = self._assign_bottle_to_table(
                 bobj.mask, bobj.bbox, table_masks, table_bboxes,
             )
             bottle_locations[bid] = region
 
-        return {
+        result: Dict[str, Any] = {
             "bottle_locations": bottle_locations,
+            "bottle_identities": bottle_identities,
             "table_regions": table_regions,
             "tracked_objects": output.objects,
             "tables": tables,
@@ -221,6 +284,29 @@ class LayupPerceptionMonitor:
             },
         }
 
+        # Expose semantic ``*_location`` keys so downstream nodes can
+        # write them directly into SSG task_state / state_schema vars.
+        #
+        # Once bottle identities are resolved we know which semantic ids we
+        # are responsible for.  Any resolved id that SAM3 did not detect this
+        # frame is reported as "unknown" rather than omitted — this prevents
+        # the downstream task_state entry from going stale and retaining a
+        # confident-but-outdated location value.
+        if self._bottle_positions is not None:
+            for bid in BOTTLE_IDS_LEFT_TO_RIGHT:
+                loc = bottle_locations.get(bid, "unknown")
+                result[f"{bid}_location"] = loc
+                # Ensure bottle_locations is complete so detected_bottle_locations
+                # in SSG task_state is also a full snapshot.
+                bottle_locations[bid] = loc
+            result["bottle_locations"] = bottle_locations
+        else:
+            for bid in BOTTLE_IDS_LEFT_TO_RIGHT:
+                if bid in bottle_locations and bottle_locations[bid] != "unknown":
+                    result[f"{bid}_location"] = bottle_locations[bid]
+
+        return result
+
     # ── Table disambiguation ─────────────────────────────────────────
 
     def _identify_tables(
@@ -228,7 +314,7 @@ class LayupPerceptionMonitor:
         tables: list,
         bottles: list,
     ) -> Dict[int, str]:
-        """Identify which table is storage vs workplace.
+        """Identify which table is storage_area vs workplace.
 
         Heuristic: bottles initially sit on the storage table, so the
         table whose bbox contains the most bottle centroids is storage.
@@ -250,7 +336,7 @@ class LayupPerceptionMonitor:
         if contain_count[0] != contain_count[1]:
             storage_idx = 0 if contain_count[0] > contain_count[1] else 1
             other_idx = 1 - storage_idx
-            return {storage_idx: "storage", other_idx: "workplace"}
+            return {storage_idx: STORAGE_REGION, other_idx: WORKPLACE_REGION}
 
         # Strategy 2: mask overlap.
         overlap_scores = [0.0, 0.0]
@@ -273,7 +359,7 @@ class LayupPerceptionMonitor:
         if overlap_scores[0] != overlap_scores[1]:
             storage_idx = 0 if overlap_scores[0] > overlap_scores[1] else 1
             other_idx = 1 - storage_idx
-            return {storage_idx: "storage", other_idx: "workplace"}
+            return {storage_idx: STORAGE_REGION, other_idx: WORKPLACE_REGION}
 
         # Strategy 3: proximity — table closest to bottle centroids.
         dist_sums = [0.0, 0.0]
@@ -290,48 +376,65 @@ class LayupPerceptionMonitor:
 
         storage_idx = 0 if dist_sums[0] <= dist_sums[1] else 1
         other_idx = 1 - storage_idx
-        return {storage_idx: "storage", other_idx: "workplace"}
+        return {storage_idx: STORAGE_REGION, other_idx: WORKPLACE_REGION}
 
-    # ── Spatial table matching ──────────────────────────────────────
+    # ── Spatial matching (shared by tables & bottles) ────────────────
 
-    def _match_tables_by_position(
-        self,
-        tables: list,
+    @staticmethod
+    def _match_by_position(
+        detections: list,
+        known_positions: Dict[str, Tuple[float, float]],
+        fallback_prefix: str = "obj",
     ) -> Dict[int, str]:
-        """Match current table detections to known positions by proximity.
+        """Match detections to known-id centroids by greedy proximity.
 
-        Uses greedy nearest-neighbour assignment so that detection index
-        order (which may change across frames) does not affect the result.
+        Returns ``{detection_idx: known_id}``.  Unmatched detections
+        get a generic ``f"{fallback_prefix}_{i}"`` label derived from
+        their index (e.g. ``table_2`` or ``bottle_2``).
         """
-        assert self._table_positions is not None
-        regions = list(self._table_positions.keys())
         assigned: Dict[int, str] = {}
-        used_regions: set = set()
+        used_ids: set = set()
 
-        # Build distance matrix and greedily assign closest pairs.
         pairs: list = []
-        for i, tobj in enumerate(tables):
-            if tobj.bbox is None:
+        for i, det in enumerate(detections):
+            if det.bbox is None:
                 continue
-            cx, cy = tobj.bbox.center
-            for region in regions:
-                rcx, rcy = self._table_positions[region]
+            cx, cy = det.bbox.center
+            for kid, (rcx, rcy) in known_positions.items():
                 dist = ((cx - rcx) ** 2 + (cy - rcy) ** 2) ** 0.5
-                pairs.append((dist, i, region))
+                pairs.append((dist, i, kid))
 
         pairs.sort()
-        for _, i, region in pairs:
-            if i in assigned or region in used_regions:
+        for _, i, kid in pairs:
+            if i in assigned or kid in used_ids:
                 continue
-            assigned[i] = region
-            used_regions.add(region)
+            assigned[i] = kid
+            used_ids.add(kid)
 
-        # Any unmatched detections get a generic label.
-        for i in range(len(tables)):
+        # Any unmatched detections get a generic fallback label.
+        for i in range(len(detections)):
             if i not in assigned:
-                assigned[i] = f"table_{i}"
+                assigned[i] = f"{fallback_prefix}_{i}"
 
         return assigned
+
+    @staticmethod
+    def _update_position(
+        store: Dict[str, Tuple[float, float]],
+        key: str,
+        new_center: Tuple[float, float],
+        alpha: float = 0.3,
+    ) -> None:
+        """Exponential moving average to smooth tracked centroids."""
+        cx, cy = new_center
+        if key in store:
+            old_cx, old_cy = store[key]
+            store[key] = (
+                alpha * cx + (1 - alpha) * old_cx,
+                alpha * cy + (1 - alpha) * old_cy,
+            )
+        else:
+            store[key] = (cx, cy)
 
     # ── Heuristic ────────────────────────────────────────────────────
 
@@ -426,12 +529,17 @@ class LayupPerceptionMonitor:
         bottles: list = result.get("bottles", [])
         bottle_locs = result.get("bottle_locations", {})
         table_regions = result.get("table_regions", {})
+        bottle_identities: Dict[int, str] = result.get("bottle_identities", {})
 
         region_colors = {
-            "storage": (255, 165, 0),     # orange (BGR)
-            "workplace": (0, 255, 0),     # green
+            STORAGE_REGION:   (255, 165, 0),    # orange (BGR)
+            WORKPLACE_REGION: (0, 255, 0),      # green
         }
-        bottle_color = (0, 0, 255)        # red
+        bottle_colors = {
+            RESIN_BOTTLE_ID:    (0, 0, 255),    # red
+            HARDENER_BOTTLE_ID: (255, 0, 255),  # magenta
+        }
+        default_bottle_color = (0, 200, 255)    # yellow-orange fallback
 
         # Draw tables.
         for i, tobj in enumerate(tables):
@@ -455,31 +563,32 @@ class LayupPerceptionMonitor:
                 cv2.putText(vis, label, (x1, y1 - 5),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
-        # Draw bottles.
+        # Draw bottles — colour-coded by semantic identity.
         for i, bobj in enumerate(bottles):
-            bid = f"bottle_{i}"
+            bid = bottle_identities.get(i, f"bottle_{i}")
             loc = bottle_locs.get(bid, "?")
+            color = bottle_colors.get(bid, default_bottle_color)
 
             if bobj.mask is not None:
                 mask = self._fit_mask(bobj.mask, fh, fw)
                 overlay = vis.copy()
-                overlay[mask > 0] = bottle_color
+                overlay[mask > 0] = color
                 vis = cv2.addWeighted(vis, 0.7, overlay, 0.3, 0)
 
             if bobj.bbox is not None:
                 x1, y1 = int(bobj.bbox.x_min), int(bobj.bbox.y_min)
                 x2, y2 = int(bobj.bbox.x_max), int(bobj.bbox.y_max)
-                cv2.rectangle(vis, (x1, y1), (x2, y2), bottle_color, 2)
+                cv2.rectangle(vis, (x1, y1), (x2, y2), color, 2)
                 label = f"{bid} @ {loc} ({bobj.confidence:.2f})"
                 (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-                cv2.rectangle(vis, (x1, y2), (x1 + tw, y2 + th + 8), bottle_color, -1)
+                cv2.rectangle(vis, (x1, y2), (x1 + tw, y2 + th + 8), color, -1)
                 cv2.putText(vis, label, (x1, y2 + th + 4),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         # Summary panel (top-left).
         panel_h = 30 + 25 * (len(bottle_locs) + len(table_regions))
-        cv2.rectangle(vis, (5, 5), (280, panel_h), (0, 0, 0), -1)
-        cv2.rectangle(vis, (5, 5), (280, panel_h), (255, 255, 255), 1)
+        cv2.rectangle(vis, (5, 5), (320, panel_h), (0, 0, 0), -1)
+        cv2.rectangle(vis, (5, 5), (320, panel_h), (255, 255, 255), 1)
         y = 25
         for tid in sorted(table_regions):
             region = table_regions[tid]
@@ -489,8 +598,9 @@ class LayupPerceptionMonitor:
             y += 25
         for bid in sorted(bottle_locs):
             loc = bottle_locs[bid]
+            color = bottle_colors.get(bid, default_bottle_color)
             cv2.putText(vis, f"{bid}: {loc}", (12, y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 255), 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
             y += 25
 
         return vis

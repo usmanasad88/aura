@@ -224,15 +224,18 @@ class AURAIntentMonitor:
 
         self.task_graph_string = dag_path.read_text(encoding="utf-8") if dag_path.exists() else "{}"
 
-        # Load full schema, then filter out system-sourced variables
-        # (e.g. robot_state, robot_active_program) that the vision model
-        # cannot observe and would hallucinate.
+        # Load full schema, then filter out externally-sourced variables
+        # (``source``: ``system`` or ``perception``) that the vision
+        # language model cannot reliably observe and would hallucinate.
+        # System-sourced vars come from the robot API; perception-sourced
+        # vars come from a task-specific perception monitor.
         self._full_state_schema: Dict[str, Any] = {}
         self._system_var_names: set = set()
+        _EXTERNAL_SOURCES = {"system", "perception"}
         if state_path.exists():
             self._full_state_schema = json.loads(state_path.read_text(encoding="utf-8"))
             for var, defn in self._full_state_schema.get("state_variables", {}).items():
-                if isinstance(defn, dict) and defn.get("source") == "system":
+                if isinstance(defn, dict) and defn.get("source") in _EXTERNAL_SOURCES:
                     self._system_var_names.add(var)
 
         # Build a filtered schema string with only vision-observable vars
@@ -252,7 +255,7 @@ class AURAIntentMonitor:
 
         if self._system_var_names:
             logger.info(
-                "Intent monitor: excluded system-sourced state vars from prompt: %s",
+                "Intent monitor: excluded externally-sourced state vars from prompt: %s",
                 self._system_var_names,
             )
 
@@ -266,8 +269,29 @@ class AURAIntentMonitor:
         )
         self.state_format_string = json.dumps(self._build_output_format(), indent=2)
 
+        # Optional anchor image: a static reference frame of the workspace
+        # prepended to every prediction request. Skipped for sglang backend.
+        self._anchor_image: Optional[Image.Image] = None
+        self._anchor_description: str = ""
+        anchor_cfg = self.task_profile.get("anchor_image") or {}
+        if anchor_cfg.get("enabled") and llm_backend != "sglang":
+            anchor_path = Path(anchor_cfg["path"])
+            if not anchor_path.is_absolute():
+                anchor_path = self.config_dir.parent.parent.parent / anchor_path
+            img = Image.open(anchor_path).convert("RGB")
+            if max(img.size) > self.max_image_dimension:
+                scale = self.max_image_dimension / max(img.size)
+                img = img.resize(
+                    (int(img.width * scale), int(img.height * scale)),
+                    Image.Resampling.LANCZOS,
+                )
+            self._anchor_image = img
+            self._anchor_description = anchor_cfg.get("description", "")
+            logger.info("Intent monitor: loaded anchor image from %s", anchor_path)
+
         self.previous_state: Optional[Dict[str, Any]] = None
         self._previous_state_timestamp: Optional[float] = None
+        self._external_state: Dict[str, Any] = {}
         self.history: List[IntentResult] = []
 
         # Unified LLM client (supports Gemini, SGLang, vLLM, etc.)
@@ -355,9 +379,18 @@ class AURAIntentMonitor:
                 f"recent frames from the task video."
             )
 
+        anchor_section = ""
+        if self._anchor_image is not None:
+            anchor_section = (
+                "\n## Workspace Anchor Image\n"
+                "The FIRST image attached is a static anchor reference of the workspace. "
+                f"{self._anchor_description}\n"
+                "Use it to ground object identities and spatial layout; it is NOT a task frame.\n"
+            )
+
         prompt = f"""{self.system_instruction}
 Your goal is to update the state variables based on the provided task graph, state schema, and the visual information from the images.
-
+{anchor_section}
 ## Task Graph Definition
 ```json
 {self.task_graph_string}
@@ -416,6 +449,64 @@ Here are the frames:
             pil_images.append(img)
         return pil_images
 
+    def inject_external_state(self, external_vars: Dict[str, Any]) -> None:
+        """Merge externally-sourced state variables (robot status, perception
+        results, etc.) into the rolling context so they appear in the next
+        prompt under "The state of the system as previously estimated".
+
+        Only variables declared with ``source: system`` or
+        ``source: perception`` in the state schema should be passed here
+        — vision-observable variables remain the LLM's responsibility.
+
+        This method is idempotent: calling it multiple times before the
+        next ``predict()`` call simply overwrites the buffered values.
+        """
+        self._external_state.update(external_vars)
+
+    def collect_external_state_from_workflow(
+        self,
+        robot_state: Optional[str],
+        robot_active_program: Optional[str],
+        object_locations: Optional[Dict[str, str]],
+    ) -> Dict[str, Any]:
+        """Build the external-state dict the monitor needs from workflow data.
+
+        Uses the state schema to discover which variables are
+        ``source: system`` (robot API) or ``source: perception`` (perception
+        monitor) and resolves them from the supplied workflow values.
+
+        ``object_locations`` is the flat ``{obj_id: region}`` dict produced by
+        the perception node — e.g. ``{"resin_bottle": "storage_area"}``.
+        Perception-sourced schema variables named ``<obj_id>_location`` are
+        resolved by stripping the ``_location`` suffix and looking up the
+        ``obj_id`` key in ``object_locations``.
+
+        Returns a dict ready to be passed to :meth:`inject_external_state`.
+        """
+        result: Dict[str, Any] = {}
+        schema_vars = self._full_state_schema.get("state_variables", {})
+
+        for var_name, defn in schema_vars.items():
+            if not isinstance(defn, dict):
+                continue
+            source = defn.get("source")
+
+            if source == "system":
+                if var_name == "robot_state" and robot_state is not None:
+                    result["robot_state"] = robot_state
+                elif var_name == "robot_active_program" and robot_active_program is not None:
+                    result["robot_active_program"] = robot_active_program
+
+            elif source == "perception" and object_locations:
+                # Convention: perception vars are named "<obj_id>_location"
+                if var_name.endswith("_location"):
+                    obj_id = var_name[: -len("_location")]
+                    loc = object_locations.get(obj_id)
+                    if loc is not None:
+                        result[var_name] = loc
+
+        return result
+
     def predict(
         self,
         frames: List[np.ndarray],
@@ -426,15 +517,25 @@ Here are the frames:
         """Run a synchronous RCWPS prediction on the given frames."""
         original_num_frames = len(frames)
         pil_frames = self._prepare_frames(frames)
-        
+        num_task_frames = len(pil_frames)
+        if self._anchor_image is not None:
+            pil_frames = [self._anchor_image] + pil_frames
+
         effective_window_duration = window_duration_sec
-        if window_duration_sec > 0 and original_num_frames > 1 and len(pil_frames) < original_num_frames:
+        if window_duration_sec > 0 and original_num_frames > 1 and num_task_frames < original_num_frames:
             frame_interval = window_duration_sec / (original_num_frames - 1)
-            effective_window_duration = frame_interval * (len(pil_frames) - 1)
+            effective_window_duration = frame_interval * (num_task_frames - 1)
+
+        # Merge externally-sourced state (robot status, perception) into the
+        # previous-state context so the LLM sees up-to-date system info.
+        effective_previous_state = dict(self.previous_state) if self.previous_state else {}
+        if self._external_state:
+            effective_previous_state.update(self._external_state)
+            self._external_state = {}  # consume after merging
 
         prompt_text = self._build_prompt(
-            num_frames=len(pil_frames),
-            previous_state=self.previous_state,
+            num_frames=num_task_frames,
+            previous_state=effective_previous_state if effective_previous_state else None,
             timestamp=timestamp,
             frame_num=frame_num,
             window_duration_sec=effective_window_duration,
@@ -485,7 +586,7 @@ Here are the frames:
         result.generation_time_sec = generation_time
 
         if parsed:
-            # Strip any system-sourced vars the LLM may have returned
+            # Strip any externally-sourced vars the LLM may have returned
             # (it shouldn't, but defensive in case it leaks from prior context)
             for sysvar in self._system_var_names:
                 parsed.pop(sysvar, None)
@@ -649,11 +750,16 @@ class IntentMonitor(BaseMonitor):
         return self._default_task_graph()
 
     def _load_state_schema(self, config: Optional[IntentMonitorConfig]) -> List[Dict]:
+        _EXTERNAL_SOURCES = {"system", "perception"}
+
+        def _is_external(v: Any) -> bool:
+            return isinstance(v, dict) and v.get("source") in _EXTERNAL_SOURCES
+
         if config and config.state_file:
             schema = _load_json_file(config.state_file)
             if schema:
                 if isinstance(schema, list):
-                    return [v for v in schema if v.get("source") != "system"]
+                    return [v for v in schema if not _is_external(v)]
                 elif isinstance(schema, dict):
                     if 'state_variables' in schema:
                         variables = schema['state_variables']
@@ -661,10 +767,10 @@ class IntentMonitor(BaseMonitor):
                             return [
                                 {"name": k, **v}
                                 for k, v in variables.items()
-                                if not (isinstance(v, dict) and v.get("source") == "system")
+                                if not _is_external(v)
                             ]
-                        return [v for v in variables if v.get("source") != "system"]
-                    if schema.get("source") != "system":
+                        return [v for v in variables if not _is_external(v)]
+                    if not _is_external(schema):
                         return [schema]
                     return []
         return self._default_state_schema()

@@ -441,6 +441,81 @@ footer {
 #connection-status.connected { color: var(--green); }
 #connection-status.disconnected { color: var(--red); }
 
+/* ── Monitors Strip (header) ─────────────────────────────────── */
+
+.monitors-strip {
+    display: inline-flex;
+    gap: 0.3rem;
+    margin-right: 0.8rem;
+}
+
+.mon-chip {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.mon-on  { background: var(--green-dim); color: var(--green); border-color: var(--green); }
+.mon-off { color: var(--text-dim); }
+
+/* ── BT Trail (decision panel) ───────────────────────────────── */
+
+.bt-flag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.05rem 0.35rem;
+    margin-left: 0.4rem;
+    border-radius: 3px;
+    background: var(--purple);
+    color: #fff;
+}
+
+.bt-trail-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--bg-panel-alt);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.4rem 0.55rem;
+    margin: 0.2rem 0 0.6rem 0;
+    min-height: 1.8rem;
+}
+
+.bt-step {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 3px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.bt-arrow {
+    color: var(--text-dim);
+    font-size: 0.7rem;
+}
+
+.bt-safety    { border-color: var(--red); color: var(--red); }
+.bt-timer     { border-color: var(--yellow); color: var(--yellow); }
+.bt-reactive  { border-color: var(--cyan); color: var(--cyan); }
+.bt-delivery  { border-color: var(--green); color: var(--green); }
+.bt-llm_fallback  { border-color: var(--purple); color: var(--purple); }
+.bt-escalate_human { border-color: var(--yellow); color: var(--yellow); }
+.bt-wait      { color: var(--text-dim); }
+
+.bt-empty {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
 /* ── Scrollbar ───────────────────────────────────────────────── */
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }

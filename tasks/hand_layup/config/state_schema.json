@@ -97,15 +97,24 @@
       "description": "Current robot program/action id when busy (populated from robot API, not vision)",
       "default": ""
     },
+    "robot_engagement": {
+      "type": "string",
+      "source": "intent_monitor",
+      "description": "Vision-informed judgement from the intent monitor on whether the robot should continue its actions now. 'continue' = safe to proceed with scheduled actions; 'hold' = defer all non-safety robot activity. The BT gates deterministic action branches on this being 'continue'.",
+      "valid_values": ["continue", "hold"],
+      "default": "continue"
+    },
     "resin_bottle_location": {
       "type": "string",
-      "description": "Current location of the resin bottle (storage_area or workplace)",
+      "source": "perception",
+      "description": "Current location of the resin bottle (populated by the layup perception monitor — the bottle initially on the left of the frame).",
       "valid_values": ["storage_area", "workplace", "unknown"],
       "default": "storage_area"
     },
     "hardener_bottle_location": {
       "type": "string",
-      "description": "Current location of the hardener bottle (storage_area or workplace)",
+      "source": "perception",
+      "description": "Current location of the hardener bottle (populated by the layup perception monitor — the bottle initially on the right of the frame).",
       "valid_values": ["storage_area", "workplace", "unknown"],
       "default": "storage_area"
     }

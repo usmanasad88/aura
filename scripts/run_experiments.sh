@@ -34,12 +34,12 @@ TASK="hand_layup"
 VIDEO="demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4"
 BASE_FLAGS="--no-realtime --no-dashboard --dry-run"
 MAX_CYCLES=300
-FRAME_SKIP=150
+FRAME_SKIP=90
 
 # Models for Tier 1
 #MODELS=("gemini-2.5-flash" "gemini-2.5-pro" "gemini-3.1-pro-preview")
 #MODELS=("gemini-3.1-pro-preview", "gemini-3.1-flash-lite-preview", "gemini-3-flash-preview")
-MODELS=("gemini-3.1-pro-preview")
+MODELS=("gemini-3.1-flash-lite-preview")
 REPS=1
 
 # ── Argument parsing ──────────────────────────────────────────────────────

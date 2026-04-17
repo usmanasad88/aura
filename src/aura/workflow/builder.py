@@ -4,26 +4,37 @@ Given a task config directory, :func:`build_task_graph` returns a
 compiled ``StateGraph`` wired according to:
 
 * ``task_profile.json`` → ``workflow_config.graph_topology``
-* Available monitor nodes (intent, gesture, perception, …)
+* Available monitor nodes (intent, gesture, perception, pose, …)
 * Conditional edges for action execution routing
 
-The default topology ``sense_decide_act`` produces::
+The default topology ``sense_decide_act`` is a *fast perception loop*.
+Intent prediction (the slow VLM call) runs in a parallel asyncio task
+— see :class:`aura.workflow.background_intent.BackgroundIntentRunner`
+— and injects results into the SSG via a shared slot read by
+``update_ssg_node``. The in-graph edges are::
 
-    capture_frame → run_gesture → run_intent → update_ssg
-          ↑                                        ↓
-          │                                   decide_action
-          │                                    │         │
-          │                              (has action)  (no)
-          │                                    ↓         │
-          │                             execute_action   │
-          │                                    │         │
-          └────── check_complete ←─────────────┘─────────┘
-                   │          │
-              (done)       (loop)
-                END      capture_frame
+    capture_frame → run_gesture → run_perception → run_pose → update_ssg
+                                                                  ↓
+                                                          check_ssg_change
+                                                          │              │
+                                                     (changed)       (same)
+                                                          ↓              │
+                                                    decide_action        │
+                                                     │        │          │
+                                               (has action) (none)       │
+                                                     ↓        │          │
+                                              execute_action  │          │
+                                                     │        │          │
+                                                     └────────┴──────────┘
+                                                              ↓
+                                                        check_complete
+                                                         │        │
+                                                     (done)    (loop)
+                                                       END   capture_frame
 
-The system runs continuously — gesture detection runs every cycle and
-sets ``human_requesting_help`` to signal the decision engine.
+The ``run_gesture`` / ``run_perception`` / ``run_pose`` nodes are each
+optional, driven by ``active_monitors`` in the task profile or a
+runtime override.
 """
 
 from __future__ import annotations
@@ -101,6 +112,11 @@ def build_task_graph(
     decision_mode = wf_cfg.get("decision_mode", "hybrid")
     active_monitors = wf_cfg.get("active_monitors", ["intent", "gesture"])
 
+    # Allow runtime override (launcher toggles perception / gesture on/off).
+    override = (extra_config or {}).get("active_monitors_override")
+    if override is not None:
+        active_monitors = list(override)
+
     # ── Build initial SSG snapshot ───────────────────────────────────
     initial_ssg = _build_initial_ssg(config_dir, state_schema)
 
@@ -170,7 +186,10 @@ def build_task_graph(
         "object_locations": obj_locs,
         "is_complete": False,
         "human_requesting_help": False,
+        "activity_detected": False,
         "last_predict_time": 0.0,
+        "last_ssg_hash": "",
+        "ssg_changed": False,
         "error": None,
         "cycle_count": 0,
         "config": runtime_config,
@@ -189,95 +208,173 @@ def build_task_graph(
 def _build_sense_decide_act(
     active_monitors: list,
 ) -> Any:
-    """Build the standard ``sense → decide → act`` graph.
+    """Build the fast-perception ``sense → decide → act`` graph with
+    parallel sensing branches.
 
-    The system runs continuously:
-    * Gesture detection runs every cycle (cheap MediaPipe call)
-    * Intent prediction runs on a time-based throttle
-    * The decision engine always evaluates, using gesture state as a signal
+    Topology per iteration::
 
-    Returns a compiled ``StateGraph`` with memory checkpointer.
+        capture_frame ──┬── run_pose → run_activity → run_intent ─┐
+                        ├── run_perception ────────────────────────┤
+                        └── run_gesture ───────────────────────────┤
+                                                                    ↓
+                                                              update_ssg
+                                                                    ↓
+                                                          check_ssg_change
+                                                            │           │
+                                                       (changed)     (same)
+                                                            ↓           │
+                                                       decide_action    │
+                                                         │      │       │
+                                                  (action) (none)       │
+                                                         ↓      └───────┤
+                                                  execute_action        │
+                                                         └──────────────┤
+                                                                        ↓
+                                                                check_complete
+                                                                  │       │
+                                                              (done)  (loop)
+                                                                END   capture_frame
+
+    Branches run **in parallel**; LangGraph waits on all of them at
+    ``update_ssg``. The intent branch is the longest pole — but the intent
+    node itself dispatches the slow VLM call to a worker thread and returns
+    immediately in realtime mode (``run_intent_node``), so the join doesn't
+    stall on the LLM. In offline / eval mode the intent node blocks, giving
+    deterministic predictions per cycle.
+
+    Monitor toggles (drawn from ``active_monitors``):
+      * ``"gesture"``    — MediaPipe gesture (cheap, ~30 ms)
+      * ``"perception"`` — Task-specific perception (tens of ms)
+      * ``"pose"``       — SAM-3D-Body pose (100 ms – 1 s)
+      * ``"activity"``   — Cheap classifier on top of pose; gates intent
+      * ``"intent"``     — Slow RCWPS VLM call (multi-second; async-dispatched)
     """
     from .state import AuraGraphState
     from .nodes import (
         capture_frame_node,
         run_gesture_node,
-        run_intent_node,
         run_perception_node,
+        run_pose_node,
+        run_activity_node,
+        run_intent_node,
         update_ssg_node,
+        check_ssg_change_node,
         decide_action_node,
         execute_action_node,
         check_complete_node,
     )
 
-    workflow = StateGraph(AuraGraphState)
+    if StateGraph is None or END is None or MemorySaver is None:
+        raise ImportError("LangGraph not available")
 
-    # ── Add nodes ────────────────────────────────────────────────────
-    workflow.add_node("capture_frame", capture_frame_node)
+    workflow = StateGraph(AuraGraphState)
 
     use_gesture = "gesture" in active_monitors
     use_perception = "perception" in active_monitors
+    use_pose = "pose" in active_monitors
+    use_activity = "activity" in active_monitors
+    use_intent = "intent" in active_monitors
 
-    if use_gesture:
-        workflow.add_node("run_gesture", run_gesture_node)
+    # ── Build the per-branch chains (each is a list of node names; items
+    #    after the first run sequentially within the branch). ──
+    branches: list[list[str]] = []
+
+    intent_chain: list[str] = []
+    if use_pose:
+        intent_chain.append("run_pose")
+    if use_activity:
+        intent_chain.append("run_activity")
+    if use_intent:
+        intent_chain.append("run_intent")
+    if intent_chain:
+        branches.append(intent_chain)
+
     if use_perception:
-        workflow.add_node("run_perception", run_perception_node)
+        branches.append(["run_perception"])
+    if use_gesture:
+        branches.append(["run_gesture"])
 
-    workflow.add_node("run_intent", run_intent_node)
+    # ── Register every node referenced by at least one branch ──
+    NODE_FNS: dict[str, Any] = {
+        "run_pose": run_pose_node,
+        "run_activity": run_activity_node,
+        "run_intent": run_intent_node,
+        "run_perception": run_perception_node,
+        "run_gesture": run_gesture_node,
+    }
+    workflow.add_node("capture_frame", capture_frame_node)
+    branch_node_names: set[str] = set()
+    for chain in branches:
+        for n in chain:
+            if n not in branch_node_names:
+                workflow.add_node(n, NODE_FNS[n])
+                branch_node_names.add(n)
+
     workflow.add_node("update_ssg", update_ssg_node)
+    workflow.add_node("check_ssg_change", check_ssg_change_node)
     workflow.add_node("decide_action", decide_action_node)
     workflow.add_node("execute_action", execute_action_node)
     workflow.add_node("check_complete", check_complete_node)
 
-    # ── Wire edges ───────────────────────────────────────────────────
     workflow.set_entry_point("capture_frame")
 
-    if use_gesture:
-        # Capture → Gesture → Intent (always linear, no gating)
-        def _capture_router(state: dict) -> str:
+    # ── capture_frame fan-out → all branch heads in parallel ──
+    branch_heads = [chain[0] for chain in branches]
+
+    if branch_heads:
+        # Conditional router: short-circuit to check_complete on EOF, else
+        # return the list of branch heads so LangGraph runs them in parallel.
+        def _capture_router(state: dict) -> Any:
             if state.get("is_complete"):
                 return "check_complete"
-            return "run_gesture"
+            return branch_heads  # list → parallel fan-out
 
+        path_map: dict[str, str] = {h: h for h in branch_heads}
+        path_map["check_complete"] = "check_complete"
         workflow.add_conditional_edges(
             "capture_frame",
             _capture_router,
-            {
-                "run_gesture": "run_gesture",
-                "check_complete": "check_complete",
-            },
+            path_map,
         )
-        workflow.add_edge("run_gesture", "run_intent")
     else:
-        # No gesture monitor — capture straight to intent
-        def _capture_router_no_gesture(state: dict) -> str:
-            if state.get("is_complete"):
-                return "check_complete"
-            return "run_intent"
+        # No sensing monitors at all — just go straight to update_ssg.
+        def _capture_passthrough(state: dict) -> str:
+            return "check_complete" if state.get("is_complete") else "update_ssg"
 
         workflow.add_conditional_edges(
             "capture_frame",
-            _capture_router_no_gesture,
-            {
-                "run_intent": "run_intent",
-                "check_complete": "check_complete",
-            },
+            _capture_passthrough,
+            {"update_ssg": "update_ssg", "check_complete": "check_complete"},
         )
 
-    # intent → [perception] → ssg → decide
-    if use_perception:
-        workflow.add_edge("run_intent", "run_perception")
-        workflow.add_edge("run_perception", "update_ssg")
-    else:
-        workflow.add_edge("run_intent", "update_ssg")
-    workflow.add_edge("update_ssg", "decide_action")
+    # ── Within-branch sequential edges + join at update_ssg ──
+    for chain in branches:
+        for prev, nxt in zip(chain, chain[1:]):
+            workflow.add_edge(prev, nxt)
+        # Last node of the branch joins update_ssg.
+        workflow.add_edge(chain[-1], "update_ssg")
 
-    # Conditional: execute or skip
+    # ── update_ssg → check_ssg_change → (decide_action | check_complete) ──
+    workflow.add_edge("update_ssg", "check_ssg_change")
+
+    def _change_router(state: dict) -> str:
+        if state.get("ssg_changed"):
+            return "decide_action"
+        return "check_complete"
+
+    workflow.add_conditional_edges(
+        "check_ssg_change",
+        _change_router,
+        {
+            "decide_action": "decide_action",
+            "check_complete": "check_complete",
+        },
+    )
+
+    # ── decide_action → (execute_action | check_complete) ───────────
     def _action_router(state: dict) -> str:
         actions = state.get("pending_actions") or []
-        if actions:
-            return "execute_action"
-        return "check_complete"
+        return "execute_action" if actions else "check_complete"
 
     workflow.add_conditional_edges(
         "decide_action",
@@ -290,7 +387,7 @@ def _build_sense_decide_act(
 
     workflow.add_edge("execute_action", "check_complete")
 
-    # Loop or end
+    # ── Loop or end ─────────────────────────────────────────────────
     def _loop_or_end(state: dict) -> str:
         if state.get("is_complete") or state.get("error"):
             return END
@@ -306,10 +403,14 @@ def _build_sense_decide_act(
     )
 
     # ── Compile ──────────────────────────────────────────────────────
-    checkpointer = MemorySaver()
-    compiled = workflow.compile(checkpointer=checkpointer)
-    logger.info("Built 'sense_decide_act' graph (monitors=%s)",
-                active_monitors)
+    # Do NOT use MemorySaver: it deep-copies the full state (including the
+    # frames_buffer of raw numpy arrays) on every cycle, causing unbounded
+    # memory growth that hangs the system in realtime mode.
+    compiled = workflow.compile()
+    logger.info(
+        "Built 'sense_decide_act' graph (monitors=%s, branches=%s)",
+        active_monitors, branches,
+    )
     return compiled
 
 
@@ -340,7 +441,7 @@ def _build_initial_ssg(
     from aura.core.scene_graph import SemanticSceneGraph
     from aura.core.scene_graph.nodes import (
         ObjectNode, AgentNode, RegionNode,
-        NodeType, Affordance,
+        NodeType,
     )
     from aura.core.scene_graph.edges import SpatialRelation
 
@@ -368,8 +469,6 @@ def _build_initial_ssg(
         node = ObjectNode.from_dict({
             "id": o["id"], "name": o["name"], "node_type": "OBJECT", **o
         })
-        for aff in o.get("affordances", []):
-            node.add_affordance(Affordance(**aff))
         ssg.add_node(node)
         if "initial_location" in o:
             ssg.set_location(o["id"], o["initial_location"])

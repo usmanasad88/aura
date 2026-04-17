@@ -83,6 +83,7 @@ class DashboardServer:
         self._workflow_running = False
         self._workflow_thread: Optional[threading.Thread] = None
         self._launch_callback: Optional[Callable[[dict], None]] = None
+        self._stop_requested: bool = False
 
         self.app = Flask(
             __name__,
@@ -96,24 +97,12 @@ class DashboardServer:
         self._lock = threading.Lock()
 
         # Latest state snapshot (for new connections / polling)
-        self._state: Dict[str, Any] = {
-            "cycle_count": 0,
-            "current_frame_num": 0,
-            "current_timestamp_sec": 0.0,
-            "gesture": {},
-            "intent": {},
-            "ssg": {},
-            "task_state": {},
-            "decision": {},
-            "actions": [],
-            "action_log": [],
-            "completed_steps": [],
-            "object_locations": {},
-            "human_requesting_help": False,
-            "is_complete": False,
-            "error": None,
-            "config": {},
-            "node_timings": {},
+        self._state: Dict[str, Any] = self._empty_state()
+
+        # Pre-initialised monitor status (populated by /api/initialize-monitors)
+        self._preinit_status: Dict[str, Any] = {
+            "perception": {"state": "idle", "task": None, "detail": ""},
+            "audio": {"state": "idle", "task": None, "detail": ""},
         }
 
         # Latest frame as JPEG bytes
@@ -143,6 +132,10 @@ class DashboardServer:
     @workflow_running.setter
     def workflow_running(self, value: bool) -> None:
         self._workflow_running = value
+
+    @property
+    def stop_requested(self) -> bool:
+        return self._stop_requested
 
     # ── Publishing API (called from workflow nodes) ─────────────────
 
@@ -223,6 +216,14 @@ class DashboardServer:
             s["task_state"] = ps.get("task_state", s["task_state"])
             s["completed_steps"] = ps.get("completed_steps", s["completed_steps"])
             s["object_locations"] = ps.get("object_locations", s["object_locations"])
+            
+            # If update_ssg propagates a delayed intent result, pick it up here
+            intent = ps.get("intent_result")
+            if intent:
+                s["intent"] = intent
+            mo = ps.get("monitor_outputs", {})
+            if mo.get("intent"):
+                s["intent"] = mo["intent"]
 
         elif node_name == "decide_action":
             s["decision"] = ps.get("last_decision", s["decision"])
@@ -245,9 +246,11 @@ class DashboardServer:
         if ps.get("error"):
             s["error"] = ps["error"]
 
-        # Config (set once)
+        # Config (set once) — capture task name + active monitors for the UI.
         if ps.get("config") and not s["config"]:
             s["config"] = ps["config"]
+            if ps["config"].get("active_monitors"):
+                s["active_monitors"] = list(ps["config"]["active_monitors"])
 
     # ── Flask routes ────────────────────────────────────────────────
 
@@ -290,6 +293,61 @@ class DashboardServer:
                             videos.append(str(f.relative_to(self._project_root)))
             return jsonify(sorted(videos))
 
+        @app.route("/api/task-profile")
+        def api_task_profile():
+            """Return the selected task's profile (for active_monitors defaults)."""
+            task = request.args.get("task", "")
+            if not task or not self._project_root:
+                return jsonify({"error": "task required"}), 400
+            path = self._project_root / "tasks" / task / "config" / "task_profile.json"
+            if not path.exists():
+                return jsonify({"error": f"profile not found: {task}"}), 404
+            try:
+                return jsonify(json.loads(path.read_text()))
+            except Exception as exc:
+                return jsonify({"error": str(exc)}), 500
+
+        @app.route("/api/initialize-monitors", methods=["POST"])
+        def api_initialize_monitors():
+            """Pre-load heavy monitors (perception SAM3, audio session) so they
+            are hot when the user hits Launch."""
+            cfg = request.json or {}
+            task = cfg.get("task")
+            if not task or not self._project_root:
+                return jsonify({"error": "task required"}), 400
+            want_perception = bool(cfg.get("enable_perception"))
+            want_audio = bool(cfg.get("enable_audio"))
+            if not (want_perception or want_audio):
+                return jsonify({"error": "Nothing to initialize"}), 400
+
+            if want_perception:
+                self._preinit_status["perception"] = {
+                    "state": "loading", "task": task, "detail": "Loading perception model..."
+                }
+                threading.Thread(
+                    target=self._preinit_perception,
+                    args=(task,),
+                    daemon=True,
+                    name="preinit-perception",
+                ).start()
+
+            if want_audio:
+                self._preinit_status["audio"] = {
+                    "state": "loading", "task": task, "detail": "Opening audio session..."
+                }
+                threading.Thread(
+                    target=self._preinit_audio,
+                    args=(task, cfg),
+                    daemon=True,
+                    name="preinit-audio",
+                ).start()
+
+            return jsonify({"status": "started", "preinit": self._preinit_status})
+
+        @app.route("/api/initialize-status")
+        def api_initialize_status():
+            return jsonify(self._preinit_status)
+
         @app.route("/api/preview", methods=["POST"])
         def api_preview():
             config = request.json or {}
@@ -313,6 +371,7 @@ class DashboardServer:
             config = request.json or {}
 
             # Reset dashboard state for fresh run
+            self._stop_requested = False
             self._reset_state()
 
             # Start workflow in background thread
@@ -331,6 +390,13 @@ class DashboardServer:
             )
             self._workflow_thread.start()
             return jsonify({"status": "started", "monitor_url": "/monitor"})
+
+        @app.route("/api/stop", methods=["POST"])
+        def api_stop():
+            if not self._workflow_running:
+                return jsonify({"status": "not_running"}), 200
+            self._stop_requested = True
+            return jsonify({"status": "stopping"}), 200
 
         @app.route("/api/workflow-status")
         def api_workflow_status():
@@ -471,11 +537,89 @@ class DashboardServer:
 
         return None
 
+    # ── Pre-initialisation helpers ─────────────────────────────────
+
+    def _preinit_perception(self, task: str) -> None:
+        """Instantiate the task-specific perception monitor on a worker
+        thread and stash it in the shared singleton dict so the workflow
+        skips the (expensive) SAM3 load at launch time."""
+        try:
+            from aura.workflow.nodes import (
+                _create_perception_monitor,
+                _perception_monitors,
+            )
+            if not self._project_root:
+                raise RuntimeError("project_root not set")
+            config_dir = str(self._project_root / "tasks" / task / "config")
+            config = {"task_name": task, "config_dir": config_dir}
+            monitor = _create_perception_monitor(task, config)
+            if monitor is None:
+                self._preinit_status["perception"] = {
+                    "state": "error", "task": task,
+                    "detail": f"No task-specific perception monitor for '{task}'",
+                }
+                return
+            _perception_monitors[config_dir] = monitor
+            self._preinit_status["perception"] = {
+                "state": "ready", "task": task,
+                "detail": "Perception model loaded.",
+            }
+            logger.info("Perception monitor pre-initialized for %s", task)
+        except Exception as exc:
+            logger.exception("Perception pre-init failed")
+            self._preinit_status["perception"] = {
+                "state": "error", "task": task, "detail": str(exc),
+            }
+
+    def _preinit_audio(self, task: str, cfg: Dict[str, Any]) -> None:
+        """Validate audio config (device availability, API key). A full
+        Gemini Live session is bound to the workflow's event loop, so we
+        only do cheap checks here — the session itself opens at launch."""
+        try:
+            import os
+            if not os.environ.get("GOOGLE_API_KEY") and not os.environ.get("GEMINI_API_KEY"):
+                self._preinit_status["audio"] = {
+                    "state": "error", "task": task,
+                    "detail": "GOOGLE_API_KEY / GEMINI_API_KEY not set",
+                }
+                return
+            # Probe that sounddevice can list devices for the requested names.
+            try:
+                import sounddevice as sd
+                devices = sd.query_devices()
+                in_name = cfg.get("audio_input_device") or ""
+                out_name = cfg.get("audio_output_device") or ""
+                names = [str(d.get("name", "")) for d in devices]
+                missing = []
+                if in_name and not any(in_name.lower() in n.lower() for n in names):
+                    missing.append(f"input='{in_name}'")
+                if out_name and not any(out_name.lower() in n.lower() for n in names):
+                    missing.append(f"output='{out_name}'")
+                if missing:
+                    self._preinit_status["audio"] = {
+                        "state": "error", "task": task,
+                        "detail": "Audio device not found: " + ", ".join(missing),
+                    }
+                    return
+            except Exception as exc:
+                logger.debug("Audio device probe skipped: %s", exc)
+            self._preinit_status["audio"] = {
+                "state": "ready", "task": task,
+                "detail": "Audio ready — session opens at launch.",
+            }
+            logger.info("Audio pre-check passed for %s", task)
+        except Exception as exc:
+            logger.exception("Audio pre-init failed")
+            self._preinit_status["audio"] = {
+                "state": "error", "task": task, "detail": str(exc),
+            }
+
     # ── State reset ────────────────────────────────────────────────
 
-    def _reset_state(self) -> None:
-        """Reset dashboard state for a fresh workflow run."""
-        self._state = {
+    @staticmethod
+    def _empty_state() -> Dict[str, Any]:
+        """Return a fresh, empty aggregated-state dict."""
+        return {
             "cycle_count": 0,
             "current_frame_num": 0,
             "current_timestamp_sec": 0.0,
@@ -493,7 +637,12 @@ class DashboardServer:
             "error": None,
             "config": {},
             "node_timings": {},
+            "active_monitors": [],
         }
+
+    def _reset_state(self) -> None:
+        """Reset dashboard state for a fresh workflow run."""
+        self._state = self._empty_state()
         self._frame_jpeg = None
 
     # ── Lifecycle ───────────────────────────────────────────────────
