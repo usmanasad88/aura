@@ -102,9 +102,15 @@ def load_predictions(session_dir: Path) -> list[Event]:
             parsed = json.loads(parsed_path.read_text())
         except (json.JSONDecodeError, OSError):
             continue
-        if parsed is None or parsed.get("decision") != "act":
+        if parsed is None:
             continue
-        action_id = parsed.get("action_id", "")
+        decision = parsed.get("decision") or meta.get("decision", "")
+        if not decision or decision == "wait":
+            continue
+        if decision == "act":
+            action_id = parsed.get("action_id", "")
+        else:
+            action_id = decision
         if not action_id:
             continue
         t = meta.get("timestamp_sec", 0.0)
@@ -237,11 +243,13 @@ def plot_timeline(gt_events: list[Event],
                   pred_events: list[Event],
                   intent_events: list[Event] | None = None,
                   title: str = "AURA Intervention Timeline",
-                  total_duration: float | None = None) -> plt.Figure:
-    """Create a 3-track Gantt chart.
+                  total_duration: float | None = None,
+                  show_human_task: bool = False,
+                  show_legend: bool = False) -> plt.Figure:
+    """Create a Gantt chart comparing AURA predictions to GT robot interventions.
 
     Tracks (top to bottom):
-        1. Human Task Progress (from GT or intent monitor)
+        1. Human Task Progress (optional, from GT or intent monitor)
         2. Ground Truth Robot Interventions
         3. AURA Predicted Interventions
     """
@@ -257,10 +265,15 @@ def plot_timeline(gt_events: list[Event],
     # Match predictions to GT for colour coding
     matching = match_predictions(robot_gt, pred_events, tolerance=15.0)
 
-    fig, ax = plt.subplots(figsize=(14, 4.0))
-
-    track_labels = ["AURA Predicted", "GT Robot", "Human Task"]
-    n_tracks = 3
+    if show_human_task:
+        track_labels = ["AURA Predicted", "GT Robot", "Human Task"]
+        n_tracks = 3
+        fig_height = 4.0
+    else:
+        track_labels = ["AURA Predicted", "GT Robot"]
+        n_tracks = 2
+        fig_height = 3.0
+    fig, ax = plt.subplots(figsize=(14, fig_height))
     bar_height = 0.6
 
     # Alternating background bands
@@ -268,18 +281,19 @@ def plot_timeline(gt_events: list[Event],
         if i % 2 == 0:
             ax.axhspan(i - 0.5, i + 0.5, color=C_BG_BAND, zorder=0)
 
-    # ── Track 2 (y=2): Human task progress ───────────────────────────────
-    source = intent_events if intent_events else human_gt
-    for ev in source:
-        if ev.action in ("idle", "task_complete"):
-            continue
-        duration = max(ev.end - ev.start, 1.5)
-        ax.barh(2, duration, left=ev.start, height=bar_height,
-                color=C_HUMAN, alpha=0.75, edgecolor="white", linewidth=0.5)
-        if duration > 5:
-            ax.text(ev.start + duration / 2, 2, _short_label(ev.action),
-                    ha="center", va="center", fontsize=6, color="white",
-                    fontweight="bold", clip_on=True)
+    # ── Track 2 (y=2): Human task progress (optional) ────────────────────
+    if show_human_task:
+        source = intent_events if intent_events else human_gt
+        for ev in source:
+            if ev.action in ("idle", "task_complete"):
+                continue
+            duration = max(ev.end - ev.start, 1.5)
+            ax.barh(2, duration, left=ev.start, height=bar_height,
+                    color=C_HUMAN, alpha=0.75, edgecolor="white", linewidth=0.5)
+            if duration > 5:
+                ax.text(ev.start + duration / 2, 2, _short_label(ev.action),
+                        ha="center", va="center", fontsize=6, color="white",
+                        fontweight="bold", clip_on=True)
 
     # ── Track 1 (y=1): Ground truth robot interventions ──────────────────
     for ev in robot_gt:
@@ -334,17 +348,20 @@ def plot_timeline(gt_events: list[Event],
     ax.grid(axis="x", which="major", alpha=0.3, linestyle="-")
     ax.grid(axis="x", which="minor", alpha=0.15, linestyle=":")
 
-    # Legend
-    legend_patches = [
-        mpatches.Patch(color=C_HUMAN, alpha=0.75, label="Human action"),
-        mpatches.Patch(color=C_ROBOT_GT, alpha=0.85, label="GT robot intervention"),
-        mpatches.Patch(color=C_MATCH, alpha=0.85, label="Matched prediction (TP)"),
-        mpatches.Patch(color=C_FP, alpha=0.7, label="False positive"),
-        mpatches.Patch(facecolor="none", edgecolor=C_MISS, linestyle="--",
-                       linewidth=1.5, label="Missed (FN)"),
-    ]
-    ax.legend(handles=legend_patches, loc="upper right", fontsize=7.5,
-              framealpha=0.9, ncol=3)
+    # Legend (optional)
+    if show_legend:
+        legend_patches = [
+            mpatches.Patch(color=C_ROBOT_GT, alpha=0.85, label="GT robot intervention"),
+            mpatches.Patch(color=C_MATCH, alpha=0.85, label="Matched prediction (TP)"),
+            mpatches.Patch(color=C_FP, alpha=0.7, label="False positive"),
+            mpatches.Patch(facecolor="none", edgecolor=C_MISS, linestyle="--",
+                           linewidth=1.5, label="Missed (FN)"),
+        ]
+        if show_human_task:
+            legend_patches.insert(0, mpatches.Patch(color=C_HUMAN, alpha=0.75,
+                                                   label="Human action"))
+        ax.legend(handles=legend_patches, loc="upper right", fontsize=7.5,
+                  framealpha=0.9, ncol=3)
 
     ax.set_title(title, fontsize=12, fontweight="bold", pad=10)
     fig.tight_layout()
@@ -356,7 +373,9 @@ def plot_timeline(gt_events: list[Event],
 def plot_multi_model_timeline(gt_events: list[Event],
                               model_preds: dict[str, list[Event]],
                               title: str = "AURA Intervention Timeline — Model Comparison",
-                              total_duration: float | None = None) -> plt.Figure:
+                              total_duration: float | None = None,
+                              show_human_task: bool = False,
+                              show_legend: bool = False) -> plt.Figure:
     """Timeline with one GT track + one prediction track per model."""
     robot_gt = [e for e in gt_events if e.agent == "robot"]
     human_gt = [e for e in gt_events if e.agent == "human"]
@@ -368,7 +387,7 @@ def plot_multi_model_timeline(gt_events: list[Event],
         total_duration = max(all_ends) if all_ends else 270.0
 
     n_models = len(model_preds)
-    n_tracks = 2 + n_models  # human + GT robot + N model tracks
+    n_tracks = (2 if show_human_task else 1) + n_models
     fig_height = max(3.5, 1.2 * n_tracks)
     fig, ax = plt.subplots(figsize=(14, fig_height))
 
@@ -379,21 +398,22 @@ def plot_multi_model_timeline(gt_events: list[Event],
         if i % 2 == 0:
             ax.axhspan(i - 0.5, i + 0.5, color=C_BG_BAND, zorder=0)
 
-    # Top track: Human
-    top = n_tracks - 1
-    for ev in human_gt:
-        if ev.action in ("idle", "task_complete"):
-            continue
-        duration = max(ev.end - ev.start, 1.5)
-        ax.barh(top, duration, left=ev.start, height=bar_height,
-                color=C_HUMAN, alpha=0.75, edgecolor="white", linewidth=0.5)
-        if duration > 5:
-            ax.text(ev.start + duration / 2, top, _short_label(ev.action),
-                    ha="center", va="center", fontsize=5.5, color="white",
-                    fontweight="bold", clip_on=True)
+    # Top track: Human (optional)
+    if show_human_task:
+        top = n_tracks - 1
+        for ev in human_gt:
+            if ev.action in ("idle", "task_complete"):
+                continue
+            duration = max(ev.end - ev.start, 1.5)
+            ax.barh(top, duration, left=ev.start, height=bar_height,
+                    color=C_HUMAN, alpha=0.75, edgecolor="white", linewidth=0.5)
+            if duration > 5:
+                ax.text(ev.start + duration / 2, top, _short_label(ev.action),
+                        ha="center", va="center", fontsize=5.5, color="white",
+                        fontweight="bold", clip_on=True)
 
     # Second track: GT Robot
-    gt_track = n_tracks - 2
+    gt_track = n_tracks - 2 if show_human_task else n_tracks - 1
     for ev in robot_gt:
         duration = ev.end - ev.start
         ax.barh(gt_track, duration, left=ev.start, height=bar_height,
@@ -435,7 +455,8 @@ def plot_multi_model_timeline(gt_events: list[Event],
         track_labels.append(short_model)
 
     # Y-axis labels
-    all_labels = list(reversed(track_labels)) + ["GT Robot", "Human Task"]
+    gt_labels = ["GT Robot", "Human Task"] if show_human_task else ["GT Robot"]
+    all_labels = list(reversed(track_labels)) + gt_labels
     ax.set_yticks(range(n_tracks))
     ax.set_yticklabels(all_labels, fontsize=9)
 
@@ -448,16 +469,19 @@ def plot_multi_model_timeline(gt_events: list[Event],
     ax.grid(axis="x", which="major", alpha=0.3)
     ax.grid(axis="x", which="minor", alpha=0.15, linestyle=":")
 
-    legend_patches = [
-        mpatches.Patch(color=C_HUMAN, alpha=0.75, label="Human action"),
-        mpatches.Patch(color=C_ROBOT_GT, alpha=0.85, label="GT robot"),
-        mpatches.Patch(color=C_MATCH, alpha=0.85, label="Matched (TP)"),
-        mpatches.Patch(color=C_FP, alpha=0.7, label="False positive"),
-        mpatches.Patch(facecolor="none", edgecolor=C_MISS, linestyle="--",
-                       linewidth=1.5, label="Missed (FN)"),
-    ]
-    ax.legend(handles=legend_patches, loc="upper right", fontsize=7,
-              framealpha=0.9, ncol=3)
+    if show_legend:
+        legend_patches = [
+            mpatches.Patch(color=C_ROBOT_GT, alpha=0.85, label="GT robot"),
+            mpatches.Patch(color=C_MATCH, alpha=0.85, label="Matched (TP)"),
+            mpatches.Patch(color=C_FP, alpha=0.7, label="False positive"),
+            mpatches.Patch(facecolor="none", edgecolor=C_MISS, linestyle="--",
+                           linewidth=1.5, label="Missed (FN)"),
+        ]
+        if show_human_task:
+            legend_patches.insert(0, mpatches.Patch(color=C_HUMAN, alpha=0.75,
+                                                   label="Human action"))
+        ax.legend(handles=legend_patches, loc="upper right", fontsize=7,
+                  framealpha=0.9, ncol=3)
     ax.set_title(title, fontsize=12, fontweight="bold", pad=10)
     fig.tight_layout()
     return fig
@@ -495,6 +519,10 @@ def main() -> None:
                         help="Root experiments dir for multi-model comparison")
     parser.add_argument("--output", type=Path, help="Output path (png/pdf)")
     parser.add_argument("--title", type=str, help="Custom figure title")
+    parser.add_argument("--show-human-task", action="store_true",
+                        help="Include the Human Task progress track (off by default)")
+    parser.add_argument("--show-legend", action="store_true",
+                        help="Include the TP/FP/FN legend (off by default)")
     args = parser.parse_args()
 
     aura_root = Path(__file__).resolve().parent.parent.parent
@@ -535,7 +563,9 @@ def main() -> None:
 
         title = args.title or "AURA Intervention Timeline — Model Comparison"
         fig = plot_multi_model_timeline(gt_events, model_preds, title=title,
-                                        total_duration=total_duration)
+                                        total_duration=total_duration,
+                                        show_human_task=args.show_human_task,
+                                        show_legend=args.show_legend)
         out = args.output or output_dir / "fig_timeline_comparison.pdf"
         fig.savefig(str(out))
         print(f"Saved multi-model timeline to {out}")
@@ -567,7 +597,9 @@ def main() -> None:
 
     title = args.title or f"AURA Intervention Timeline — {model_name}"
     fig = plot_timeline(gt_events, pred_events, intent_events,
-                        title=title, total_duration=total_duration)
+                        title=title, total_duration=total_duration,
+                        show_human_task=args.show_human_task,
+                        show_legend=args.show_legend)
 
     out = args.output or output_dir / "fig_timeline.pdf"
     fig.savefig(str(out))

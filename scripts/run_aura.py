@@ -249,6 +249,8 @@ async def run_workflow(
     frame_skip: int = 30,
     max_cycles: int | None = None,
     use_ground_truth_robot_status: bool = False,
+    intent_source: str = "llm",
+    intent_gt_path: str | None = None,
     llm_backend: str = "gemini",
     sglang_base_url: str = "http://localhost:8100/v1",
     intent_backend: str | None = None,
@@ -290,6 +292,8 @@ async def run_workflow(
         "realtime": realtime,
         "frame_skip": frame_skip,
         "use_ground_truth_robot_status": use_ground_truth_robot_status,
+        "intent_source": intent_source,
+        "intent_gt_path": intent_gt_path,
         "llm_backend": llm_backend,
         "sglang_base_url": sglang_base_url,
         "screen_capture": screen_capture,
@@ -422,7 +426,11 @@ async def run_workflow(
     print("\n" + "=" * 60)
     print(f"  AURA Workflow [{task_display}]")
     print(f"  Mode: {'dry-run' if dry_run else 'LIVE'}  |  Continuous")
-    print(f"  Intent   : {ib}  |  {im}")
+    if intent_source == "ground_truth":
+        gt_tag = intent_gt_path if intent_gt_path else "auto-resolved from video"
+        print(f"  Intent   : GROUND TRUTH  |  {gt_tag}")
+    else:
+        print(f"  Intent   : {ib}  |  {im}")
     print(f"  Decision : {db}  |  {dm}")
     if ib != "gemini" or db != "gemini":
         print(f"  SGLang   : {sglang_base_url}")
@@ -448,7 +456,7 @@ async def run_workflow(
         "configurable": {
             "thread_id": f"aura_{task_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
         },
-        "recursion_limit": 2000,
+        "recursion_limit": 6000,
     }
 
     # ── Run the LangGraph fast perception loop ───────────────────────
@@ -461,7 +469,7 @@ async def run_workflow(
     # a fresh prediction.
     last_cycle = 0
     try:
-        async for event in compiled_graph.astream(initial_state, thread_config, stream_mode="updates"):
+         async for event in compiled_graph.astream(initial_state, thread_config, stream_mode="updates"):
             for node_name, node_state in event.items():
                 print(f"[LangGraph] Node executed: {node_name}")
                 # LangGraph may emit events where the node returned ``None``
@@ -595,6 +603,8 @@ def run_launcher(dashboard_port: int = 5555) -> None:
                 use_ground_truth_robot_status=config.get(
                     "use_ground_truth_robot_status", False
                 ),
+                intent_source=config.get("intent_source", "llm"),
+                intent_gt_path=config.get("intent_gt_path"),
                 llm_backend=config.get("llm_backend", "gemini"),
                 sglang_base_url=config.get(
                     "sglang_url", "http://localhost:8100/v1"
@@ -711,6 +721,17 @@ def main() -> None:
     parser.add_argument(
         "--use-ground-truth-robot-status", action="store_true",
         help="Populate robot_state from tasks/<task>/config/ground_truth.json",
+    )
+    parser.add_argument(
+        "--intent-source", default="llm", choices=["llm", "ground_truth"],
+        help="Source of intent predictions: 'llm' runs the VLM (default), "
+             "'ground_truth' serves pre-annotated keyframes from the GT file "
+             "(see scripts/annotate_ground_truth.py).",
+    )
+    parser.add_argument(
+        "--intent-gt-path", default=None,
+        help="Explicit path to the intent GT JSON. Defaults to "
+             "tasks/<task>/ground_truth/<video_stem>.intent_gt.json when omitted.",
     )
     parser.add_argument(
         "--no-dashboard", action="store_true",
@@ -848,6 +869,8 @@ def main() -> None:
             frame_skip=args.frame_skip,
             max_cycles=args.max_cycles,
             use_ground_truth_robot_status=args.use_ground_truth_robot_status,
+            intent_source=args.intent_source,
+            intent_gt_path=args.intent_gt_path,
             llm_backend=args.llm_backend,
             sglang_base_url=args.sglang_url,
             intent_backend=args.intent_backend,

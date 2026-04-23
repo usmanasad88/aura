@@ -85,7 +85,7 @@ class DecisionPromptLogger:
         decision: Optional[str] = None,
         ssg_snapshot: Optional[Dict[str, Any]] = None,
         available_actions: Optional[List[Dict]] = None,
-        proactive_opportunities: Optional[List[Dict]] = None,
+        images: Optional[List[Any]] = None,
     ) -> None:
         """Persist one LLM call to the session directory."""
         if not self.enabled or self.session_dir is None:
@@ -97,6 +97,20 @@ class DecisionPromptLogger:
 
         (call_dir / "prompt.txt").write_text(prompt_text, encoding="utf-8")
         (call_dir / "response.txt").write_text(response_text, encoding="utf-8")
+
+        if images:
+            try:
+                from PIL import Image
+                for i, img in enumerate(images):
+                    if isinstance(img, Image.Image):
+                        # Save in RGB mode to ensure JPG compatibility
+                        img_path = call_dir / f"image_{i}.jpg"
+                        if img.mode in ("RGBA", "P"):
+                            img.convert("RGB").save(img_path)
+                        else:
+                            img.save(img_path)
+            except Exception as e:
+                logger.warning(f"Failed to save images to prompt log: {e}")
 
         if parsed_response is not None:
             with open(call_dir / "response_parsed.json", "w") as f:
@@ -115,7 +129,6 @@ class DecisionPromptLogger:
             "decision": decision,
             "response_length_chars": len(response_text),
             "num_available_actions": len(available_actions) if available_actions else 0,
-            "num_proactive_opportunities": len(proactive_opportunities) if proactive_opportunities else 0,
             "logged_at": datetime.now().isoformat(),
         }
         with open(call_dir / "meta.json", "w") as f:
@@ -211,9 +224,9 @@ class DecisionEngine:
 
         # Core components
         self.graph = SemanticSceneGraph(name="aura_ssg")
-        self.reasoner = GraphReasoner(self.graph)
-        self.explainer = DecisionExplainer(self.graph)
         self.skills = SkillRegistry()
+        self.reasoner = GraphReasoner(self.graph, skills=self.skills)
+        self.explainer = DecisionExplainer(self.graph)
         self.task_graph_string = dag_path.read_text(encoding="utf-8") if dag_path.exists() else "{}"
 
         self.prompt_logger = DecisionPromptLogger(
@@ -395,7 +408,7 @@ class DecisionEngine:
     # Decision Making
     # =========================================================================
     
-    async def decide_action(self, current_time_sec: float = None) -> Optional[ActionPrediction]:
+    async def decide_action(self, current_time_sec: float = None, current_frame: Optional[Any] = None) -> Optional[ActionPrediction]:
         """Decide what action the robot should take (if any).
 
         Delegates to the compiled BT policy (built by ``load_task``).
@@ -422,8 +435,8 @@ class DecisionEngine:
         # If BT not built (no task loaded), fall back to legacy LLM path.
         if self._bt_policy is None:
             if self.config.enable_llm_reasoning and self.llm_client:
-                return await self._llm_decide_action([], [], current_time_sec or 0.0)
-            return self._rule_based_decide([], [], current_time_sec or 0.0)
+                return await self._llm_decide_action([], current_time_sec or 0.0, current_frame)
+            return self._rule_based_decide([], current_time_sec or 0.0)
 
         # Gather tick inputs from SSG / task_state.
         task_state = dict(self.graph.task_state)
@@ -454,28 +467,30 @@ class DecisionEngine:
         )
         generation_time = time.monotonic() - t0
 
-        # Log the decision to disk
-        self.prompt_logger.log_call(
-            prompt_text=json.dumps({
-                "intent": intent,
-                "task_state": task_state,
-                "steps_completed": steps_completed,
-                "human_requesting_help": human_help
-            }, indent=2, default=str),
-            response_text=reasoning,
-            parsed_response={
-                "decision": prediction.action_id if prediction else "wait",
-                "target": prediction.target_id if prediction else None,
-                "parameters": prediction.parameters if prediction else {},
-                "confidence": prediction.confidence if prediction else 1.0,
-                "reasoning": reasoning
-            },
-            model="BehaviorTree+LLM" if llm_invoked else "BehaviorTree",
-            generation_time_sec=generation_time,
-            timestamp_sec=current_time_sec or 0.0,
-            decision=prediction.action_id if prediction else "wait",
-            ssg_snapshot=self.graph.to_dict(),
-        )
+        # Log the decision to disk only if it was resolved deterministically by BT
+        # (If LLM was invoked, the prompt and text were already logged by _llm_decide_action)
+        if not llm_invoked:
+            self.prompt_logger.log_call(
+                prompt_text=json.dumps({
+                    "intent": intent,
+                    "task_state": task_state,
+                    "steps_completed": steps_completed,
+                    "human_requesting_help": human_help
+                }, indent=2, default=str),
+                response_text=reasoning,
+                parsed_response={
+                    "decision": prediction.action_id if prediction else "wait",
+                    "target": prediction.target_id if prediction else None,
+                    "parameters": prediction.parameters if prediction else {},
+                    "confidence": prediction.confidence if prediction else 1.0,
+                    "reasoning": reasoning
+                },
+                model="BehaviorTree",
+                generation_time_sec=generation_time,
+                timestamp_sec=current_time_sec or 0.0,
+                decision=prediction.action_id if prediction else "wait",
+                ssg_snapshot=self.graph.to_dict(),
+            )
 
         # Cache the trail so the dashboard can display BT state.
         self._last_bt_reasoning = reasoning
@@ -570,9 +585,8 @@ class DecisionEngine:
             return None
 
         available = self.reasoner.get_available_actions("robot")
-        proactive = self.reasoner.get_proactive_opportunities("robot")
         prediction = await self._llm_decide_action(
-            available, proactive, ctx.current_time_sec
+            available, ctx.current_time_sec, getattr(ctx, "current_frame", None)
         )
         if prediction is not None:
             prediction.reasoning = f"[llm_fallback:{reason}] {prediction.reasoning}"
@@ -595,12 +609,12 @@ class DecisionEngine:
         return "\n".join(lines)
 
     async def _llm_decide_action(self, available_actions: List[Dict],
-                                  opportunities: List[Dict],
-                                  current_time_sec: float) -> Optional[ActionPrediction]:
+                                  current_time_sec: float,
+                                  current_frame: Optional[Any] = None) -> Optional[ActionPrediction]:
         """Use LLM to decide on action."""
         if not self.llm_client:
             logger.warning("LLM client not available, falling back to rules")
-            return self._rule_based_decide(available_actions, opportunities, current_time_sec)
+            return self._rule_based_decide(available_actions, current_time_sec)
 
         # Build prompt
         scene_state = self.graph.get_state_summary_for_llm()
@@ -656,20 +670,56 @@ Respond with ONLY the JSON object, no other text."""
 # ## Available Actions Now
 # {json.dumps(available_actions[:5], indent=2) if available_actions else "No immediately available actions."}
 
-# ## Proactive Opportunities
-# {json.dumps(opportunities[:3], indent=2) if opportunities else "No proactive opportunities identified."}
+        generate_kwargs = {
+            "prompt": prompt,
+            "temperature": 0.3,
+            "json_mode": True,
+            "max_tokens": self.config.max_completion_tokens,
+        }
 
+        # Check if we should pass the captured frame and/or the anchor image
+        task_profile = getattr(self, "_task_profile", {}) or {}
+        images_to_pass = []
+        if task_profile.get("workflow_config", {}).get("pass_captured_frame_to_vlm", True) and current_frame is not None:
+            # We assume current_frame is an np.ndarray (OpenCV format) or PIL Image.
+            # Convert to PIL Image for the llm_client
+            try:
+                import numpy as np
+                from PIL import Image
+                if isinstance(current_frame, np.ndarray):
+                    # usually BGR from cv2, convert to RGB
+                    import cv2
+                    rgb_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2RGB)
+                    pil_img = Image.fromarray(rgb_frame)
+                    images_to_pass.append(pil_img)
+                elif isinstance(current_frame, Image.Image):
+                    images_to_pass.append(current_frame)
+            except Exception as e:
+                logger.warning(f"Engine: Failed to parse current_frame for LLM: {e}")
+
+        # Check if anchor image should be passed
+        anchor_cfg = task_profile.get("anchor_image", {})
+        if anchor_cfg.get("enabled", False) and anchor_cfg.get("path"):
+            try:
+                from PIL import Image
+                import os
+                # Path relative to workspace or absolute
+                anchor_path = anchor_cfg["path"]
+                if os.path.exists(anchor_path):
+                    anchor_img = Image.open(anchor_path).convert("RGB")
+                    images_to_pass.append(anchor_img)
+                else:
+                    logger.warning(f"Engine: Anchor image {anchor_path} not found.")
+            except Exception as e:
+                logger.warning(f"Engine: Failed to load anchor image for LLM: {e}")
+
+        if images_to_pass:
+            generate_kwargs["images"] = images_to_pass
 
         try:
             t0 = time.monotonic()
             response_text = await asyncio.wait_for(
-                asyncio.to_thread(
-                    self.llm_client.generate,
-                    prompt,
-                    temperature=0.3,
-                    json_mode=True,
-                    max_tokens=self.config.max_completion_tokens,
-                ),
+                asyncio.to_thread(self.llm_client.generate, **generate_kwargs),
                 timeout=self.config.max_reasoning_time_sec,
             )
             generation_time = time.monotonic() - t0
@@ -689,7 +739,7 @@ Respond with ONLY the JSON object, no other text."""
                 decision=result.get("decision"),
                 ssg_snapshot=self.graph.to_dict(),
                 available_actions=available_actions,
-                proactive_opportunities=opportunities,
+                images=images_to_pass,
             )
 
             if result.get("decision") == "act":
@@ -728,27 +778,15 @@ Respond with ONLY the JSON object, no other text."""
 
         except asyncio.TimeoutError:
             logger.warning("LLM reasoning timed out")
-            return self._rule_based_decide(available_actions, opportunities, current_time_sec)
+            return self._rule_based_decide(available_actions, current_time_sec)
         except Exception as e:
             logger.error(f"LLM reasoning error: {e}")
-            return self._rule_based_decide(available_actions, opportunities, current_time_sec)
-    
+            return self._rule_based_decide(available_actions, current_time_sec)
+
     def _rule_based_decide(self, available_actions: List[Dict],
-                           opportunities: List[Dict],
                            current_time_sec: float) -> Optional[ActionPrediction]:
         """Simple rule-based decision making as fallback."""
-        # Check proactive opportunities first
-        for opp in opportunities:
-            if opp.get("priority", 0) >= self.config.proactive_threshold:
-                return ActionPrediction(
-                    action_id=opp["action_id"],
-                    target_id=opp.get("target"),
-                    predicted_time_sec=current_time_sec,
-                    confidence=opp.get("priority", 0.5),
-                    reasoning=opp.get("reasoning", "Rule-based decision"),
-                )
-        
-        # Check available actions
+        # Fire the first skill whose preconditions clear the threshold.
         for action in available_actions:
             if action.get("feasibility", 0) >= self.config.proactive_threshold:
                 return ActionPrediction(

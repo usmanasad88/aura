@@ -6,8 +6,7 @@ Design note
 The BT is **compiled from config** at decision-engine init — there is no
 hand-written topology per task. All branches read standard fields from
 ``task_profile.json``, ``robot_skills.json``, ``dag.json`` and the live
-``SemanticSceneGraph.task_state``; nothing in this module hard-codes the
-hand-layup task (or any task).
+``SemanticSceneGraph.task_state``; nothing in this module hard-codes any task.
 
 Topology (top-down priority selector)
 -------------------------------------
@@ -394,8 +393,12 @@ class SkillDeliveryLeaf(_BTLeaf):
 
     def update(self) -> py_trees.common.Status:
         skill = self.skill
-        # Skills without any trigger field are never scheduled here.
-        if not skill.trigger_steps and not skill.trigger_after_steps:
+        has_triggers = bool(skill.trigger_steps or skill.trigger_after_steps)
+        has_preconditions = bool(skill.preconditions)
+
+        # Utility skills with no triggers AND no preconditions are never
+        # scheduled here — they remain available only via the LLM.
+        if not has_triggers and not has_preconditions:
             return py_trees.common.Status.FAILURE
 
         # Gate 1: vision-informed engagement judgement.
@@ -413,7 +416,17 @@ class SkillDeliveryLeaf(_BTLeaf):
         if not ok:
             return py_trees.common.Status.FAILURE
 
-        # Gate 4: trigger match.
+        # Gate 4: trigger match. Skills without any trigger field but with
+        # satisfied preconditions are ambiguous — the BT cannot tell when
+        # to fire them. Escalate to the LLM rather than auto-firing or
+        # silently ignoring.
+        if not has_triggers:
+            self.ctx._force_llm_reason = (  # type: ignore[attr-defined]
+                f"eligible_no_trigger:{skill.id}"
+            )
+            self.ctx.reasoning_trail.append(f"delivery:eligible_no_trigger:{skill.id}")
+            return py_trees.common.Status.FAILURE
+
         trigger_reason = ""
         if skill.trigger_steps:
             predicted = self.ctx.intent.get("predicted_next_action") or ""

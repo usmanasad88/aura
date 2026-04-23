@@ -203,6 +203,12 @@ class DashboardServer:
             s["gesture"] = mo.get("gesture", s["gesture"])
             s["human_requesting_help"] = ps.get("human_requesting_help", False)
 
+        elif node_name == "run_perception":
+            mo = ps.get("monitor_outputs", {})
+            if mo.get("perception"):
+                s["perception"] = mo["perception"]
+            s["object_locations"] = ps.get("object_locations", s["object_locations"])
+
         elif node_name == "run_intent":
             intent = ps.get("intent_result")
             if intent:
@@ -625,6 +631,7 @@ class DashboardServer:
             "current_timestamp_sec": 0.0,
             "gesture": {},
             "intent": {},
+            "perception": {},
             "ssg": {},
             "task_state": {},
             "decision": {},

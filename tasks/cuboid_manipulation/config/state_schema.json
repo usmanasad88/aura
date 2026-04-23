@@ -1,0 +1,122 @@
+{
+  "name": "Cuboid Manipulation State",
+  "description": "State variables tracked from video frames + Isaac Sim pose stream. Cuboid locations are symbolic (table/basket/held/<custom>); literal coordinates are sourced from the /scene/object_poses ROS 2 topic and injected by the runtime, not inferred visually. Treat location transitions as monotonic unless you positively observe a change.",
+  "version": "2.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "Current high-level phase of the task",
+      "valid_values": ["initialization", "manipulating", "complete"],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "Specific action currently being performed (must match a DAG node id)",
+      "default": "idle"
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": ["idle", "instructing", "pointing", "placing_object", "observing", "done"],
+      "default": "idle"
+    },
+    "cuboid_red_location": {
+      "type": "string",
+      "description": "Symbolic location of the red cuboid. One of: table, basket, held, or a custom drop-zone id from task_profile.drop_zones.",
+      "valid_values": ["unknown", "table", "basket", "held"],
+      "default": "unknown"
+    },
+    "cuboid_green_location": {
+      "type": "string",
+      "description": "Symbolic location of the green cuboid.",
+      "valid_values": ["unknown", "table", "basket", "held"],
+      "default": "unknown"
+    },
+    "cuboid_blue_location": {
+      "type": "string",
+      "description": "Symbolic location of the blue cuboid.",
+      "valid_values": ["unknown", "table", "basket", "held"],
+      "default": "unknown"
+    },
+    "cuboid_yellow_location": {
+      "type": "string",
+      "description": "Symbolic location of the yellow cuboid.",
+      "valid_values": ["unknown", "table", "basket", "held"],
+      "default": "unknown"
+    },
+    "cuboid_orange_location": {
+      "type": "string",
+      "description": "Symbolic location of the orange cuboid.",
+      "valid_values": ["unknown", "table", "basket", "held"],
+      "default": "unknown"
+    },
+    "cuboid_red_xy": {
+      "type": "string",
+      "source": "system",
+      "description": "Live (x,y) position of the red cuboid as 'x,y' in meters, sourced from /scene/object_poses. Populated by the runtime; the vision LLM should not guess it.",
+      "default": ""
+    },
+    "cuboid_green_xy": {
+      "type": "string",
+      "source": "system",
+      "description": "Live (x,y) of the green cuboid in meters from /scene/object_poses.",
+      "default": ""
+    },
+    "cuboid_blue_xy": {
+      "type": "string",
+      "source": "system",
+      "description": "Live (x,y) of the blue cuboid in meters from /scene/object_poses.",
+      "default": ""
+    },
+    "cuboid_yellow_xy": {
+      "type": "string",
+      "source": "system",
+      "description": "Live (x,y) of the yellow cuboid in meters from /scene/object_poses.",
+      "default": ""
+    },
+    "cuboid_orange_xy": {
+      "type": "string",
+      "source": "system",
+      "description": "Live (x,y) of the orange cuboid in meters from /scene/object_poses.",
+      "default": ""
+    },
+    "held_cuboid": {
+      "type": "string",
+      "description": "Id of the cuboid currently grasped by the robot, or empty string if none.",
+      "default": ""
+    },
+    "cuboids_in_basket": {
+      "type": "integer",
+      "description": "Count of cuboids whose *_location equals 'basket'.",
+      "default": 0
+    },
+    "active_instruction": {
+      "type": "string",
+      "description": "Current natural-language instruction from the human (e.g., 'put the red one in the basket', 'stack blue on green'). Empty until the human issues one.",
+      "default": ""
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "Predicted next DAG step",
+      "default": "manipulate_cuboids"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action (0-1)",
+      "default": 0.0
+    },
+    "robot_state": {
+      "type": "string",
+      "source": "system",
+      "description": "Robot execution status (populated from robot API)",
+      "valid_values": ["unknown", "idle", "busy"],
+      "default": "unknown"
+    },
+    "robot_active_program": {
+      "type": "string",
+      "source": "system",
+      "description": "Current robot program id when busy",
+      "default": ""
+    }
+  }
+}

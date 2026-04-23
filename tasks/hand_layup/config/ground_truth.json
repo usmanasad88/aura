@@ -111,23 +111,23 @@
       "description": "Robot picks roller, uses force-controlled rolling to consolidate layup, then returns roller"
     },
     {
-      "action": "return_hardener_to_storage",
+      "action": "return_resin_to_storage",
       "start_time": 185.0,
       "end_time": 192.0,
       "agent": "human",
-      "description": "Human returns hardener bottle to storage"
+      "description": "Human returns resin bottle to storage"
     },
     {
-      "action": "return_resin_to_storage",
-      "start_time": 234.0,
-      "end_time": 270.0,
+      "action": "return_hardener_to_storage",
+      "start_time": 195.0,
+      "end_time": 236.0,
       "agent": "robot",
-      "description": "Robot picks resin bottle from workplace and returns it to storage"
+      "description": "Robot picks hardener bottle from workplace and returns it to storage"
     },
     {
       "action": "task_complete",
-      "start_time": 270.0,
-      "end_time": 270.0,
+      "start_time": 236.0,
+      "end_time": 236.0,
       "agent": null,
       "description": "Task finished, workspace cleared"
     }

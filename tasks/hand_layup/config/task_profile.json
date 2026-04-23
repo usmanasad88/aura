@@ -51,6 +51,7 @@
         "predict_interval_sec": 3.0,
         "gesture_hold_frames": 3,
         "resume_gestures": ["Thumb_Up"],
-        "stop_gestures": ["Open_Palm", "Pointing_Up"]
+        "stop_gestures": ["Open_Palm", "Pointing_Up"],
+        "pass_captured_frame_to_vlm": true
     }
 }

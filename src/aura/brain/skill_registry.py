@@ -104,7 +104,20 @@ class RobotSkill:
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "RobotSkill":
-        """Deserialize from dictionary."""
+        """Deserialize from dictionary.
+
+        Accepts ``parameters`` in two shapes:
+          - a list of objects each carrying a ``name`` field, or
+          - a dict keyed by parameter name whose values are the specs.
+        The dict form is normalized to the list form before construction.
+        """
+        raw_params = data.get("parameters") or []
+        if isinstance(raw_params, dict):
+            raw_params = [
+                {"name": name, **(spec if isinstance(spec, dict) else {})}
+                for name, spec in raw_params.items()
+            ]
+
         params = [
             SkillParameter(
                 name=p["name"],
@@ -114,7 +127,7 @@ class RobotSkill:
                 default=p.get("default"),
                 valid_values=p.get("valid_values", []),
             )
-            for p in data.get("parameters", [])
+            for p in raw_params
         ]
         
         metadata = dict(data.get("metadata", {}))

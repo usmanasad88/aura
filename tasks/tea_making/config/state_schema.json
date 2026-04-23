@@ -1,12 +1,16 @@
 {
   "name": "Tea Making Task State",
   "description": "State variables the intent monitor LLM must track from video frames",
-  "version": "2.0",
+  "version": "2.1",
   "state_variables": {
     "current_phase": {
       "type": "string",
       "description": "Current high-level phase of the task",
-      "valid_values": ["initialization", "setup", "heating", "brewing", "serving", "cleanup", "complete"],
+      "valid_values": [
+        "initialization", "setup", "heating", "brewing",
+        "serving", "cleanup", "complete",
+        "Other", "Unknown"
+      ],
       "default": "initialization"
     },
     "current_action": {
@@ -16,14 +20,21 @@
         "idle", "setup_workspace", "fill_pot_with_water", "place_pot_on_stove",
         "turn_on_stove", "wait_for_boil", "add_chai_powder", "simmer_tea",
         "add_milk_to_pot", "stir_pot", "pour_tea", "ask_sugar_preference",
-        "add_sugar", "skip_sugar", "stir_cup", "serve_tea", "cleanup", "task_complete"
+        "add_sugar", "skip_sugar", "stir_cup", "serve_tea", "cleanup",
+        "task_complete",
+        "Other", "Unknown"
       ],
       "default": "idle"
     },
     "human_state": {
       "type": "string",
       "description": "Current activity of the human operator",
-      "valid_values": ["idle", "filling_water", "placing_pot", "operating_stove", "adding_ingredient", "stirring", "pouring", "waiting", "drinking", "done"],
+      "valid_values": [
+        "idle", "filling_water", "placing_pot", "operating_stove",
+        "adding_ingredient", "stirring", "pouring", "waiting",
+        "drinking", "done",
+        "Other", "Unknown"
+      ],
       "default": "idle"
     },
     "water_in_pot": {
@@ -78,24 +89,90 @@
     },
     "predicted_next_action": {
       "type": "string",
-      "description": "Predicted next action based on task graph",
+      "description": "Predicted next action based on task graph (shares valid_values with current_action)",
+      "valid_values": [
+        "idle", "setup_workspace", "fill_pot_with_water", "place_pot_on_stove",
+        "turn_on_stove", "wait_for_boil", "add_chai_powder", "simmer_tea",
+        "add_milk_to_pot", "stir_pot", "pour_tea", "ask_sugar_preference",
+        "add_sugar", "skip_sugar", "stir_cup", "serve_tea", "cleanup",
+        "task_complete",
+        "Other", "Unknown"
+      ],
       "default": "setup_workspace"
     },
     "prediction_confidence": {
       "type": "number",
       "description": "Confidence in the predicted next action (0-1)",
-      "default": 0.0
+      "default": 1.0
     },
     "robot_state": {
       "type": "string",
-      "description": "Robot execution status for decision context",
+      "source": "system",
+      "description": "Robot execution status (populated from robot API, not vision)",
       "valid_values": ["unknown", "idle", "busy"],
       "default": "unknown"
     },
     "robot_active_program": {
       "type": "string",
-      "description": "Current robot program/action id when busy",
+      "source": "system",
+      "description": "Current robot program/action id when busy (populated from robot API, not vision)",
       "default": ""
+    },
+    "robot_engagement": {
+      "type": "string",
+      "source": "intent_monitor",
+      "description": "Vision-informed judgement from the intent monitor on whether the robot should continue its actions now. 'continue' = safe to proceed with scheduled actions; 'hold' = defer all non-safety robot activity. The BT gates deterministic action branches on this being 'continue'.",
+      "valid_values": ["continue", "hold", "Unknown"],
+      "default": "continue"
+    },
+    "pot_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the pot.",
+      "valid_values": ["storage_area", "working_area", "stove_area", "unknown"],
+      "default": "storage_area"
+    },
+    "cup_1_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the first cup.",
+      "valid_values": ["storage_area", "working_area", "unknown"],
+      "default": "storage_area"
+    },
+    "cup_2_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the second cup.",
+      "valid_values": ["storage_area", "working_area", "unknown"],
+      "default": "storage_area"
+    },
+    "tea_container_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the chai powder container.",
+      "valid_values": ["storage_area", "working_area", "unknown"],
+      "default": "storage_area"
+    },
+    "milk_container_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the powdered milk container.",
+      "valid_values": ["storage_area", "working_area", "unknown"],
+      "default": "storage_area"
+    },
+    "sugar_container_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the sugar container.",
+      "valid_values": ["storage_area", "working_area", "unknown"],
+      "default": "storage_area"
+    },
+    "spoon_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the stirring spoon.",
+      "valid_values": ["storage_area", "working_area", "unknown"],
+      "default": "storage_area"
     }
   }
 }

@@ -46,6 +46,9 @@ def count_decisions(session_dir: Path) -> dict[str, int]:
         except (json.JSONDecodeError, OSError):
             continue
         decision = meta.get("decision", "unknown")
+        # Normalize BehaviorTree-style decisions (action_id) to "act"
+        if decision not in ("wait", "act", "unknown"):
+            decision = "act"
         counts[decision] = counts.get(decision, 0) + 1
         counts["total"] += 1
     return counts
@@ -149,7 +152,22 @@ def evaluate_run(
         result["a_score"] = {}
 
     # --- Intent accuracy ---
+    # gt-intent runs bypass the intent monitor entirely (empty session dir);
+    # intent is sourced directly from the GT timeline, so accuracy is 1.0.
+    intent_is_gt = False
     if intent_session and intent_session.is_dir():
+        if not any(intent_session.glob("call_*")):
+            intent_is_gt = True
+
+    if intent_is_gt:
+        result["intent_accuracy"] = {
+            "current_action": 1.0,
+            "next_action": 1.0,
+            "detection_rate": 1.0,
+            "mean_detection_lag_sec": 0.0,
+            "source": "ground_truth",
+        }
+    elif intent_session and intent_session.is_dir():
         intent_result = evaluate_intent_session(str(intent_session), str(gt_path))
         if "error" not in intent_result:
             result["intent_accuracy"] = {

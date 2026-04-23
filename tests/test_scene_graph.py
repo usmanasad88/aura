@@ -396,19 +396,6 @@ class TestGraphReasoner:
         action_ids = [a["action_id"] for a in actions]
         assert "add_sugar" in action_ids
     
-    def test_proactive_opportunities(self, reasoner_graph):
-        """Test finding proactive opportunities."""
-        reasoner = GraphReasoner(reasoner_graph)
-        
-        # Set human targeting cup
-        reasoner_graph.set_agent_target("human", "cup")
-        
-        opportunities = reasoner.get_proactive_opportunities("robot")
-        
-        # Should find opportunity to help with cup
-        assert len(opportunities) >= 0  # May be empty if no matching affordances
-
-
 class TestGraphQuery:
     """Tests for graph query builder."""
     

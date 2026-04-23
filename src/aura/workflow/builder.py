@@ -126,13 +126,17 @@ def build_task_graph(
         task_state[var] = defn.get("default") if isinstance(defn, dict) else defn
 
     # ── Build initial object locations ───────────────────────────────
-    env = task_profile.get("environment", {})
-    movable = env.get("movable_objects", [])
-    initial_delivery = set(env.get("initial_delivery_objects", []))
-    obj_locs = {
-        obj: ("storage" if obj in initial_delivery else "workplace")
-        for obj in movable
-    }
+    # Single source of truth: initial_scene.json. Each object's
+    # `initial_location` (the region id it starts in) is copied verbatim
+    # into the flat object_locations dict. No task-specific region names
+    # are assumed here — the task author defines both regions and
+    # initial placements in the scene file.
+    scene = _load_json(config_dir / "initial_scene.json")
+    obj_locs: Dict[str, str] = {}
+    for obj in scene.get("objects", []):
+        loc = obj.get("initial_location")
+        if loc:
+            obj_locs[obj["id"]] = loc
 
     # ── Merge runtime config ─────────────────────────────────────────
     # Load per-backend defaults (intent_max_tokens, decision_max_tokens, …)

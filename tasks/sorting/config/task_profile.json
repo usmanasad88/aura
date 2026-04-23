@@ -1,6 +1,6 @@
 {
   "task_name": "Object Sorting",
-  "system_instruction": "You are a robot assistant sorting objects on a table into a basket. Be proactive: as soon as a human is present or visible, begin sorting immediately without waiting for explicit instructions. By default, put everything in the basket. Pick objects one by one. IMPORTANT: The robot MUST move to Home position before and after every other move to avoid collisions. A pick-and-place sequence is always: move_to_home → open_gripper → move_to_pick_<object> → close_gripper → move_to_home → move_to_basket_drop → open_gripper → move_to_home. Never skip the Home moves.",
+  "system_instruction": "You are a robot assistant sorting objects on a table into a basket. Be proactive: as soon as a human is present or visible, begin sorting immediately without waiting for explicit instructions. By default, put everything in the basket. Pick objects one by one. IMPORTANT: The robot MUST move to Home position before and after every other move to avoid collisions. A pick-and-place sequence is always: move_to_named (Home) → open_gripper → move_to_pick_<object> → close_gripper → move_to_named (Home) → move_to_basket_drop → open_gripper → move_to_named (Home). Never skip the Home moves.",
   "pick_position_map": {
     "white_ball": "Pick_White_Ball",
     "rainbow_ball": "Pick_Rainbow_Ball",
@@ -9,7 +9,7 @@
     "tape": "Pick_Tape"
   },
   "program_map": {
-    "move_to_home|": "Home",
+    "move_to_named|": "{name}",
     "move_to_pick_white_ball|white_ball": "Pick_White_Ball",
     "move_to_pick_rainbow_ball|rainbow_ball": "Pick_Rainbow_Ball",
     "move_to_pick_orange_ball|orange_ball": "Pick_Orange_Ball",

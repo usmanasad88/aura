@@ -1,0 +1,5 @@
+[
+  {"id": "idle", "description": "System initialized, cuboids scattered on the table awaiting instructions", "dependencies": []},
+  {"id": "manipulate_cuboids", "description": "Pick and place cuboids between named locations (table, basket, or custom drop zones) according to the active instruction", "dependencies": ["idle"]},
+  {"id": "task_complete", "description": "All cuboids are at their goal locations as defined by the active instruction", "dependencies": ["manipulate_cuboids"]}
+]

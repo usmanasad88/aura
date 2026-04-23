@@ -11,12 +11,13 @@
       "category": "program",
       "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_resin_from_storage_to_workplace.prog"}},
       "preconditions": {
-        "resin_bottle.location": "storage_area"
+        "resin_bottle.location": "storage_area",
+        "resin_added": false
       },
       "effects": {
         "resin_bottle.location": "workplace"
       },
-      "trigger_steps": ["add_resin_to_cup"],
+      "trigger_after_steps": ["idle"],
       "estimated_duration_sec": 15.0,
       "can_interrupt": false
     },
@@ -32,7 +33,7 @@
       "effects": {
         "resin_bottle.location": "storage_area"
       },
-      "trigger_after_steps": ["mix_resin_hardener"],
+      "trigger_after_steps": ["consolidate_with_roller"],
       "estimated_duration_sec": 15.0,
       "can_interrupt": false
     },
@@ -43,12 +44,13 @@
       "category": "program",
       "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "move_hardener_from_storage_to_workplace.prog"}},
       "preconditions": {
-        "hardener_bottle.location": "storage_area"
+        "hardener_bottle.location": "storage_area",
+        "hardener_added": false
       },
       "effects": {
         "hardener_bottle.location": "workplace"
       },
-      "trigger_steps": ["add_hardener_to_cup"],
+      "trigger_after_steps": ["add_resin_to_cup"],
       "estimated_duration_sec": 15.0,
       "can_interrupt": false
     },
@@ -64,7 +66,7 @@
       "effects": {
         "hardener_bottle.location": "storage_area"
       },
-      "trigger_after_steps": ["mix_resin_hardener"],
+      "trigger_after_steps": ["consolidate_with_roller"],
       "estimated_duration_sec": 15.0,
       "can_interrupt": false
     },
@@ -76,12 +78,14 @@
       "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "use_roller_to_consolidate_in_force_mode.prog"}},
       "preconditions": {
         "roller.location": "storage_area",
-        "workpiece.needs_consolidation": true
+        "consolidated": false,
+        "layers_resined": 4
       },
       "effects": {
-        "workpiece.consolidated": true,
-        "roller.location": "storage_area"
+        "roller.location": "storage_area",
+        "consolidated": true
       },
+      "trigger_after_steps": ["apply_resin_layer_4"],
       "estimated_duration_sec": 35.0,
       "can_interrupt": false
     },

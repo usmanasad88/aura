@@ -39,9 +39,24 @@
       </div>
     </section>
 
-    <!-- Gesture Monitor -->
+    <!-- Perception + Gesture + Intent -->
     <section class="monitor-section">
       <h2>
+        <span class="dot" id="perception-dot"></span>
+        Perception Monitor
+      </h2>
+      <div class="monitor-content">
+        <div class="stat-row">
+          <span class="stat-label">Objects Tracked</span>
+          <span id="perception-count" class="stat-value mono">0</span>
+        </div>
+        <h3 style="margin-top:0.6rem;">Locations</h3>
+        <div id="perception-locations" class="location-grid"></div>
+        <h3 style="margin-top:0.6rem;">Task State</h3>
+        <div id="perception-task-state"></div>
+      </div>
+
+      <h2 style="margin-top:1.2rem;">
         <span class="dot" id="gesture-dot"></span>
         Gesture Monitor
       </h2>

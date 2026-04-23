@@ -494,6 +494,9 @@ function collectConfig() {
         decision_model: val("decision-model") || null,
         max_cycles: intVal("max-cycles") || null,
         use_ground_truth_robot_status: document.getElementById("ground-truth").checked,
+        intent_source: document.getElementById("intent-ground-truth").checked
+            ? "ground_truth" : "llm",
+        intent_gt_path: val("intent-gt-path") || null,
         enable_gesture: document.getElementById("enable-gesture").checked,
         enable_perception: document.getElementById("enable-perception").checked,
         enable_audio: document.getElementById("enable-audio").checked,

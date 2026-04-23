@@ -1,0 +1,163 @@
+{
+  "name": "Cuboid Manipulation Robot Skills",
+  "description": "Parametric skills for picking and placing cuboids on an Isaac Sim table with a UR5 + Robotiq gripper. The underlying robot controller is the `program_executor` ROS 2 node in ur5_curobo_control. Each skill below maps to a program file in ur5_curobo_control/programs/ and is invoked via the standard load-then-execute sequence: (1) set ROS 2 parameters `program_file` and `program_args` on the executor node, (2) call service `/program_executor/load_program` (std_srvs/Trigger), (3) call service `/program_executor/execute_program` (std_srvs/Trigger). Live cuboid pick poses are written into ur5_curobo_control/config/named_positions.txt by the Isaac Sim extension on every scene setup, so `cuboid_red`, `cuboid_green`, etc. are resolvable at execution time.",
+  "version": "2.0",
+  "api": {
+    "executor_node": "/program_executor",
+    "services": {
+      "load":    {"name": "/program_executor/load_program",    "type": "std_srvs/srv/Trigger"},
+      "execute": {"name": "/program_executor/execute_program", "type": "std_srvs/srv/Trigger"},
+      "stop":    {"name": "/program_executor/stop",            "type": "std_srvs/srv/Trigger"},
+      "pause":   {"name": "/program_executor/pause",           "type": "std_srvs/srv/SetBool"}
+    },
+    "parameters": {
+      "program_file": "string — absolute path or basename of the .prog file under ur5_curobo_control/programs/",
+      "program_args": "string — whitespace-separated `key=value` pairs (e.g., 'object=cuboid_red safe=Home')"
+    },
+    "invocation_template": [
+      "ros2 param set /program_executor program_file '{program_file}'",
+      "ros2 param set /program_executor program_args '{program_args}'",
+      "ros2 service call /program_executor/load_program std_srvs/srv/Trigger",
+      "ros2 service call /program_executor/execute_program std_srvs/srv/Trigger"
+    ]
+  },
+  "skills": [
+    {
+      "id": "move_to_named",
+      "name": "Move to Named Position",
+      "description": "Move the robot to a specific named joint configuration or position (e.g. Home, safe, a cuboid location).",
+      "category": "motion",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "description": "The name of the position to move to",
+          "default": "Home"
+        }
+      },
+      "api_call": {
+        "program_file": "move_to_named.prog",
+        "program_args": "name={name}"
+      },
+      "preconditions": {},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "pick_cuboid",
+      "name": "Pick Cuboid",
+      "description": "Approach the named cuboid from 15 cm above its live pose, descend, close the gripper, and retreat to the `safe` pose (defaults to Home). Cuboid poses are populated in named_positions.txt by the Isaac Sim extension.",
+      "category": "program",
+      "parameters": {
+        "cuboid": {
+          "type": "string",
+          "description": "Cuboid id to pick; must match a pose name in named_positions.txt",
+          "valid_values": ["cuboid_red", "cuboid_green", "cuboid_blue", "cuboid_yellow", "cuboid_orange"]
+        },
+        "safe": {"type": "string", "description": "Safe retreat pose name", "default": "Home"}
+      },
+      "api_call": {
+        "program_file": "pick_object.prog",
+        "program_args": "object={cuboid} safe={safe}"
+      },
+      "preconditions": {"{cuboid}.location": "table", "held_cuboid": ""},
+      "effects": {"{cuboid}.location": "held"},
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "place_cuboid",
+      "name": "Place Cuboid",
+      "description": "While holding a cuboid, descend to the named destination pose, open the gripper, and retreat to the `safe` pose.",
+      "category": "program",
+      "parameters": {
+        "destination": {
+          "type": "string",
+          "description": "Named destination pose (e.g., blue_basket_drop_position, or any pose id defined in task_profile.drop_zones)"
+        },
+        "safe": {"type": "string", "description": "Safe retreat pose name", "default": "Home"}
+      },
+      "api_call": {
+        "program_file": "place_object.prog",
+        "program_args": "object={destination} safe={safe}"
+      },
+      "preconditions": {"held_cuboid": "!"},
+      "effects": {"held_cuboid": ""},
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "pick_and_place_cuboid",
+      "name": "Pick and Place Cuboid",
+      "description": "One-shot pick-and-place: pick the named cuboid from the table and release it at the named destination, transiting via the safe pose.",
+      "category": "program",
+      "parameters": {
+        "cuboid": {
+          "type": "string",
+          "description": "Cuboid id to pick",
+          "valid_values": ["cuboid_red", "cuboid_green", "cuboid_blue", "cuboid_yellow", "cuboid_orange"]
+        },
+        "destination": {"type": "string", "description": "Named destination pose, e.g. blue_basket_drop_position"},
+        "safe": {"type": "string", "description": "Safe retreat pose", "default": "Home"}
+      },
+      "api_call": {
+        "program_file": "pick_and_place_objects.prog",
+        "program_args": "initial={cuboid} home={safe} final={destination}"
+      },
+      "preconditions": {"{cuboid}.location": "table", "held_cuboid": ""},
+      "effects": {"{cuboid}.location": "{destination}"},
+      "estimated_duration_sec": 14.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "open_gripper",
+      "name": "Open Gripper",
+      "description": "Open the Robotiq gripper.",
+      "category": "gripper",
+      "api_call": {
+        "program_file": "open_gripper.prog",
+        "program_args": ""
+      },
+      "preconditions": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "close_gripper",
+      "name": "Close Gripper",
+      "description": "Close the Robotiq gripper.",
+      "category": "gripper",
+      "api_call": {
+        "program_file": "close_gripper.prog",
+        "program_args": ""
+      },
+      "preconditions": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "stop_program",
+      "name": "Stop Program",
+      "description": "Halt the currently executing program immediately.",
+      "category": "utility",
+      "api_call": {
+        "service": "/program_executor/stop",
+        "type": "std_srvs/srv/Trigger"
+      },
+      "preconditions": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
+      "id": "wait",
+      "name": "Wait",
+      "description": "Wait for a specified duration or until the human signals readiness.",
+      "category": "utility",
+      "parameters": {
+        "duration_sec": {"type": "number", "default": 5.0}
+      },
+      "preconditions": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    }
+  ]
+}

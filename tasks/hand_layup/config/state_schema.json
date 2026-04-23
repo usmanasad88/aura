@@ -1,14 +1,15 @@
 {
   "name": "Hand Layup Task State",
   "description": "State variables the intent monitor LLM must track from video frames",
-  "version": "2.0",
+  "version": "2.1",
   "state_variables": {
     "current_phase": {
       "type": "string",
       "description": "Current high-level phase of the task",
       "valid_values": [
         "initialization", "resin_preparation", "mixing",
-        "layup", "consolidation", "cleanup", "complete"
+        "layup", "consolidation", "cleanup", "complete",
+        "Other", "Unknown"
       ],
       "default": "initialization"
     },
@@ -23,7 +24,8 @@
         "place_layer_2", "apply_resin_layer_2",
         "place_layer_3", "apply_resin_layer_3",
         "place_layer_4", "apply_resin_layer_4",
-        "consolidate_with_roller", "cleanup", "task_complete"
+        "consolidate_with_roller", "cleanup", "task_complete",
+        "Other", "Unknown"
       ],
       "default": "idle"
     },
@@ -31,9 +33,10 @@
       "type": "string",
       "description": "Current activity of the human operator",
       "valid_values": [
-        "idle", "preparing_resin", "mixing",
+        "idle", "waiting", "preparing_resin", "mixing",
         "placing_fiberglass", "applying_resin",
-        "rolling", "inspecting", "done"
+        "rolling", "inspecting", "done",
+        "Other", "Unknown"
       ],
       "default": "idle"
     },
@@ -74,13 +77,24 @@
     },
     "predicted_next_action": {
       "type": "string",
-      "description": "Predicted next action based on task graph",
+      "description": "Predicted next action based on task graph (shares valid_values with current_action)",
+      "valid_values": [
+        "idle", "place_cup_on_scale",
+        "add_resin_to_cup", "add_hardener_to_cup",
+        "weigh_mixture", "mix_resin_hardener",
+        "place_layer_1", "apply_resin_layer_1",
+        "place_layer_2", "apply_resin_layer_2",
+        "place_layer_3", "apply_resin_layer_3",
+        "place_layer_4", "apply_resin_layer_4",
+        "consolidate_with_roller", "cleanup", "task_complete",
+        "Other", "Unknown"
+      ],
       "default": "place_cup_on_scale"
     },
     "prediction_confidence": {
       "type": "number",
       "description": "Confidence in the predicted next action (0-1)",
-      "default": 0.0
+      "default": 1.0
     },
     "robot_state": {
       "type": "string",
@@ -101,7 +115,7 @@
       "type": "string",
       "source": "intent_monitor",
       "description": "Vision-informed judgement from the intent monitor on whether the robot should continue its actions now. 'continue' = safe to proceed with scheduled actions; 'hold' = defer all non-safety robot activity. The BT gates deterministic action branches on this being 'continue'.",
-      "valid_values": ["continue", "hold"],
+      "valid_values": ["continue", "hold", "Unknown"],
       "default": "continue"
     },
     "resin_bottle_location": {

@@ -1,0 +1,723 @@
+{
+  "video": "/home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4",
+  "task": "hand_layup",
+  "fps": 29.995771074147168,
+  "total_frames": 7093,
+  "created_at": "2026-04-21T15:41:54",
+  "keyframes": [
+    {
+      "frame_num": 0,
+      "timestamp_sec": 0.0,
+      "state": {
+        "current_phase": "initialization",
+        "current_action": "idle",
+        "human_state": "idle",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": false,
+        "hardener_added": false,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "add_resin_to_cup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "place_cup_on_scale"
+        ],
+        "steps_in_progress": [
+          "idle"
+        ],
+        "steps_pending": [
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 156,
+      "timestamp_sec": 5.200733117157761,
+      "state": {
+        "current_phase": "initialization",
+        "current_action": "add_resin_to_cup",
+        "human_state": "waiting",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": false,
+        "hardener_added": false,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "add_hardener_to_cup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale"
+        ],
+        "steps_in_progress": [
+          "add_resin_to_cup"
+        ],
+        "steps_pending": [
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1094,
+      "timestamp_sec": 36.47180788570891,
+      "state": {
+        "current_phase": "resin_preparation",
+        "current_action": "add_resin_to_cup",
+        "human_state": "preparing_resin",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": false,
+        "hardener_added": false,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "add_hardener_to_cup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale"
+        ],
+        "steps_in_progress": [
+          "add_resin_to_cup"
+        ],
+        "steps_pending": [
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1556,
+      "timestamp_sec": 51.87397904036844,
+      "state": {
+        "current_phase": "resin_preparation",
+        "current_action": "add_hardener_to_cup",
+        "human_state": "preparing_resin",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": true,
+        "hardener_added": false,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "weigh_mixture",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup"
+        ],
+        "steps_in_progress": [
+          "add_hardener_to_cup"
+        ],
+        "steps_pending": [
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1856,
+      "timestamp_sec": 61.87538888105644,
+      "state": {
+        "current_phase": "resin_preparation",
+        "current_action": "add_hardener_to_cup",
+        "human_state": "placing_fiberglass",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": true,
+        "hardener_added": false,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "weigh_mixture",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup"
+        ],
+        "steps_in_progress": [
+          "add_hardener_to_cup",
+          "place_layer_1"
+        ],
+        "steps_pending": [
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 2277,
+      "timestamp_sec": 75.91070069082194,
+      "state": {
+        "current_phase": "resin_preparation",
+        "current_action": "add_hardener_to_cup",
+        "human_state": "preparing_resin",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": true,
+        "hardener_added": false,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "weigh_mixture",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "place_layer_1"
+        ],
+        "steps_in_progress": [
+          "add_hardener_to_cup"
+        ],
+        "steps_pending": [
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 2638,
+      "timestamp_sec": 87.94573053244983,
+      "state": {
+        "current_phase": "resin_preparation",
+        "current_action": "mix_resin_hardener",
+        "human_state": "preparing_resin",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "apply_resin_layer_1",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "place_layer_1"
+        ],
+        "steps_in_progress": [
+          "mix_resin_hardener"
+        ],
+        "steps_pending": [
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 2743,
+      "timestamp_sec": 91.44622397669063,
+      "state": {
+        "current_phase": "layup",
+        "current_action": "apply_resin_layer_1",
+        "human_state": "preparing_resin",
+        "layers_placed": 0,
+        "layers_resined": 0,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "place_layer_2",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1"
+        ],
+        "steps_in_progress": [
+          "apply_resin_layer_1"
+        ],
+        "steps_pending": [
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 2864,
+      "timestamp_sec": 95.48012594576812,
+      "state": {
+        "current_phase": "layup",
+        "current_action": "place_layer_2",
+        "human_state": "preparing_resin",
+        "layers_placed": 1,
+        "layers_resined": 1,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "apply_resin_layer_2",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1"
+        ],
+        "steps_in_progress": [
+          "place_layer_2"
+        ],
+        "steps_pending": [
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3054,
+      "timestamp_sec": 101.81435217820386,
+      "state": {
+        "current_phase": "layup",
+        "current_action": "apply_resin_layer_2",
+        "human_state": "preparing_resin",
+        "layers_placed": 2,
+        "layers_resined": 1,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "place_layer_3",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2"
+        ],
+        "steps_in_progress": [
+          "apply_resin_layer_2"
+        ],
+        "steps_pending": [
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3200,
+      "timestamp_sec": 106.68170496733869,
+      "state": {
+        "current_phase": "layup",
+        "current_action": "place_layer_3",
+        "human_state": "preparing_resin",
+        "layers_placed": 2,
+        "layers_resined": 2,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "apply_resin_layer_3",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2"
+        ],
+        "steps_in_progress": [
+          "place_layer_3"
+        ],
+        "steps_pending": [
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3388,
+      "timestamp_sec": 112.94925513416983,
+      "state": {
+        "current_phase": "layup",
+        "current_action": "place_layer_3",
+        "human_state": "preparing_resin",
+        "layers_placed": 3,
+        "layers_resined": 2,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "apply_resin_layer_3",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2"
+        ],
+        "steps_in_progress": [
+          "place_layer_3"
+        ],
+        "steps_pending": [
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3552,
+      "timestamp_sec": 118.41669251374594,
+      "state": {
+        "current_phase": "layup",
+        "current_action": "place_layer_4",
+        "human_state": "preparing_resin",
+        "layers_placed": 3,
+        "layers_resined": 2,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "apply_resin_layer_4",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3"
+        ],
+        "steps_in_progress": [
+          "place_layer_4"
+        ],
+        "steps_pending": [
+          "apply_resin_layer_4",
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3633,
+      "timestamp_sec": 121.1170731707317,
+      "state": {
+        "current_phase": "layup",
+        "current_action": "apply_resin_layer_4",
+        "human_state": "preparing_resin",
+        "layers_placed": 4,
+        "layers_resined": 3,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": false,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "consolidate_with_roller",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4"
+        ],
+        "steps_in_progress": [
+          "apply_resin_layer_4"
+        ],
+        "steps_pending": [
+          "consolidate_with_roller",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3752,
+      "timestamp_sec": 125.08429907420461,
+      "state": {
+        "current_phase": "consolidation",
+        "current_action": "consolidate_with_roller",
+        "human_state": "preparing_resin",
+        "layers_placed": 4,
+        "layers_resined": 4,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": true,
+        "consolidated": false,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "cleanup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4"
+        ],
+        "steps_in_progress": [
+          "consolidate_with_roller"
+        ],
+        "steps_pending": [
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 5313,
+      "timestamp_sec": 177.1249682785845,
+      "state": {
+        "current_phase": "consolidation",
+        "current_action": "cleanup",
+        "human_state": "preparing_resin",
+        "layers_placed": 4,
+        "layers_resined": 4,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": true,
+        "consolidated": true,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "task_complete",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller"
+        ],
+        "steps_in_progress": [
+          "cleanup"
+        ],
+        "steps_pending": [
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 5424,
+      "timestamp_sec": 180.82548991963907,
+      "state": {
+        "current_phase": "consolidation",
+        "current_action": "cleanup",
+        "human_state": "Other",
+        "layers_placed": 4,
+        "layers_resined": 4,
+        "resin_added": true,
+        "hardener_added": true,
+        "mixture_mixed": true,
+        "consolidated": true,
+        "human_wearing_gloves": true,
+        "predicted_next_action": "task_complete",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "place_cup_on_scale",
+          "add_resin_to_cup",
+          "add_hardener_to_cup",
+          "weigh_mixture",
+          "mix_resin_hardener",
+          "place_layer_1",
+          "apply_resin_layer_1",
+          "place_layer_2",
+          "apply_resin_layer_2",
+          "place_layer_3",
+          "apply_resin_layer_3",
+          "place_layer_4",
+          "apply_resin_layer_4",
+          "consolidate_with_roller"
+        ],
+        "steps_in_progress": [
+          "cleanup"
+        ],
+        "steps_pending": [
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    }
+  ]
+}

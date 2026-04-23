@@ -1,0 +1,68 @@
+{
+  "task_name": "Cuboid Manipulation",
+  "system_instruction": "You are a UR5 robot assistant that manipulates coloured cuboids (red, green, blue, yellow, orange) on a table in Isaac Sim. State is populated from ROS 2 topics by the perception layer — trust it. Follow the `active_instruction` field. When acting, prefer the parametric `pick_and_place_cuboid` skill with explicit `cuboid` and `destination` arguments; use `pick_cuboid` + `place_cuboid` separately only when the instruction requires intermediate reasoning (e.g., inspect, wait for human). Valid destinations are `blue_basket_drop_position` (the basket) and any id under `drop_zones`. The underlying program always transits via Home between pick and place, so you do not need to schedule Home moves yourself. Only mark the task complete when every cuboid's location matches the goal implied by `active_instruction`.",
+  "goal_policy": {
+    "default_goal": "all_in_basket",
+    "description": "If `active_instruction` is empty, assume: place every cuboid into the basket one by one."
+  },
+  "cuboids": ["cuboid_red", "cuboid_green", "cuboid_blue", "cuboid_yellow", "cuboid_orange"],
+  "anchor_image": {
+    "enabled": false,
+    "path": ""
+  },
+  "drop_zones": {
+    "basket":    {"named_pose": "blue_basket_drop_position", "description": "Blue basket on the table"},
+    "home_zone": {"named_pose": "Home",                 "description": "Safe home pose above the table"}
+  },
+  "perception": {
+    "description": "Perception is driven by ROS 2 topics published by the Isaac Sim extension and the robot controller. The perception monitor reads these at `predict_interval_sec` and updates the state schema directly; no vision-LLM inference is required for cuboid locations or positions.",
+    "ros_subscriptions": [
+      {
+        "topic": "/scene/object_initial_poses",
+        "type": "geometry_msgs/msg/PoseArray",
+        "maps_to": ["cuboid_red_xy", "cuboid_green_xy", "cuboid_blue_xy", "cuboid_yellow_xy", "cuboid_orange_xy"],
+        "note": "Published once on scene setup. Indices match the cuboid order above."
+      },
+      {
+        "topic": "/scene/object_poses",
+        "type": "geometry_msgs/msg/PoseArray",
+        "maps_to": ["cuboid_red_xy", "cuboid_green_xy", "cuboid_blue_xy", "cuboid_yellow_xy", "cuboid_orange_xy"],
+        "note": "Live poses at 30 Hz. Symbolic locations are derived from these: if a cuboid's xy falls within the basket's footprint, its location becomes `basket`; otherwise `table` (or `held` while grasped)."
+      },
+      {
+        "topic": "/program_executor/status",
+        "type": "std_msgs/msg/String",
+        "maps_to": ["robot_state", "robot_active_program"],
+        "note": "Controller status (idle / busy / program name)."
+      }
+    ],
+    "basket_footprint": {
+      "center_xy": [0.5, -0.5],
+      "radius_m": 0.12,
+      "description": "Axis-aligned xy disc around the basket centre used to classify cuboid-in-basket from /scene/object_poses."
+    }
+  },
+  "program_map": {
+    "move_to_named|": "move_to_named[{name}]",
+    "open_gripper|": "open_gripper",
+    "close_gripper|": "close_gripper",
+    "pick_cuboid|cuboid_red":    "pick_object[object=cuboid_red, safe=Home]",
+    "pick_cuboid|cuboid_green":  "pick_object[object=cuboid_green, safe=Home]",
+    "pick_cuboid|cuboid_blue":   "pick_object[object=cuboid_blue, safe=Home]",
+    "pick_cuboid|cuboid_yellow": "pick_object[object=cuboid_yellow, safe=Home]",
+    "pick_cuboid|cuboid_orange": "pick_object[object=cuboid_orange, safe=Home]",
+    "place_cuboid|basket":       "place_object[object=blue_basket_drop_position, safe=Home]",
+    "pick_and_place_cuboid|cuboid_red->basket":    "pick_and_place_objects[initial=cuboid_red, home=Home, final=blue_basket_drop_position]",
+    "pick_and_place_cuboid|cuboid_green->basket":  "pick_and_place_objects[initial=cuboid_green, home=Home, final=blue_basket_drop_position]",
+    "pick_and_place_cuboid|cuboid_blue->basket":   "pick_and_place_objects[initial=cuboid_blue, home=Home, final=blue_basket_drop_position]",
+    "pick_and_place_cuboid|cuboid_yellow->basket": "pick_and_place_objects[initial=cuboid_yellow, home=Home, final=blue_basket_drop_position]",
+    "pick_and_place_cuboid|cuboid_orange->basket": "pick_and_place_objects[initial=cuboid_orange, home=Home, final=blue_basket_drop_position]"
+  },
+  "workflow_config": {
+    "active_monitors": ["perception"],
+    "decision_mode": "hybrid",
+    "graph_topology": "sense_decide_act",
+    "predict_interval_sec": 3.0,
+    "pass_captured_frame_to_vlm": true
+  }
+}

@@ -60,6 +60,7 @@ function updateAll(s) {
     updateStatusBadge(s);
     updateMonitorsStrip(s);
     updateFrameInfo(s);
+    updatePerception(s);
     updateGesture(s);
     updateIntent(s);
     updateTaskState(s);
@@ -134,6 +135,62 @@ function updateFrameInfo(s) {
     const el = document.getElementById("frame-info");
     const ts = (s.current_timestamp_sec || 0).toFixed(1);
     el.textContent = `Frame: ${s.current_frame_num || 0} | ${ts}s`;
+}
+
+// ── Perception Monitor ──────────────────────────────────────────
+
+function updatePerception(s) {
+    const p = s.perception || {};
+    const dot = document.getElementById("perception-dot");
+
+    // Consolidate all *_locations dicts into one object → region map.
+    const locs = {};
+    for (const [k, v] of Object.entries(p)) {
+        if (k.endsWith("_locations") && v && typeof v === "object") {
+            for (const [obj, region] of Object.entries(v)) {
+                locs[obj] = region;
+            }
+        }
+    }
+    const objCount = Object.keys(locs).length;
+    setText("perception-count", String(objCount));
+
+    if (dot) dot.className = objCount > 0 ? "dot active" : "dot";
+
+    const locEl = document.getElementById("perception-locations");
+    if (locEl) {
+        if (objCount > 0) {
+            locEl.innerHTML = Object.keys(locs).map(obj => {
+                const place = locs[obj];
+                const cls = place === "unknown" ? "loc-storage" : "loc-workplace";
+                return `<div class="loc-item">
+                    <span class="loc-name">${escHtml(obj)}</span>
+                    <span class="loc-place ${cls}">${escHtml(String(place))}</span>
+                </div>`;
+            }).join("");
+        } else {
+            locEl.innerHTML = '<span class="chip chip-pending">no detections</span>';
+        }
+    }
+
+    const tsEl = document.getElementById("perception-task-state");
+    if (tsEl) {
+        const ts = p.task_state || {};
+        const keys = Object.keys(ts).filter(k => !k.startsWith("_"));
+        if (keys.length > 0) {
+            tsEl.innerHTML = '<div class="state-var-grid">' +
+                keys.map(k => {
+                    const v = ts[k];
+                    const display = typeof v === "object" ? JSON.stringify(v) : String(v);
+                    return `<div class="state-var">
+                        <span class="state-var-key">${escHtml(k)}</span>
+                        <span class="state-var-val">${escHtml(display)}</span>
+                    </div>`;
+                }).join("") + '</div>';
+        } else {
+            tsEl.innerHTML = '<span class="chip chip-pending">--</span>';
+        }
+    }
 }
 
 // ── Gesture Monitor ─────────────────────────────────────────────

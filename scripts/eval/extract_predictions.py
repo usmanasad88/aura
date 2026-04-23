@@ -45,15 +45,20 @@ def extract(session_dir: Path) -> list[InterventionEvent]:
             continue
 
         decision = parsed.get("decision") or meta.get("decision", "")
-        if decision != "act":
+        if not decision or decision == "wait":
             continue
 
-        action_id = parsed.get("action_id", "")
+        if decision == "act":
+            action_id = parsed.get("action_id", "")
+        else:
+            # BehaviorTree / gt-intent runs: `decision` is the action_id itself
+            action_id = decision
+
         if not action_id:
             continue
 
         timestamp = meta.get("timestamp_sec", 0.0)
-        target_id = parsed.get("target_id")
+        target_id = parsed.get("target_id") or parsed.get("target")
         targets = [target_id] if target_id else _extract_targets(action_id)
 
         events.append(

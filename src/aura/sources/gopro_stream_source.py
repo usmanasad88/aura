@@ -12,7 +12,7 @@ Requirements:
     - GoPro connected and reachable at ``camera_ip`` (default 172.29.170.51)
     - USB interface must have an IP in the camera's subnet
     - ``requests`` package installed
-Migh have to sudo ip addr add 172.29.170.50/24 dev enx04574796c048
+Might have to sudo ip addr add 172.29.170.50/24 dev enx04574796c048
 
 Usage::
 

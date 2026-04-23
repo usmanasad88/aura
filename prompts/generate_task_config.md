@@ -84,22 +84,50 @@ Rules:
   "name": "<Task> Robot Skills",
   "description": "...",
   "version": "2.0",
+  "api": { ... optional, reference only ... },
   "skills": [ ... ]
 }
 ```
 
 Each skill needs:
-- `id` (string): unique identifier
+- `id` (string): unique identifier, referenced by `program_map` keys, `trigger_steps`, and the decision engine
 - `name` (string): human-readable
-- `description` (string): what the robot does (1-2 sentences)
-- `category`: "program" | "motion" | "gripper" | "utility"
-- `preconditions` (object): state conditions that must be true (checked at runtime against SSG)
+- `description` (string): what the robot does (1–2 sentences)
+- `category`: `"program" | "motion" | "gripper" | "utility"`
+- `preconditions` (object): state conditions that must all be true before the BT will fire this skill
+- `effects` (object, optional): state deltas the runtime applies to the SSG on successful execution
 - `estimated_duration_sec` (number)
 - `can_interrupt` (boolean)
 
-Omit from skills: `api_call` (unused — execution goes through `task_profile.program_map`), `effects` (informational only, not applied by runtime).
+Deterministic firing (behaviour tree) — opt-in:
+- `trigger_steps` (string[]): DAG step IDs whose imminent execution should fire this skill (e.g. a delivery skill fires when its consuming step is the predicted next action).
+- `trigger_after_steps` (string[]): DAG step IDs whose completion should fire this skill (e.g. a return-to-storage skill fires after the last step that used the object).
+- Skills with **neither** field are never fired deterministically — they remain available only to the LLM fallback. Utility/motion primitives (`open_gripper`, `move_to_named_position`, `wait`) should stay trigger-less by design.
 
-Include `parameters` only for generic/parametric skills (like `move_to_named_position`). For task-specific programs (pick X, return X), parameters are baked into the program.
+Preconditions schema:
+- Keys are `"<node_id>.<attr>"` or `"<task_state_key>"`.
+- `".location"` is resolved via the SSG (``ssg.get_location(node_id)``); other dotted attrs fall back to ``task_state["<node>_<attr>"]`` then ``task_state["<key>"]``.
+- A key like `"<var>": "!"` is not supported; preconditions are equality checks. Use a concrete expected value (`""`, `"idle"`, `"table"`, `True`, etc.) or leave the precondition out.
+- For parametric skills, the runtime does **not** substitute `{param}` into precondition keys — write preconditions that hold regardless of parameters, or model each parametric variant as its own skill id (see the Hand Layup example).
+
+Parameters:
+- Use `parameters` only for generic/parametric skills (e.g., `pick_cuboid` with a `cuboid` argument). For task-specific programs (`move_resin_to_workplace`), bake the concrete object into the skill `id`.
+- Canonical shape is a **list** of objects, each with `name`, `type`, `description`, and optional `required`, `default`, `valid_values`:
+
+```json
+"parameters": [
+  {"name": "cuboid",  "type": "string", "description": "Cuboid id to pick",
+   "valid_values": ["cuboid_red", "cuboid_green"]},
+  {"name": "safe",    "type": "string", "description": "Safe retreat pose", "default": "Home"}
+]
+```
+
+The loader also accepts a dict keyed by parameter name — but prefer the list form for consistency across tasks.
+
+Execution binding (`api_call`):
+- The bridge that executes a skill reads `api_call` from the skill dict and places it under `skill.metadata["api_call"]`. For HTTP-style robot clients it expects `{"endpoint": ..., "body": {...}}` and substitutes `<param>` placeholders from the caller's parameters into the body.
+- For ROS 2 / custom executors, `api_call` is free-form reference metadata — the actual invocation is handled by the controller-specific glue (e.g. `program_executor` load+execute). In that case, include `api_call` for documentation purposes, and wire execution through `task_profile.program_map`.
+- Omit `api_call` entirely if execution is purely driven by `program_map`.
 
 Always include these standard utility skills:
 - `stop_program` — emergency stop

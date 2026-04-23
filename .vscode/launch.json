@@ -64,6 +64,23 @@
       "justMyCode": false
     },
     {
+      "name": "AURA Live Screen Capture (cuboid_manipulation)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_aura.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task", "cuboid_manipulation",
+        "--screen-capture",
+        "--screen-monitor", "3",
+        "--live",
+        "--robot-url", "http://localhost:5050",
+        "--model", "gemini-3.1-flash-lite-preview"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
       "name": "AURA Live Screen Capture (hand_layup)",
       "type": "python",
       "request": "launch",

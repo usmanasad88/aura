@@ -306,6 +306,18 @@
           <span class="toggle-switch"></span>
           Ground truth robot status
         </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="intent-ground-truth">
+          <span class="toggle-switch"></span>
+          Ground truth intent (skip VLM)
+        </label>
+      </div>
+      <div class="field-row align-center">
+        <div class="field" style="flex:1">
+          <label for="intent-gt-path">Intent GT path (optional)</label>
+          <input type="text" id="intent-gt-path"
+                 placeholder="Auto-resolved from video when blank">
+        </div>
       </div>
     </section>
 

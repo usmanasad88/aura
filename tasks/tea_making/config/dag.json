@@ -7,7 +7,7 @@
   {"id": "wait_for_boil", "description": "Wait for water to boil", "dependencies": ["turn_on_stove"]},
   {"id": "add_chai_powder", "description": "Human adds chai powder to boiling water", "dependencies": ["wait_for_boil"]},
   {"id": "simmer_tea", "description": "Let tea simmer", "dependencies": ["add_chai_powder"]},
-  {"id": "add_milk_to_pot", "description": "Add powdered milk to pot", "dependencies": ["simmer_tea"]},
+  {"id": "add_milk_to_cup", "description": "Add powdered milk to cup", "dependencies": ["simmer_tea"]},
   {"id": "stir_pot", "description": "Stir the tea in pot", "dependencies": ["add_milk_to_pot"]},
   {"id": "pour_tea", "description": "Human pours tea into cups", "dependencies": ["stir_pot"]},
   {"id": "ask_sugar_preference", "description": "Robot asks about sugar preference", "dependencies": ["pour_tea"]},

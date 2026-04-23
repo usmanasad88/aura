@@ -42,6 +42,11 @@ FRAME_SKIP=90
 MODELS=("gemini-3.1-flash-lite-preview")
 REPS=1
 
+# Intent source: "llm" (runs VLM) or "ground_truth" (reads annotated keyframes
+# from tasks/<task>/ground_truth/<video_stem>.intent_gt.json). Ground truth
+# isolates the decision engine by removing intent-monitor variance.
+INTENT_SOURCE="ground_truth"
+
 # ── Argument parsing ──────────────────────────────────────────────────────
 FRESH=false
 EVAL_ONLY=false
@@ -55,6 +60,7 @@ while [[ $# -gt 0 ]]; do
         --reps)     REPS="$2"; shift 2 ;;
         --task)     TASK="$2"; shift 2 ;;
         --video)    VIDEO="$2"; shift 2 ;;
+        --intent-source) INTENT_SOURCE="$2"; shift 2 ;;
         *)          echo "Unknown option: $1"; exit 1 ;;
     esac
 done
@@ -65,12 +71,15 @@ mkdir -p "$EXPERIMENTS_DIR"
 
 # Generate experiment ID from parameters
 exp_id() {
-    local task="$1" model="$2" fs="$3" gt_flag="$4"
+    local task="$1" model="$2" fs="$3" gt_flag="$4" intent_src="${5:-llm}"
     local model_slug="${model//\//-}"
     model_slug="${model_slug// /-}"
     local id="${task}__${model_slug}__fs${fs}"
     if [[ "$gt_flag" == "true" ]]; then
         id="${id}__gt"
+    fi
+    if [[ "$intent_src" == "ground_truth" ]]; then
+        id="${id}__gtintent"
     fi
     echo "$id"
 }
@@ -89,9 +98,10 @@ next_rep() {
 run_single() {
     local task="$1" model="$2" frame_skip="$3" gt_robot="$4"
     local extra_flags="${5:-}"
+    local intent_src="${6:-$INTENT_SOURCE}"
 
     local eid
-    eid=$(exp_id "$task" "$model" "$frame_skip" "$gt_robot")
+    eid=$(exp_id "$task" "$model" "$frame_skip" "$gt_robot" "$intent_src")
     local exp_dir="$EXPERIMENTS_DIR/$eid"
 
     if [[ "$FRESH" == "true" ]] && [[ -d "$exp_dir" ]]; then
@@ -109,6 +119,7 @@ run_single() {
   "model": "$model",
   "frame_skip": $frame_skip,
   "ground_truth_robot": $gt_robot,
+  "intent_source": "$intent_src",
   "video": "$VIDEO",
   "base_flags": "$BASE_FLAGS",
   "max_cycles": $MAX_CYCLES,
@@ -147,6 +158,7 @@ MANIFEST
         --model "$model" \
         --no-realtime --no-dashboard --dry-run \
         $gt_flag \
+        --intent-source "$intent_src" \
         --frame-skip "$frame_skip" \
         --max-cycles "$MAX_CYCLES" \
         $extra_flags \
@@ -246,7 +258,7 @@ evaluate_all_reps() {
 
 run_tier1() {
     echo ""
-    echo "=== Tier 1: Model Comparison ==="
+    echo "=== Tier 1: Decision Engine Isolation (intent=$INTENT_SOURCE) ==="
     echo "Models: ${MODELS[*]}"
     echo "Reps per model: $REPS"
     echo ""
@@ -254,7 +266,7 @@ run_tier1() {
     for model in "${MODELS[@]}"; do
         for ((r=1; r<=REPS; r++)); do
             echo "--- $model (rep $r/$REPS) ---"
-            run_single "$TASK" "$model" "$FRAME_SKIP" "true"
+            run_single "$TASK" "$model" "$FRAME_SKIP" "true" "" "$INTENT_SOURCE"
         done
     done
 }
@@ -307,20 +319,15 @@ echo "============================================="
 echo "  AURA Experiment Runner"
 echo "  Task: $TASK"
 echo "  Video: $VIDEO"
+echo "  Intent source: $INTENT_SOURCE"
 echo "  Experiments dir: $EXPERIMENTS_DIR"
 echo "============================================="
 
 case "$TIER" in
-    1)   run_tier1 ;;
-    2)   run_tier2 ;;
-    3)   run_tier3 ;;
-    4)   run_tier4 ;;
-    all)
-        run_tier1
-        run_tier2
-        run_tier3
-        run_tier4
-        ;;
+    1|all) run_tier1 ;;
+    2)     run_tier2 ;;
+    3)     run_tier3 ;;
+    4)     run_tier4 ;;
     *)
         echo "Unknown tier: $TIER (valid: 1, 2, 3, 4, all)"
         exit 1

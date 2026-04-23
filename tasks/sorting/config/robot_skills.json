@@ -4,10 +4,17 @@
   "version": "2.0",
   "skills": [
     {
-      "id": "move_to_home",
-      "name": "Move to Home",
-      "description": "Move to the safe Home position via /api/move/named {name: Home}",
+      "id": "move_to_named",
+      "name": "Move to Named Position",
+      "description": "Move to a named position (e.g. Home, safe, a cuboid location).",
       "category": "motion",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "description": "The name of the position to move to",
+          "default": "Home"
+        }
+      },
       "preconditions": {},
       "estimated_duration_sec": 3.0,
       "can_interrupt": false

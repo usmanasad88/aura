@@ -1,20 +1,43 @@
 {
   "task_name": "Collaborative Tea Making",
-  "system_instruction": "You are a robot assistant helping a human make chai tea. You proactively retrieve items from storage, assist with sugar and stirring, and return items when done. Keep announcements short and clear.",
-  "program_map": {
-    "deliver_to_workplace|pot": "retrieve_pot_from_storage_to_working_area",
-    "deliver_to_workplace|cup_1": "retrieve_cup_1_from_storage_to_working_area",
-    "deliver_to_workplace|cup_2": "retrieve_cup_2_from_storage_to_working_area",
-    "deliver_to_workplace|tea_container": "retrieve_tea_container_from_storage_to_working_area",
-    "deliver_to_workplace|milk_container": "retrieve_milk_container_from_storage_to_working_area",
-    "deliver_to_workplace|sugar_container": "retrieve_sugar_container_from_storage_to_working_area",
-    "deliver_to_workplace|spoon": "retrieve_spoon_from_storage_to_working_area",
-    "return_to_storage|pot": "return_pot_from_working_area_to_storage",
-    "return_to_storage|tea_container": "return_tea_container_from_working_area_to_storage",
-    "return_to_storage|milk_container": "return_milk_container_from_working_area_to_storage",
-    "return_to_storage|sugar_container": "return_sugar_container_from_working_area_to_storage",
-    "return_to_storage|spoon": "return_spoon_from_working_area_to_storage"
+  "system_instruction": "You are a robot assistant helping a human make chai tea. You proactively retrieve items from storage, assist with sugar dispensing and stirring, and return items when done. Keep announcements short and clear.",
+  "environment": {
+    "movable_objects": [
+      "pot", "cup_1", "cup_2",
+      "tea_container", "milk_container", "sugar_container", "spoon"
+    ]
   },
+  "program_map": {
+    "deliver_to_workplace|pot": "retrieve_pot_from_storage_to_working_area.prog",
+    "deliver_to_workplace|cup_1": "retrieve_cup_1_from_storage_to_working_area.prog",
+    "deliver_to_workplace|cup_2": "retrieve_cup_2_from_storage_to_working_area.prog",
+    "deliver_to_workplace|tea_container": "retrieve_tea_container_from_storage_to_working_area.prog",
+    "deliver_to_workplace|milk_container": "retrieve_milk_container_from_storage_to_working_area.prog",
+    "deliver_to_workplace|sugar_container": "retrieve_sugar_container_from_storage_to_working_area.prog",
+    "deliver_to_workplace|spoon": "retrieve_spoon_from_storage_to_working_area.prog",
+    "return_to_storage|pot": "return_pot_from_working_area_to_storage.prog",
+    "return_to_storage|tea_container": "return_tea_container_from_working_area_to_storage.prog",
+    "return_to_storage|milk_container": "return_milk_container_from_working_area_to_storage.prog",
+    "return_to_storage|sugar_container": "return_sugar_container_from_working_area_to_storage.prog",
+    "return_to_storage|spoon": "return_spoon_from_working_area_to_storage.prog"
+  },
+  "safety_rules": [
+    {
+      "trigger_field": "stove_on",
+      "trigger_condition": true,
+      "active_phases": ["heating", "brewing"],
+      "warning_message": "Warning: induction cooker is on. Keep hands clear of the hot pot."
+    }
+  ],
+  "timers": [
+    {
+      "trigger_field": "water_boiling",
+      "trigger_condition": true,
+      "time_limit_minutes": 5,
+      "warning_interval_minutes": 3,
+      "warning_message": "Warning: water has been boiling for {elapsed} minutes. Consider adding chai powder or turning off the stove."
+    }
+  ],
   "workflow_config": {
     "active_monitors": ["intent", "gesture"],
     "decision_mode": "hybrid",

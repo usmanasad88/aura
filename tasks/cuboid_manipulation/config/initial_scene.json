@@ -1,0 +1,20 @@
+{
+  "regions": [
+    {"id": "table",   "name": "Table Workspace", "region_type": "workspace"},
+    {"id": "basket",  "name": "Basket",          "region_type": "storage"},
+    {"id": "held",    "name": "Robot Gripper",   "region_type": "workspace"},
+    {"id": "unknown", "name": "Unknown",         "region_type": "unknown"}
+  ],
+  "objects": [
+    {"id": "cuboid_red",    "name": "Red Cuboid",    "category": "material",  "is_movable": true,  "initial_location": "unknown"},
+    {"id": "cuboid_green",  "name": "Green Cuboid",  "category": "material",  "is_movable": true,  "initial_location": "unknown"},
+    {"id": "cuboid_blue",   "name": "Blue Cuboid",   "category": "material",  "is_movable": true,  "initial_location": "unknown"},
+    {"id": "cuboid_yellow", "name": "Yellow Cuboid", "category": "material",  "is_movable": true,  "initial_location": "unknown"},
+    {"id": "cuboid_orange", "name": "Orange Cuboid", "category": "material",  "is_movable": true,  "initial_location": "unknown"},
+    {"id": "basket_blue",   "name": "Blue Basket",   "category": "container", "is_movable": false, "initial_location": "table"}
+  ],
+  "agents": [
+    {"id": "human", "name": "Human Operator", "agent_type": "human"},
+    {"id": "robot", "name": "UR5 Robot",      "agent_type": "robot"}
+  ]
+}

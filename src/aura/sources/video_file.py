@@ -111,7 +111,7 @@ class VideoFileSource(FrameSource):
             frame = Frame(
                 image=image,
                 timestamp=ts,
-                frame_number=self._delivered,
+                frame_number=current_pos,
                 source_name=f"file:{Path(self._path).name}",
                 width=self._width,
                 height=self._height,

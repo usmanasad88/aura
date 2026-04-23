@@ -142,105 +142,134 @@ class GraphQuery:
         return QueryResult(nodes=nodes)
 
 
+def _eval_ssg_precondition(
+    key: str, expected: Any, graph: "SemanticSceneGraph"
+) -> Tuple[bool, Any]:
+    """Evaluate one precondition clause against the SSG.
+
+    Keys are ``"<node_id>.<attr>"`` or a bare ``"<task_state_key>"``.
+    ``.location`` is resolved via ``graph.get_location``; any other
+    attr falls back to ``task_state["<node>_<attr>"]`` then
+    ``task_state["<key>"]``. Returns ``(matches, actual_value)``.
+    """
+    if "." in key:
+        node_id, attr = key.split(".", 1)
+    else:
+        node_id, attr = key, ""
+
+    actual: Any = None
+    if attr == "location":
+        try:
+            actual = graph.get_location(node_id)
+        except Exception:
+            actual = None
+        if actual is None:
+            actual = graph.task_state.get(
+                f"{node_id}_location", graph.task_state.get(key)
+            )
+    else:
+        actual = graph.task_state.get(key)
+        if actual is None and attr:
+            actual = graph.task_state.get(f"{node_id}_{attr}")
+        if actual is None and not attr:
+            actual = graph.task_state.get(node_id)
+
+    return actual == expected, actual
+
+
 class GraphReasoner:
     """Reasoning utilities for the scene graph.
-    
+
     Provides methods to extract actionable insights from the graph
-    state, supporting the decision engine.
+    state, supporting the decision engine. When constructed with a
+    ``SkillRegistry``, ``get_available_actions`` consults skills and
+    their preconditions from the task config rather than affordances
+    on object nodes.
     """
-    
-    def __init__(self, graph: "SemanticSceneGraph"):
+
+    def __init__(
+        self,
+        graph: "SemanticSceneGraph",
+        skills: Optional[Any] = None,
+    ):
         self.graph = graph
-    
+        self.skills = skills
+
     def get_available_actions(self, agent_id: str) -> List[Dict[str, Any]]:
         """Get all actions available to an agent given current state.
-        
-        Returns list of dicts with:
-            - action_id: Action identifier
-            - target_object: Object to act on (if applicable)
-            - feasibility: How feasible the action is (0-1)
-            - reasoning: Why this action is available
+
+        Walks the ``SkillRegistry``, filters by the agent's
+        ``capabilities``, and checks each skill's ``preconditions``
+        against the live SSG / ``task_state``. Returns list of dicts:
+            - action_id: skill id
+            - action_name: skill human-readable name
+            - target_object: best-effort id parsed from the first
+              dotted ``effects`` key (may be ``None``)
+            - feasibility: 1.0 if preconditions hold, else 0.0
+            - reasoning: human-readable summary of the check
+            - effects: raw effects dict from the skill
         """
         agent = self.graph.get_node(agent_id)
         if not isinstance(agent, AgentNode):
             return []
-        
-        available = []
-        
-        # Check each capability against objects with matching affordances
-        for capability in agent.capabilities:
-            for obj in self.graph.get_objects():
-                aff = obj.get_affordance(capability)
-                if not aff:
-                    continue
-                
-                # Check preconditions
-                preconditions_met, reasoning = self._check_preconditions(
-                    aff.preconditions, obj
-                )
-                
-                if preconditions_met:
-                    # Check if object is blocked
-                    is_blocked, blocker = self.graph.is_blocked(obj.id)
-                    if is_blocked:
-                        feasibility = 0.2
-                        reasoning += f" (blocked by {blocker})"
-                    else:
-                        feasibility = aff.feasibility
-                    
-                    available.append({
-                        "action_id": capability,
-                        "action_name": aff.name,
-                        "target_object": obj.id,
-                        "target_name": obj.name,
-                        "feasibility": feasibility,
-                        "reasoning": reasoning,
-                        "effects": aff.effects,
-                    })
-        
+
+        if self.skills is None:
+            return []
+
+        capabilities = set(getattr(agent, "capabilities", []) or [])
+        available: List[Dict[str, Any]] = []
+
+        for skill in self.skills.list_skills():
+            if capabilities and skill.id not in capabilities:
+                continue
+
+            preconditions_met, why = self._check_preconditions(
+                skill.preconditions or {}
+            )
+            if not preconditions_met:
+                continue
+
+            target_id: Optional[str] = None
+            for effect_key in (skill.effects or {}).keys():
+                if "." in effect_key:
+                    target_id = effect_key.split(".", 1)[0]
+                    break
+
+            target_name: Optional[str] = None
+            if target_id is not None:
+                target_node = self.graph.get_node(target_id)
+                if target_node is not None:
+                    target_name = target_node.name
+
+            available.append({
+                "action_id": skill.id,
+                "action_name": skill.name,
+                "target_object": target_id,
+                "target_name": target_name,
+                "feasibility": 1.0,
+                "reasoning": why or "preconditions met",
+                "effects": dict(skill.effects or {}),
+            })
+
         return sorted(available, key=lambda x: x["feasibility"], reverse=True)
-    
-    def _check_preconditions(self, preconditions: Dict[str, Any], 
-                             obj: ObjectNode) -> Tuple[bool, str]:
-        """Check if preconditions are met for an action.
-        
-        Returns (are_met, reasoning).
+
+    def _check_preconditions(
+        self, preconditions: Dict[str, Any]
+    ) -> Tuple[bool, str]:
+        """Evaluate skill preconditions against the SSG.
+
+        Returns ``(all_match, summary)``.
         """
         if not preconditions:
-            return True, "No preconditions required"
-        
-        reasons = []
+            return True, "no preconditions"
+
+        matched: List[str] = []
         for key, expected in preconditions.items():
-            # Check object attributes
-            if key in obj.attributes:
-                actual = obj.attributes[key]
-                if actual != expected:
-                    return False, f"Precondition failed: {key}={actual}, expected {expected}"
-                reasons.append(f"{key}={actual}")
-            
-            # Check object state
-            elif key == "state":
-                actual = obj.state.name if hasattr(obj.state, 'name') else str(obj.state)
-                if actual != expected:
-                    return False, f"Object state is {actual}, expected {expected}"
-                reasons.append(f"state={actual}")
-            
-            # Check task state
-            elif key.startswith("task."):
-                task_key = key[5:]
-                actual = self.graph.get_task_state(task_key)
-                if actual != expected:
-                    return False, f"Task state {task_key}={actual}, expected {expected}"
-                reasons.append(f"{task_key}={actual}")
-            
-            # Check location
-            elif key == "at_region":
-                location = self.graph.get_location(obj.id)
-                if location != expected:
-                    return False, f"Object at {location}, expected at {expected}"
-                reasons.append(f"at {location}")
-        
-        return True, "Preconditions met: " + ", ".join(reasons)
+            ok, actual = _eval_ssg_precondition(key, expected, self.graph)
+            if not ok:
+                return False, f"{key}={actual!r}≠{expected!r}"
+            matched.append(f"{key}={actual!r}")
+        return True, "; ".join(matched)
     
     def get_blocking_objects(self, target_id: str) -> List[str]:
         """Get all objects blocking access to target."""
@@ -309,62 +338,3 @@ class GraphReasoner:
                 lines.append(f"  - {key} → {value}")
         
         return "\n".join(lines)
-    
-    def get_proactive_opportunities(self, robot_id: str = "robot") -> List[Dict[str, Any]]:
-        """Identify opportunities for proactive robot assistance.
-        
-        Looks for:
-        - Objects human is targeting that robot can prepare
-        - Missing prerequisites for predicted human actions
-        - Objects that should be retrieved/returned
-        
-        Returns list of opportunity dicts.
-        """
-        opportunities = []
-        robot = self.graph.get_node(robot_id)
-        if not isinstance(robot, AgentNode):
-            return opportunities
-        
-        human = None
-        for agent in self.graph.get_agents():
-            if agent.agent_type == "human":
-                human = agent
-                break
-        
-        if not human:
-            return opportunities
-        
-        # Check what human is targeting
-        human_target = self.graph.get_agent_target(human.id)
-        if human_target:
-            target_obj = self.graph.get_node(human_target)
-            if target_obj:
-                # Can robot prepare this object?
-                for aff in target_obj.affordances:
-                    if robot.can_perform(aff.action_id):
-                        opportunities.append({
-                            "type": "prepare_for_human",
-                            "action_id": aff.action_id,
-                            "target": human_target,
-                            "reasoning": f"Human targeting {target_obj.name}, robot can {aff.name}",
-                            "priority": 0.8,
-                        })
-        
-        # Check predicted actions for missing prerequisites
-        for obj in self.graph.get_objects():
-            for pred in obj.predicted_actions:
-                if pred.agent_id == human.id:
-                    # Human predicted to use this object
-                    location = self.graph.get_location(obj.id)
-                    if location and location != "working_area":
-                        # Object not in working area
-                        if robot.can_perform("retrieve_object"):
-                            opportunities.append({
-                                "type": "retrieve_needed_object",
-                                "action_id": "retrieve_object",
-                                "target": obj.id,
-                                "reasoning": f"{obj.name} predicted to be needed, currently at {location}",
-                                "priority": 0.7,
-                            })
-        
-        return sorted(opportunities, key=lambda x: x["priority"], reverse=True)

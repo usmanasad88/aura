@@ -44,6 +44,7 @@ logger = logging.getLogger(__name__)
 # helper that handles lazy init.
 
 _intent_monitors: Dict[str, Any] = {}
+_intent_gt_providers: Dict[str, Any] = {}
 _gesture_monitors: Dict[str, Any] = {}
 _perception_monitors: Dict[str, Any] = {}
 _pose_monitors: Dict[str, Any] = {}
@@ -132,6 +133,33 @@ def _get_ssg(state: AuraGraphState) -> "SemanticSceneGraph":
     return _ssg_instances[task_name]
 
 
+def _apply_skill_effect(ssg: "SemanticSceneGraph", key: str, value: Any) -> None:
+    """Apply a single skill effect to the SSG.
+
+    Effect keys use dotted notation ``"<node_id>.<attr>"``. ``.location``
+    updates the spatial edge via ``ssg.set_location``; any other attribute
+    is written into ``ssg.task_state`` under the flat key ``"<node>_<attr>"``
+    (matching the precondition lookup convention in
+    :func:`aura.brain.bt_policy._check_preconditions`). A bare key with no
+    dot is written directly into ``task_state``.
+
+    Task-state keys are auto-created on first write: skill authors do not
+    need to pre-declare every effect variable in ``state_schema.json``.
+    """
+    if "." in key:
+        node_id, attr = key.split(".", 1)
+        if attr == "location" and ssg.has_node(node_id):
+            try:
+                ssg.set_location(node_id, value)
+                return
+            except Exception as exc:
+                logger.debug("set_location(%s, %s) failed: %s", node_id, value, exc)
+        # Non-location dotted effect → flat task_state key ``<node>_<attr>``.
+        ssg.set_task_state(f"{node_id}_{attr}", value)
+    else:
+        ssg.set_task_state(key, value)
+
+
 def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
     from aura.monitors.intent_monitor import AURAIntentMonitor
 
@@ -151,6 +179,47 @@ def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
             max_tokens=config.get("intent_max_tokens", 4096),
         )
     return _intent_monitors[config_dir]
+
+
+def _get_intent_gt_provider(state: AuraGraphState):
+    """Lazy-init the :class:`GroundTruthIntentProvider` for the current video.
+
+    Resolves the GT file from ``tasks/<task>/ground_truth/<video_stem>.intent_gt.json``
+    unless ``config["intent_gt_path"]`` is set explicitly. Returns ``None``
+    if no GT file is available (callers fall back to the live monitor).
+    """
+    from aura.monitors.intent_ground_truth import (
+        GroundTruthIntentProvider, default_gt_path,
+    )
+
+    config = state.get("config", {}) or {}
+    config_dir = config.get("config_dir", "")
+    video_path = config.get("video_path")
+    explicit = config.get("intent_gt_path")
+    key = f"{config_dir}::{explicit or video_path or ''}"
+
+    if key in _intent_gt_providers:
+        return _intent_gt_providers[key]
+
+    if explicit:
+        gt_path = Path(explicit)
+    elif video_path and config_dir:
+        gt_path = default_gt_path(config_dir, video_path)
+    else:
+        raise RuntimeError(
+            "intent_source=ground_truth requires either config['intent_gt_path'] "
+            "or both config_dir + video_path to locate the GT file."
+        )
+
+    if not gt_path.exists():
+        raise FileNotFoundError(
+            f"Intent GT file not found: {gt_path}. "
+            "Create it with scripts/annotate_ground_truth.py."
+        )
+
+    provider = GroundTruthIntentProvider(gt_path)
+    _intent_gt_providers[key] = provider
+    return provider
 
 
 def _get_gesture_monitor(state: AuraGraphState) -> "GestureMonitor":
@@ -192,6 +261,15 @@ def _create_perception_monitor(task_name: str, config: dict):
             return LayupPerceptionMonitor()
         except ImportError:
             logger.warning("hand_layup perception monitor not found")
+            return None
+    if normalised == "cuboid_manipulation":
+        try:
+            from tasks.cuboid_manipulation.perception.cuboid_perception_monitor import (
+                CuboidPerceptionMonitor,
+            )
+            return CuboidPerceptionMonitor.from_task_profile(config)
+        except ImportError as exc:
+            logger.warning("cuboid_manipulation perception monitor not found: %s", exc)
             return None
     if normalised == "sorting":
         try:
@@ -252,6 +330,11 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
         if wf_mode in ("llm", "bt", "hybrid"):
             decision_mode = wf_mode
 
+        sys_instr = task_profile.get("system_instruction", "")
+        goal_policy = task_profile.get("goal_policy", {})
+        if "description" in goal_policy:
+            sys_instr += f"\n\nGoal Policy: {goal_policy['description']}"
+
         engine_config = DecisionEngineConfig(
             gemini_model=decision_model,
             enable_llm_reasoning=(decision_mode in ("llm", "hybrid")),
@@ -259,7 +342,7 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
             max_completion_tokens=config.get("decision_max_tokens", 1024),
             llm_backend=decision_backend,
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
-            task_system_instruction=task_profile.get("system_instruction", ""),
+            task_system_instruction=sys_instr,
             decision_mode=decision_mode,
         )
         engine = DecisionEngine(config_dir=config_dir, config=engine_config)
@@ -269,7 +352,7 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
 
         # Re-create reasoner against the shared SSG
         from aura.core.scene_graph import GraphReasoner
-        engine.reasoner = GraphReasoner(engine.graph)
+        engine.reasoner = GraphReasoner(engine.graph, skills=engine.skills)
 
         # Load task artefacts
         p = Path(config_dir)
@@ -461,7 +544,7 @@ def _robot_status_from_api(state: AuraGraphState) -> Dict[str, Any]:
     """Poll ``GET /api/status`` and derive ``robot_state`` / ``robot_active_program``.
 
     Heuristics:
-    * ``executor_running=False`` → ``idle``  (no executor process)
+    * ``executor_running=True`` → ``busy``
     * Any joint velocity > threshold → ``busy``
     * Otherwise → ``idle``
 
@@ -480,6 +563,7 @@ def _robot_status_from_api(state: AuraGraphState) -> Dict[str, Any]:
         return {"robot_state": "unknown", "robot_active_program": ""}
 
     executor_running = status.get("executor_running", False)
+    executor_state = status.get("executor_state", "IDLE").upper()
     joint_state = status.get("joint_state") or {}
     gripper_state = status.get("gripper_state") or {}
     velocities = joint_state.get("velocities", [])
@@ -488,12 +572,12 @@ def _robot_status_from_api(state: AuraGraphState) -> Dict[str, Any]:
     velocity_threshold = 0.01  # rad/s — above this we consider the robot moving
     is_moving = any(abs(v) > velocity_threshold for v in velocities) if velocities else False
 
-    if not executor_running:
-        robot_state = "idle"
-        active_program = ""
-    elif is_moving:
+    if executor_state in ("EXECUTING", "PAUSED"):
         robot_state = "busy"
         active_program = _last_active_program  # retain from execute_action_node
+    elif is_moving:
+        robot_state = "busy"
+        active_program = _last_active_program
     else:
         robot_state = "idle"
         active_program = ""
@@ -667,6 +751,15 @@ def run_perception_node(state: AuraGraphState) -> dict:
             for obj_id, region in val.items():
                 if region != "unknown":
                     obj_locs[obj_id] = region
+
+    # Perception monitors may also emit a "task_state" dict carrying
+    # state-schema variables they own (e.g. live xy coords, held flags).
+    # Mirror them into the SSG so the decision engine prompt sees them.
+    perception_task_state = result.get("task_state") if isinstance(result, dict) else None
+    if isinstance(perception_task_state, dict) and perception_task_state:
+        ssg = _get_ssg(state)
+        for k, v in perception_task_state.items():
+            ssg.set_task_state(k, v)
 
     return {
         "object_locations": obj_locs,
@@ -899,6 +992,42 @@ def run_intent_node(state: AuraGraphState) -> dict:
     realtime = bool(config.get("realtime", True))
     blocking = bool(config.get("intent_blocking", not realtime))
 
+    # ── Ground-truth short-circuit ─────────────────────────────────
+    # When ``intent_source == "ground_truth"``, skip the VLM entirely
+    # and serve pre-annotated state from the GT file. Same output shape
+    # (dict pushed onto the intent slot), consumed identically by
+    # ``update_ssg_node``. No future, no throttle, no blocking — the
+    # lookup is O(log N) on frame_num.
+    if (config.get("intent_source") or "llm") == "ground_truth":
+        provider = _get_intent_gt_provider(state)
+        if provider is not None:
+            frame_num = int(state.get("current_frame_num") or 0)
+            ts = float(state.get("current_timestamp_sec") or 0.0)
+            gt_result = provider.get_at_frame(frame_num, timestamp_sec=ts)
+            serialised = _serialise_intent_result(gt_result)
+            push_intent_result(key, serialised)
+            return {
+                "monitor_outputs": {
+                    "intent_status": {
+                        "source": "ground_truth",
+                        "gt_path": str(provider.gt_path),
+                        "num_keyframes": provider.num_keyframes,
+                        "drained_this_cycle": True,
+                        "dispatched_this_cycle": False,
+                        "in_flight": False,
+                        "blocking": True,
+                        "skip_reason": "",
+                    }
+                },
+                "last_predict_time": time.time(),
+            }
+        raise RuntimeError(
+            "intent_source=ground_truth but GT provider unavailable. "
+            "Check config_dir / video_path / intent_gt_path and ensure the "
+            "GT file exists (see scripts/annotate_ground_truth.py). "
+            "Refusing to silently fall back to the live LLM monitor."
+        )
+
     # 1. Pick up any completed future (so the slot has the freshest result).
     drained = _drain_intent_future(key)
 
@@ -1076,9 +1205,7 @@ def update_ssg_node(state: AuraGraphState) -> dict:
                 remaining = [e for e in pending if not e.get("observed_busy")]
                 for entry in ready:
                     for effect_key, effect_val in (entry.get("effects") or {}).items():
-                        parts = effect_key.split(".")
-                        if len(parts) == 2 and parts[1] == "location" and ssg.has_node(parts[0]):
-                            ssg.set_location(parts[0], effect_val)
+                        _apply_skill_effect(ssg, effect_key, effect_val)
                 if ready:
                     ssg.set_task_state("pending_skill_effects", remaining)
 
@@ -1270,10 +1397,15 @@ async def decide_action_node(state: AuraGraphState) -> dict:
     pushed to the AudioWorkflowBridge for the SoundMonitor to speak.
     """
     intent_result = state.get("intent_result")
-    print(f"  [decide_action_node] Called. intent_result present: {intent_result is not None}, keys: {list(intent_result.keys()) if intent_result else 'N/A'}")
-    if not intent_result:
-        print(f"  [decide_action_node] No intent_result; returning empty dict")
+    config = state.get("config") or {}
+    use_intent = "intent" in config.get("active_monitors", ["intent", "gesture"])
+
+    print(f"  [decide_action_node] Called. intent_result present: {intent_result is not None}, use_intent: {use_intent}")
+    if use_intent and not intent_result:
+        print(f"  [decide_action_node] No intent_result (and use_intent is True); returning empty dict")
         return {}
+
+    intent_result = intent_result or {}
 
     timestamp = state.get("current_timestamp_sec", 0.0)
     help_requested = state.get("human_requesting_help", False)
@@ -1284,12 +1416,18 @@ async def decide_action_node(state: AuraGraphState) -> dict:
     if help_requested:
         reasoning_parts.append("Human requesting help (gesture detected)")
 
+    # ── Get the current frame if available ──────────────────────────
+    current_frame = None
+    frames = state.get("frames_buffer", [])
+    if frames:
+        current_frame = frames[-1]
+
     # ── Brain decision engine ───────────────────────────────────────
     speech_message: Optional[str] = None
     engine = None
     try:
         engine = _get_decision_engine(state)
-        prediction = await engine.decide_action(current_time_sec=timestamp)
+        prediction = await engine.decide_action(current_time_sec=timestamp, current_frame=current_frame)
         if prediction:
             # Check if this is a communication action (ask/communicate)
             if prediction.action_id in ("ask_preference", "ask_question",
@@ -1304,12 +1442,13 @@ async def decide_action_node(state: AuraGraphState) -> dict:
                     "reason": prediction.reasoning,
                     "confidence": prediction.confidence,
                     "timestamp": timestamp,
+                    "parameters": prediction.parameters,
                 })
                 reasoning_parts.append(
                     f"Brain: {prediction.action_id}"
                 )
     except Exception as e:
-        logger.warning("Brain engine error: %s", e)
+        logger.warning("Brain engine error: %s", e, exc_info=True)
 
     # ── Push speech to human via audio bridge ─────────────────────
     audio_bridge = get_audio_bridge()
@@ -1397,7 +1536,37 @@ def execute_action_node(state: AuraGraphState) -> dict:
             try:
                 resp: Dict[str, Any] = {"success": False, "error": "no handler"}
                 params = action.get("parameters") or {}
-                if api_call:
+                if api_call and "program_file" in api_call:
+                    # Program-executor shape: translate to /api/program/execute.
+                    # api_call: {"program_file": "<file>.prog",
+                    #            "program_args": "k1=v1 k2=v2"} (template)
+                    # Args may contain {param} placeholders filled from params.
+                    program = api_call["program_file"]
+                    args_template = api_call.get("program_args", "") or ""
+                    try:
+                        args_str = args_template.format(**params) if params else args_template
+                    except KeyError as exc:
+                        raise RuntimeError(
+                            f"Missing parameter {exc} for skill '{action_type}' args '{args_template}'"
+                        ) from exc
+                    args_dict: Dict[str, str] = {}
+                    for token in args_str.split():
+                        if "=" in token:
+                            k, v = token.split("=", 1)
+                            args_dict[k] = v
+                    body = {"program": program, "args": args_dict} if args_dict else {"program": program}
+                    resp = robot._post("/api/program/execute", body)
+                elif api_call and "service" in api_call:
+                    # Bare ROS service trigger (e.g. stop). Map known ones to
+                    # dedicated REST endpoints; fall back to a generic POST.
+                    service = api_call["service"]
+                    if service.endswith("/stop"):
+                        resp = robot._post("/api/program/stop", {})
+                    elif service.endswith("/pause"):
+                        resp = robot._post("/api/program/pause", {})
+                    else:
+                        resp = {"success": False, "error": f"unmapped service {service}"}
+                elif api_call:
                     # Dispatch using the skill's api_call definition
                     endpoint = api_call.get("endpoint", "")
                     body = dict(api_call.get("body", {}))
