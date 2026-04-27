@@ -33,7 +33,7 @@
       "effects": {
         "pot.location": "storage_area"
       },
-      "trigger_after_steps": ["serve_tea"],
+      "trigger_after_steps": ["cleanup"],
       "estimated_duration_sec": 6.0,
       "can_interrupt": false
     },
@@ -114,7 +114,7 @@
       "effects": {
         "milk_container.location": "working_area"
       },
-      "trigger_steps": ["add_milk_to_pot"],
+      "trigger_steps": ["add_milk_to_cup"],
       "estimated_duration_sec": 8.0,
       "can_interrupt": false
     },
@@ -131,7 +131,7 @@
       "effects": {
         "milk_container.location": "storage_area"
       },
-      "trigger_after_steps": ["add_milk_to_pot"],
+      "trigger_after_steps": ["add_milk_to_cup"],
       "estimated_duration_sec": 6.0,
       "can_interrupt": false
     },
@@ -164,7 +164,7 @@
       "effects": {
         "sugar_container.location": "storage_area"
       },
-      "trigger_after_steps": ["serve_tea"],
+      "trigger_after_steps": ["cleanup"],
       "estimated_duration_sec": 6.0,
       "can_interrupt": false
     },
@@ -197,7 +197,7 @@
       "effects": {
         "spoon.location": "storage_area"
       },
-      "trigger_after_steps": ["serve_tea"],
+      "trigger_after_steps": ["cleanup"],
       "estimated_duration_sec": 6.0,
       "can_interrupt": false
     },

@@ -65,9 +65,15 @@ class DecisionPromptLogger:
             self.session_dir: Optional[Path] = None
             return
 
-        base = Path(log_dir) if log_dir else Path("logs/decision_engine")
-        session_name = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        self.session_dir = base / session_name
+        # When log_dir is provided, use it directly as the session dir
+        # (the caller owns the unique per-run layout). Otherwise fall back
+        # to the legacy ``logs/decision_engine/session_<timestamp>/`` scheme
+        # so standalone usage (tests, ad-hoc scripts) still works.
+        if log_dir:
+            self.session_dir = Path(log_dir)
+        else:
+            session_name = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            self.session_dir = Path("logs/decision_engine") / session_name
         self.session_dir.mkdir(parents=True, exist_ok=True)
         self.call_counter = 0
         logger.info("Decision prompt logger session: %s", self.session_dir)

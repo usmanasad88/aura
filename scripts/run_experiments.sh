@@ -344,3 +344,12 @@ echo "============================================="
 echo ""
 echo "Aggregating results..."
 $PYTHON scripts/eval/aggregate_results.py --experiments-dir "$EXPERIMENTS_DIR" --output "$EXPERIMENTS_DIR/aggregate_results.json" 2>&1 || echo "[WARN] Aggregation failed — run aggregate_results.py manually"
+
+# Intent-prediction F1 table across every intent_monitor session found
+# under the experiments tree (scored against tasks/<task>/ground_truth/*.intent_gt.json).
+echo ""
+echo "Building intent-prediction F1 table..."
+$PYTHON scripts/eval/generate_intent_results_table.py \
+    --experiments-dir "$EXPERIMENTS_DIR" \
+    --output-dir results/intent_evaluation \
+    --latex 2>&1 || echo "[WARN] Intent table generation failed — run generate_intent_results_table.py manually"

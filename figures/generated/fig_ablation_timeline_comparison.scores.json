@@ -1,0 +1,83 @@
+{
+  "task_gt": "/home/mani/Repos/aura/tasks/hand_layup/ground_truth/layup_gesture_demo_stationary_with_overlay.robot_gt.json",
+  "weights": {
+    "w_t": 0.3333333333333333,
+    "w_a": 0.3333333333333333,
+    "w_n": 0.3333333333333333
+  },
+  "match_tolerance_sec": 15.0,
+  "ablations": {
+    "GT intent results (skip intent monitor) + perception": {
+      "n_gt": 4,
+      "n_pred": 5,
+      "tp": 4,
+      "fp": 1,
+      "fn": 0,
+      "a_time": 0.51644683255089,
+      "a_act": 1.0,
+      "a_nec": 0.9090881546455788,
+      "a_score": 0.8085116623988229,
+      "weights": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "matched_iou_mean": 0.51644683255089,
+      "matched_act_acc": 1.0
+    },
+    "GT intent prev-state, no perception": {
+      "n_gt": 4,
+      "n_pred": 5,
+      "tp": 3,
+      "fp": 2,
+      "fn": 1,
+      "a_time": 0.31583076923076925,
+      "a_act": 0.5,
+      "a_nec": 0.7714304759365419,
+      "a_score": 0.529087081722437,
+      "weights": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "matched_iou_mean": 0.42110769230769235,
+      "matched_act_acc": 0.6666666666666666
+    },
+    "GT intent prev-state + perception": {
+      "n_gt": 4,
+      "n_pred": 6,
+      "tp": 4,
+      "fp": 2,
+      "fn": 0,
+      "a_time": 0.16426680732166277,
+      "a_act": 0.5,
+      "a_nec": 0.2978587612087946,
+      "a_score": 0.3207085228434858,
+      "weights": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "matched_iou_mean": 0.16426680732166277,
+      "matched_act_acc": 0.5
+    },
+    "Self intent prev-state + perception": {
+      "n_gt": 4,
+      "n_pred": 4,
+      "tp": 2,
+      "fp": 2,
+      "fn": 2,
+      "a_time": 0.05367969003624392,
+      "a_act": 0.25,
+      "a_nec": 0.5000178552297967,
+      "a_score": 0.2678991817553469,
+      "weights": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "matched_iou_mean": 0.10735938007248784,
+      "matched_act_acc": 0.5
+    }
+  }
+}

@@ -1,0 +1,1197 @@
+{
+  "video": "/home/mani/Repos/aura/demo_data/layup_demo/tea_making.mp4",
+  "task": "tea_making",
+  "fps": 29.97,
+  "total_frames": 10466,
+  "created_at": "2026-04-24T10:04:18",
+  "keyframes": [
+    {
+      "frame_num": 0,
+      "timestamp_sec": 0.0,
+      "state": {
+        "current_phase": "initialization",
+        "current_action": "idle",
+        "human_state": "idle",
+        "water_in_pot": false,
+        "pot_on_stove": false,
+        "stove_on": false,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "setup_workspace",
+        "prediction_confidence": 1.0,
+        "steps_completed": [],
+        "steps_in_progress": [
+          "idle"
+        ],
+        "steps_pending": [
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1,
+      "timestamp_sec": 0.033366700033366704,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "fill_pot_with_water",
+        "human_state": "filling_water",
+        "water_in_pot": false,
+        "pot_on_stove": false,
+        "stove_on": false,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "place_pot_on_stove",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace"
+        ],
+        "steps_in_progress": [
+          "fill_pot_with_water"
+        ],
+        "steps_pending": [
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 478,
+      "timestamp_sec": 15.949282615949283,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "place_pot_on_stove",
+        "human_state": "placing_pot",
+        "water_in_pot": true,
+        "pot_on_stove": false,
+        "stove_on": false,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "turn_on_stove",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water"
+        ],
+        "steps_in_progress": [
+          "place_pot_on_stove"
+        ],
+        "steps_pending": [
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 692,
+      "timestamp_sec": 23.089756423089757,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "turn_on_stove",
+        "human_state": "operating_stove",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": false,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "wait_for_boil",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove"
+        ],
+        "steps_in_progress": [
+          "turn_on_stove"
+        ],
+        "steps_pending": [
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 841,
+      "timestamp_sec": 28.061394728061394,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "wait_for_boil",
+        "human_state": "waiting",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 909,
+      "timestamp_sec": 30.33033033033033,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "fill_pot_with_water",
+        "human_state": "filling_water",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1261,
+      "timestamp_sec": 42.07540874207541,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "wait_for_boil",
+        "human_state": "waiting",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1624,
+      "timestamp_sec": 54.187520854187525,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "setup_workspace",
+        "human_state": "Other",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 2196,
+      "timestamp_sec": 73.27327327327328,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "add_sugar",
+        "human_state": "adding_ingredient",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": false,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "ask_sugar_preference"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 2589,
+      "timestamp_sec": 86.38638638638639,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "wait_for_boil",
+        "human_state": "adding_ingredient",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 2640,
+      "timestamp_sec": 88.08808808808809,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "add_milk_to_cup",
+        "human_state": "adding_ingredient",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": false,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3119,
+      "timestamp_sec": 104.07073740407074,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "add_milk_to_cup",
+        "human_state": "adding_ingredient",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3201,
+      "timestamp_sec": 106.8068068068068,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "wait_for_boil",
+        "human_state": "waiting",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3439,
+      "timestamp_sec": 114.74808141474809,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "setup_workspace",
+        "human_state": "Other",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3560,
+      "timestamp_sec": 118.78545211878546,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "wait_for_boil",
+        "human_state": "idle",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "wait_for_boil"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3937,
+      "timestamp_sec": 131.3646980313647,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "add_chai_powder",
+        "human_state": "adding_ingredient",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": "Unknown",
+        "chai_added": false,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "simmer_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "add_chai_powder"
+        ],
+        "steps_pending": [
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 4082,
+      "timestamp_sec": 136.20286953620288,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "add_chai_powder",
+        "human_state": "waiting",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": false,
+        "chai_added": false,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "simmer_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "add_chai_powder"
+        ],
+        "steps_pending": [
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 4900,
+      "timestamp_sec": 163.49683016349684,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "add_chai_powder",
+        "human_state": "adding_ingredient",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": false,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "simmer_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "add_chai_powder"
+        ],
+        "steps_pending": [
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 4992,
+      "timestamp_sec": 166.56656656656656,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "add_chai_powder",
+        "human_state": "adding_ingredient",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "add_chai_powder",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_milk_to_cup",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "simmer_tea"
+        ],
+        "steps_pending": [
+          "add_chai_powder",
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 5210,
+      "timestamp_sec": 173.8405071738405,
+      "state": {
+        "current_phase": "heating",
+        "current_action": "simmer_tea",
+        "human_state": "stirring",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "stir_pot",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "add_milk_to_cup",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "simmer_tea"
+        ],
+        "steps_pending": [
+          "stir_pot",
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 5995,
+      "timestamp_sec": 200.03336670003338,
+      "state": {
+        "current_phase": "brewing",
+        "current_action": "simmer_tea",
+        "human_state": "stirring",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "pour_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "add_milk_to_cup",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "simmer_tea",
+          "stir_pot"
+        ],
+        "steps_pending": [
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 7989,
+      "timestamp_sec": 266.56656656656656,
+      "state": {
+        "current_phase": "brewing",
+        "current_action": "simmer_tea",
+        "human_state": "Other",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "pour_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "add_milk_to_cup",
+          "stir_pot",
+          "ask_sugar_preference",
+          "add_sugar"
+        ],
+        "steps_in_progress": [
+          "simmer_tea"
+        ],
+        "steps_pending": [
+          "pour_tea",
+          "skip_sugar",
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 8468,
+      "timestamp_sec": 282.5492158825492,
+      "state": {
+        "current_phase": "serving",
+        "current_action": "pour_tea",
+        "human_state": "pouring",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": false,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "stir_cup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar"
+        ],
+        "steps_in_progress": [
+          "pour_tea"
+        ],
+        "steps_pending": [
+          "stir_cup",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 9230,
+      "timestamp_sec": 307.97464130797465,
+      "state": {
+        "current_phase": "serving",
+        "current_action": "stir_cup",
+        "human_state": "pouring",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": true,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "serve_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar"
+        ],
+        "steps_in_progress": [
+          "stir_cup"
+        ],
+        "steps_pending": [
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 9263,
+      "timestamp_sec": 309.07574240907576,
+      "state": {
+        "current_phase": "serving",
+        "current_action": "stir_cup",
+        "human_state": "waiting",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": true,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "serve_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar"
+        ],
+        "steps_in_progress": [
+          "stir_cup"
+        ],
+        "steps_pending": [
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 9718,
+      "timestamp_sec": 324.2575909242576,
+      "state": {
+        "current_phase": "serving",
+        "current_action": "stir_cup",
+        "human_state": "stirring",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": true,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "serve_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar"
+        ],
+        "steps_in_progress": [
+          "stir_cup"
+        ],
+        "steps_pending": [
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 10363,
+      "timestamp_sec": 345.7791124457791,
+      "state": {
+        "current_phase": "serving",
+        "current_action": "serve_tea",
+        "human_state": "Other",
+        "water_in_pot": true,
+        "pot_on_stove": true,
+        "stove_on": true,
+        "water_boiling": true,
+        "chai_added": true,
+        "milk_added": true,
+        "tea_poured": true,
+        "sugar_added": true,
+        "tea_served": false,
+        "predicted_next_action": "cleanup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "setup_workspace",
+          "fill_pot_with_water",
+          "place_pot_on_stove",
+          "turn_on_stove",
+          "wait_for_boil",
+          "add_chai_powder",
+          "simmer_tea",
+          "add_milk_to_cup",
+          "stir_pot",
+          "pour_tea",
+          "ask_sugar_preference",
+          "add_sugar",
+          "skip_sugar",
+          "stir_cup"
+        ],
+        "steps_in_progress": [
+          "serve_tea"
+        ],
+        "steps_pending": [
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    }
+  ]
+}

@@ -2,21 +2,30 @@
 """Generate intervention timeline (Gantt chart) comparing human task progress,
 ground truth robot interventions, and AURA predicted interventions.
 
+Reads the per-video robot ground-truth file
+``tasks/<task>/ground_truth/<video_stem>.robot_gt.json`` (schema v1.0:
+``interventions: [{skill, args, t_start, t_end, ...}, ...]``).
+
 Usage::
 
-    # From experiment rep directory (auto-detects sessions + GT)
+    # Default: walk logs/run_*/ and produce intervention_timeline.png
+    # inside every run that has a decision_engine/ folder and a matching
+    # robot GT (skips runs whose timeline already exists).
+    python scripts/eval/generate_timeline.py
+    python scripts/eval/generate_timeline.py --force        # regenerate
+
+    # Single run
     python scripts/eval/generate_timeline.py \
-        --task hand_layup \
-        --rep-dir logs/experiments/hand_layup__gemini-3.1-pro-preview__fs150__gt/rep_001
+        --rep-dir logs/run_20260425_054919_hand_layup
 
     # Explicit paths
     python scripts/eval/generate_timeline.py \
-        --gt tasks/hand_layup/config/ground_truth.json \
-        --decision-session logs/decision_engine/session_20260404_065941 \
-        --intent-session logs/intent_monitor/session_20260404_065938 \
+        --gt tasks/hand_layup/ground_truth/<stem>.robot_gt.json \
+        --decision-session logs/run_.../decision_engine \
+        --intent-session   logs/run_.../intent_monitor \
         --output figures/timeline.pdf
 
-    # From aggregate results (multiple models side-by-side)
+    # Multi-model comparison
     python scripts/eval/generate_timeline.py \
         --task hand_layup \
         --experiments-dir logs/experiments/ \
@@ -74,19 +83,61 @@ class Event:
     agent: str  # "human", "robot", or None
 
 
-def load_ground_truth(gt_path: Path) -> list[Event]:
-    """Load all events from ground_truth.json."""
+def load_robot_gt(gt_path: Path) -> tuple[list[Event], float]:
+    """Load robot interventions from ``<stem>.robot_gt.json`` (schema v1.0).
+
+    Returns ``(events, duration_sec)``. Each intervention becomes an Event
+    with ``agent="robot"`` and ``action=skill`` (args, if any, are appended
+    in parentheses for display).
+    """
     data = json.loads(gt_path.read_text())
-    events = []
-    for ev in data.get("events", []):
-        agent = ev.get("agent") or "system"
+    events: list[Event] = []
+    for iv in data.get("interventions", []):
+        skill = iv.get("skill", "")
+        args = iv.get("args") or {}
+        if args:
+            label = f"{skill}({', '.join(f'{k}={v}' for k, v in args.items())})"
+        else:
+            label = skill
         events.append(Event(
-            action=ev["action"],
-            start=ev["start_time"],
-            end=ev["end_time"],
-            agent=agent,
+            action=label,
+            start=float(iv["t_start"]),
+            end=float(iv["t_end"]),
+            agent="robot",
         ))
-    return events
+    return events, float(data.get("duration_sec", 0.0) or 0.0)
+
+
+def load_intent_gt_humans(gt_path: Path) -> list[Event]:
+    """Derive contiguous human-action spans from a sparse ``intent_gt.json``.
+
+    Walks keyframes in order; each transition in ``current_action`` opens a
+    new span. Used to plot the optional Human Task track when the user has
+    annotated intent GT for the same video.
+    """
+    if not gt_path.exists():
+        return []
+    data = json.loads(gt_path.read_text())
+    keyframes = data.get("keyframes", [])
+    spans: list[Event] = []
+    cur_action: str | None = None
+    cur_start: float = 0.0
+    for kf in keyframes:
+        t = float(kf.get("timestamp_sec", 0.0))
+        action = (kf.get("state") or {}).get("current_action", "")
+        if cur_action is None:
+            cur_action = action
+            cur_start = t
+            continue
+        if action != cur_action:
+            spans.append(Event(action=cur_action, start=cur_start, end=t, agent="human"))
+            cur_action = action
+            cur_start = t
+    if cur_action is not None and keyframes:
+        last_t = float(keyframes[-1].get("timestamp_sec", cur_start))
+        if last_t > cur_start:
+            spans.append(Event(action=cur_action, start=cur_start, end=last_t, agent="human"))
+    return spans
 
 
 def load_predictions(session_dir: Path) -> list[Event]:
@@ -209,6 +260,47 @@ def match_predictions(gt_robot: list[Event], preds: list[Event],
 
 # ── Short label helpers ──────────────────────────────────────────────────────
 
+def _stagger_offsets(centers_widths: list[tuple[float, float]],
+                     levels: tuple[float, ...] = (0.0, -0.15, -0.30, -0.45),
+                     padding: float = 1.0) -> list[float]:
+    """Assign each label a y-offset so labels don't horizontally overlap.
+
+    ``centers_widths`` is a list of ``(center_x, half_width_x)`` pairs in
+    data coordinates. For each item, picks the first level whose most
+    recent occupant ends (with ``padding``) before this item starts.
+    """
+    offsets: list[float] = []
+    last_right: list[float] = [float("-inf")] * len(levels)
+    for cx, hw in centers_widths:
+        left = cx - hw
+        right = cx + hw
+        chosen = 0
+        for i in range(len(levels)):
+            if last_right[i] + padding <= left:
+                chosen = i
+                break
+        else:
+            # All levels occupied — pick the one that frees up soonest.
+            chosen = min(range(len(levels)), key=lambda i: last_right[i])
+        offsets.append(levels[chosen])
+        last_right[chosen] = right
+    return offsets
+
+
+def _label_half_width(text: str, fontsize: float, ax) -> float:
+    """Approximate half-width of rendered text in data (x-axis) coords."""
+    fig = ax.get_figure()
+    # Rough char width: ~0.55 * fontsize in points; 72pt = 1 inch.
+    char_in = 0.55 * fontsize / 72.0
+    width_in = max(len(text), 1) * char_in
+    fig_w_in, _ = fig.get_size_inches()
+    bbox = ax.get_position()
+    ax_w_in = fig_w_in * bbox.width
+    x0, x1 = ax.get_xlim()
+    data_per_in = (x1 - x0) / max(ax_w_in, 1e-6)
+    return 0.5 * width_in * data_per_in
+
+
 def _short_label(action: str, max_len: int = 22) -> str:
     """Shorten action name for display."""
     replacements = {
@@ -276,6 +368,9 @@ def plot_timeline(gt_events: list[Event],
     fig, ax = plt.subplots(figsize=(14, fig_height))
     bar_height = 0.6
 
+    # Set xlim early so label-width estimation uses the final scale.
+    ax.set_xlim(-2, total_duration + 5)
+
     # Alternating background bands
     for i in range(n_tracks):
         if i % 2 == 0:
@@ -283,50 +378,76 @@ def plot_timeline(gt_events: list[Event],
 
     # ── Track 2 (y=2): Human task progress (optional) ────────────────────
     if show_human_task:
-        source = intent_events if intent_events else human_gt
-        for ev in source:
-            if ev.action in ("idle", "task_complete"):
-                continue
+        source = [e for e in (intent_events if intent_events else human_gt)
+                  if e.action not in ("idle", "task_complete")]
+        source_sorted = sorted(source, key=lambda e: e.start)
+        human_cw = []
+        for e in source_sorted:
+            duration = max(e.end - e.start, 1.5)
+            label = _short_label(e.action)
+            human_cw.append((e.start + duration / 2,
+                             _label_half_width(label, 6, ax)))
+        human_offsets = _stagger_offsets(human_cw)
+        for ev, y_off in zip(source_sorted, human_offsets):
             duration = max(ev.end - ev.start, 1.5)
             ax.barh(2, duration, left=ev.start, height=bar_height,
                     color=C_HUMAN, alpha=0.75, edgecolor="white", linewidth=0.5)
             if duration > 5:
-                ax.text(ev.start + duration / 2, 2, _short_label(ev.action),
-                        ha="center", va="center", fontsize=6, color="white",
+                ax.text(ev.start + duration / 2, 2 + y_off, _short_label(ev.action),
+                        ha="center", va="center", fontsize=6, color="black",
                         fontweight="bold", clip_on=True)
 
     # ── Track 1 (y=1): Ground truth robot interventions ──────────────────
-    for ev in robot_gt:
+    robot_gt_sorted = sorted(robot_gt, key=lambda e: e.start)
+    gt_cw = [((e.start + e.end) / 2,
+              _label_half_width(_short_label(e.action), 6.5, ax))
+             for e in robot_gt_sorted]
+    gt_offsets = _stagger_offsets(gt_cw)
+    for ev, y_off in zip(robot_gt_sorted, gt_offsets):
         duration = ev.end - ev.start
         ax.barh(1, duration, left=ev.start, height=bar_height,
                 color=C_ROBOT_GT, alpha=0.85, edgecolor="white", linewidth=0.5)
-        ax.text(ev.start + duration / 2, 1, _short_label(ev.action),
-                ha="center", va="center", fontsize=6.5, color="white",
+        ax.text(ev.start + duration / 2, 1 + y_off, _short_label(ev.action),
+                ha="center", va="center", fontsize=6.5, color="black",
                 fontweight="bold", clip_on=True)
 
     # ── Track 0 (y=0): AURA predicted interventions ─────────────────────
     matched_preds = {id(p) for _, p in matching["matched"]}
 
+    # Build a combined, time-sorted list so label staggering accounts for
+    # both matched and false-positive predictions on the same track.
+    pred_items: list[tuple[Event, Event | None, str]] = []
     for gt, pred in matching["matched"]:
-        duration = max(pred.end - pred.start, 2.5)
-        ax.barh(0, duration, left=pred.start, height=bar_height,
-                color=C_MATCH, alpha=0.85, edgecolor="white", linewidth=0.5)
-        ax.text(pred.start + duration / 2, 0, _short_label(pred.action),
-                ha="center", va="center", fontsize=6.5, color="white",
-                fontweight="bold", clip_on=True)
-        # Draw connection line from prediction to GT
-        ax.annotate("", xy=(gt.start, 1 - bar_height / 2),
-                    xytext=(pred.start, 0 + bar_height / 2),
-                    arrowprops=dict(arrowstyle="-", color="#95a5a6",
-                                    linestyle="--", linewidth=0.8))
-
+        pred_items.append((pred, gt, "match"))
     for pred in matching["false_positives"]:
+        pred_items.append((pred, None, "fp"))
+    pred_items.sort(key=lambda it: it[0].start)
+    pred_cw = []
+    for p, _, kind in pred_items:
+        duration = max(p.end - p.start, 2.5)
+        fs = 6.5 if kind == "match" else 6
+        pred_cw.append((p.start + duration / 2,
+                        _label_half_width(_short_label(p.action), fs, ax)))
+    pred_offsets = _stagger_offsets(pred_cw)
+
+    for (pred, gt, kind), y_off in zip(pred_items, pred_offsets):
         duration = max(pred.end - pred.start, 2.5)
-        ax.barh(0, duration, left=pred.start, height=bar_height,
-                color=C_FP, alpha=0.7, edgecolor="white", linewidth=0.5)
-        ax.text(pred.start + duration / 2, 0, _short_label(pred.action),
-                ha="center", va="center", fontsize=6, color="white",
-                fontweight="bold", clip_on=True)
+        if kind == "match":
+            ax.barh(0, duration, left=pred.start, height=bar_height,
+                    color=C_MATCH, alpha=0.85, edgecolor="white", linewidth=0.5)
+            ax.text(pred.start + duration / 2, 0 + y_off, _short_label(pred.action),
+                    ha="center", va="center", fontsize=6.5, color="black",
+                    fontweight="bold", clip_on=True)
+            ax.annotate("", xy=(gt.start, 1 - bar_height / 2),
+                        xytext=(pred.start, 0 + bar_height / 2),
+                        arrowprops=dict(arrowstyle="-", color="#95a5a6",
+                                        linestyle="--", linewidth=0.8))
+        else:
+            ax.barh(0, duration, left=pred.start, height=bar_height,
+                    color=C_FP, alpha=0.7, edgecolor="white", linewidth=0.5)
+            ax.text(pred.start + duration / 2, 0 + y_off, _short_label(pred.action),
+                    ha="center", va="center", fontsize=6, color="black",
+                    fontweight="bold", clip_on=True)
 
     # Show missed GT as dashed outlines on prediction track
     for gt in matching["missed"]:
@@ -393,6 +514,9 @@ def plot_multi_model_timeline(gt_events: list[Event],
 
     bar_height = 0.55
 
+    # Set xlim early so label-width estimation uses the final scale.
+    ax.set_xlim(-2, total_duration + 5)
+
     # Background bands
     for i in range(n_tracks):
         if i % 2 == 0:
@@ -401,25 +525,37 @@ def plot_multi_model_timeline(gt_events: list[Event],
     # Top track: Human (optional)
     if show_human_task:
         top = n_tracks - 1
-        for ev in human_gt:
-            if ev.action in ("idle", "task_complete"):
-                continue
+        human_src = sorted(
+            [e for e in human_gt if e.action not in ("idle", "task_complete")],
+            key=lambda e: e.start)
+        human_cw = []
+        for e in human_src:
+            duration = max(e.end - e.start, 1.5)
+            human_cw.append((e.start + duration / 2,
+                             _label_half_width(_short_label(e.action), 5.5, ax)))
+        human_offsets = _stagger_offsets(human_cw)
+        for ev, y_off in zip(human_src, human_offsets):
             duration = max(ev.end - ev.start, 1.5)
             ax.barh(top, duration, left=ev.start, height=bar_height,
                     color=C_HUMAN, alpha=0.75, edgecolor="white", linewidth=0.5)
             if duration > 5:
-                ax.text(ev.start + duration / 2, top, _short_label(ev.action),
-                        ha="center", va="center", fontsize=5.5, color="white",
+                ax.text(ev.start + duration / 2, top + y_off, _short_label(ev.action),
+                        ha="center", va="center", fontsize=5.5, color="black",
                         fontweight="bold", clip_on=True)
 
     # Second track: GT Robot
     gt_track = n_tracks - 2 if show_human_task else n_tracks - 1
-    for ev in robot_gt:
+    robot_gt_sorted = sorted(robot_gt, key=lambda e: e.start)
+    gt_cw = [((e.start + e.end) / 2,
+              _label_half_width(_short_label(e.action), 6, ax))
+             for e in robot_gt_sorted]
+    gt_offsets = _stagger_offsets(gt_cw)
+    for ev, y_off in zip(robot_gt_sorted, gt_offsets):
         duration = ev.end - ev.start
         ax.barh(gt_track, duration, left=ev.start, height=bar_height,
                 color=C_ROBOT_GT, alpha=0.85, edgecolor="white", linewidth=0.5)
-        ax.text(ev.start + duration / 2, gt_track, _short_label(ev.action),
-                ha="center", va="center", fontsize=6, color="white",
+        ax.text(ev.start + duration / 2, gt_track + y_off, _short_label(ev.action),
+                ha="center", va="center", fontsize=6, color="black",
                 fontweight="bold", clip_on=True)
 
     # Model prediction tracks
@@ -430,20 +566,27 @@ def plot_multi_model_timeline(gt_events: list[Event],
         color = model_colors[i % len(model_colors)]
         matching = match_predictions(robot_gt, preds, tolerance=15.0)
 
-        for gt, pred in matching["matched"]:
-            duration = max(pred.end - pred.start, 2.5)
-            ax.barh(y, duration, left=pred.start, height=bar_height,
-                    color=C_MATCH, alpha=0.85, edgecolor="white", linewidth=0.5)
-            ax.text(pred.start + duration / 2, y, _short_label(pred.action),
-                    ha="center", va="center", fontsize=5.5, color="white",
-                    fontweight="bold", clip_on=True)
-
+        pred_items: list[tuple[Event, str]] = []
+        for _, pred in matching["matched"]:
+            pred_items.append((pred, "match"))
         for pred in matching["false_positives"]:
+            pred_items.append((pred, "fp"))
+        pred_items.sort(key=lambda it: it[0].start)
+        pred_cw = []
+        for p, _ in pred_items:
+            duration = max(p.end - p.start, 2.5)
+            pred_cw.append((p.start + duration / 2,
+                            _label_half_width(_short_label(p.action), 5.5, ax)))
+        pred_offsets = _stagger_offsets(pred_cw)
+
+        for (pred, kind), y_off in zip(pred_items, pred_offsets):
             duration = max(pred.end - pred.start, 2.5)
+            color_bar = C_MATCH if kind == "match" else C_FP
+            alpha = 0.85 if kind == "match" else 0.7
             ax.barh(y, duration, left=pred.start, height=bar_height,
-                    color=C_FP, alpha=0.7, edgecolor="white", linewidth=0.5)
-            ax.text(pred.start + duration / 2, y, _short_label(pred.action),
-                    ha="center", va="center", fontsize=5.5, color="white",
+                    color=color_bar, alpha=alpha, edgecolor="white", linewidth=0.5)
+            ax.text(pred.start + duration / 2, y + y_off, _short_label(pred.action),
+                    ha="center", va="center", fontsize=5.5, color="black",
                     fontweight="bold", clip_on=True)
 
         for gt in matching["missed"]:
@@ -489,17 +632,152 @@ def plot_multi_model_timeline(gt_events: list[Event],
 
 # ── Path resolution helpers ──────────────────────────────────────────────────
 
-def _find_session(base: Path, component: str) -> Path | None:
-    """Find the latest session dir for a component inside a rep directory."""
+AURA_ROOT = Path(__file__).resolve().parent.parent.parent
+LOGS_DIR = AURA_ROOT / "logs"
+TIMELINE_FILENAME = "intervention_timeline.png"
+
+
+def _find_call_dir(base: Path, component: str) -> Path | None:
+    """Find a callable session dir for ``component`` inside ``base``.
+
+    Handles both layouts:
+      * ``base/<component>/call_*``           (run_aura's per-run layout)
+      * ``base/<component>/session_*/call_*`` (experiments' per-rep layout)
+    """
     comp_dir = base / component
     if not comp_dir.is_dir():
         return None
+    if any(comp_dir.glob("call_*")):
+        return comp_dir
     sessions = sorted(comp_dir.glob("session_*"))
-    return sessions[-1] if sessions else None
+    for s in reversed(sessions):
+        if any(s.glob("call_*")):
+            return s
+    return None
 
 
-def _resolve_gt(task: str, aura_root: Path) -> Path:
-    return aura_root / "tasks" / task / "config" / "ground_truth.json"
+def _resolve_robot_gt(task: str, video: str | None) -> Path | None:
+    """Locate ``tasks/<task>/ground_truth/<video_stem>.robot_gt.json``.
+
+    Falls back to the only ``*.robot_gt.json`` in the directory if the
+    video stem doesn't match (handles experiments that don't record the
+    video path).
+    """
+    gt_dir = AURA_ROOT / "tasks" / task / "ground_truth"
+    if not gt_dir.is_dir():
+        return None
+    if video:
+        stem = Path(video).stem
+        candidate = gt_dir / f"{stem}.robot_gt.json"
+        if candidate.exists():
+            return candidate
+    matches = sorted(gt_dir.glob("*.robot_gt.json"))
+    return matches[0] if matches else None
+
+
+def _resolve_intent_gt(task: str, video: str | None) -> Path | None:
+    gt_dir = AURA_ROOT / "tasks" / task / "ground_truth"
+    if not gt_dir.is_dir():
+        return None
+    if video:
+        stem = Path(video).stem
+        candidate = gt_dir / f"{stem}.intent_gt.json"
+        if candidate.exists():
+            return candidate
+    matches = sorted(gt_dir.glob("*.intent_gt.json"))
+    return matches[0] if matches else None
+
+
+def _read_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text())
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+# ── Batch over logs/run_*/ ───────────────────────────────────────────────────
+
+def _title_for_run(run_dir: Path, settings: dict) -> str:
+    task = settings.get("task_name") or settings.get("task") or "?"
+    model = settings.get("decision_model") or settings.get("intent_model") or settings.get("model") or ""
+    if model:
+        return f"{task} — {model} ({run_dir.name})"
+    return f"{task} ({run_dir.name})"
+
+
+def run_batch(logs_dir: Path, force: bool, show_human_task: bool,
+              show_legend: bool) -> int:
+    """Generate intervention_timeline.png for every run_* under logs_dir."""
+    count = 0
+    skipped: list[tuple[str, str]] = []
+
+    for run_dir in sorted(logs_dir.glob("run_*")):
+        if not run_dir.is_dir():
+            continue
+        settings_path = run_dir / "settings.json"
+        if not settings_path.exists():
+            continue
+        settings = _read_json(settings_path)
+        if not settings:
+            continue
+
+        dec_dir = _find_call_dir(run_dir, "decision_engine")
+        if dec_dir is None:
+            continue
+
+        output = run_dir / TIMELINE_FILENAME
+        if output.exists() and not force:
+            continue
+
+        task = settings.get("task_name") or settings.get("task") or ""
+        video = settings.get("video_path") or settings.get("video")
+        gt_path = _resolve_robot_gt(task, video)
+        if gt_path is None:
+            skipped.append((run_dir.name, f"No robot_gt.json for task {task!r}"))
+            continue
+
+        try:
+            gt_events, total_duration = load_robot_gt(gt_path)
+        except Exception as e:
+            skipped.append((run_dir.name, f"GT parse error: {e}"))
+            continue
+
+        pred_events = load_predictions(dec_dir)
+        if not pred_events:
+            skipped.append((run_dir.name, "No predictions in decision_engine"))
+            continue
+
+        intent_events = None
+        if show_human_task:
+            int_dir = _find_call_dir(run_dir, "intent_monitor")
+            if int_dir is not None:
+                intent_events = load_intent_timeline(int_dir)
+            elif (igt := _resolve_intent_gt(task, video)) is not None:
+                intent_events = load_intent_gt_humans(igt)
+
+        if total_duration <= 0:
+            all_ends = [e.end for e in gt_events] + [e.end for e in pred_events]
+            total_duration = max(all_ends) if all_ends else 270.0
+
+        print(f"[{run_dir.name}] plotting...")
+        try:
+            fig = plot_timeline(gt_events, pred_events, intent_events,
+                                title=_title_for_run(run_dir, settings),
+                                total_duration=total_duration,
+                                show_human_task=show_human_task,
+                                show_legend=show_legend)
+            fig.savefig(str(output))
+            plt.close(fig)
+            count += 1
+            print(f"  -> {output}")
+        except Exception as e:
+            skipped.append((run_dir.name, f"plot error: {e}"))
+
+    if skipped:
+        print("\nSkipped:")
+        for name, reason in skipped:
+            print(f"  - {name}: {reason}")
+    return count
 
 
 # ── CLI ──────────────────────────────────────────────────────────────────────
@@ -507,14 +785,18 @@ def _resolve_gt(task: str, aura_root: Path) -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate AURA intervention timeline (Gantt chart)")
-    parser.add_argument("--task", default="hand_layup", help="Task name")
-    parser.add_argument("--gt", type=Path, help="Ground truth JSON path")
+    parser.add_argument("--logs-dir", type=Path, default=LOGS_DIR,
+                        help="Scan this directory for run_*/ folders (default: logs/)")
+    parser.add_argument("--force", action="store_true",
+                        help="Regenerate timelines even if intervention_timeline.png exists")
+    parser.add_argument("--task", default=None, help="Task name (for ad-hoc GT lookup)")
+    parser.add_argument("--gt", type=Path, help="robot_gt.json path (overrides --task lookup)")
     parser.add_argument("--decision-session", type=Path,
-                        help="Decision engine session directory")
+                        help="Decision engine call dir or session dir")
     parser.add_argument("--intent-session", type=Path,
-                        help="Intent monitor session directory (optional)")
+                        help="Intent monitor call dir or session dir (optional)")
     parser.add_argument("--rep-dir", type=Path,
-                        help="Experiment repetition directory (auto-detects sessions)")
+                        help="Experiment / run directory (auto-detects sessions)")
     parser.add_argument("--experiments-dir", type=Path,
                         help="Root experiments dir for multi-model comparison")
     parser.add_argument("--output", type=Path, help="Output path (png/pdf)")
@@ -525,37 +807,53 @@ def main() -> None:
                         help="Include the TP/FP/FN legend (off by default)")
     args = parser.parse_args()
 
-    aura_root = Path(__file__).resolve().parent.parent.parent
+    # ── Default batch mode: no targeting flags → walk logs/run_*/ ────────
+    ad_hoc = any([args.task, args.gt, args.decision_session, args.intent_session,
+                  args.rep_dir, args.experiments_dir])
+    if not ad_hoc:
+        if not args.logs_dir.is_dir():
+            print(f"No logs dir at {args.logs_dir}", file=sys.stderr)
+            sys.exit(1)
+        n = run_batch(args.logs_dir, force=args.force,
+                      show_human_task=args.show_human_task,
+                      show_legend=args.show_legend)
+        print(f"\nGenerated {n} timeline(s).")
+        return
 
-    # Resolve GT path
-    gt_path = args.gt or _resolve_gt(args.task, aura_root)
-    if not gt_path.exists():
-        print(f"Error: ground truth not found: {gt_path}", file=sys.stderr)
-        sys.exit(1)
-    gt_events = load_ground_truth(gt_path)
-    gt_data = json.loads(gt_path.read_text())
-    total_duration = gt_data.get("total_duration_seconds", 270.0)
-
-    output_dir = aura_root / "figures" / "generated"
+    output_dir = AURA_ROOT / "figures" / "generated"
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Resolve GT for ad-hoc modes
+    if args.gt:
+        gt_path: Path | None = args.gt
+    else:
+        # Try to derive video stem from rep_dir/settings.json if available
+        video = None
+        if args.rep_dir and (s := args.rep_dir / "settings.json").exists():
+            video = _read_json(s).get("video_path") or _read_json(s).get("video")
+        gt_path = _resolve_robot_gt(args.task or "hand_layup", video)
+    if gt_path is None or not gt_path.exists():
+        print(f"Error: robot ground truth not found: {gt_path}", file=sys.stderr)
+        sys.exit(1)
+    gt_events, total_duration = load_robot_gt(gt_path)
+    if total_duration <= 0:
+        total_duration = max((e.end for e in gt_events), default=270.0)
 
     # ── Mode 1: Multi-model comparison from experiments dir ──────────────
     if args.experiments_dir:
         exp_root = args.experiments_dir
         if not exp_root.is_absolute():
-            exp_root = aura_root / exp_root
+            exp_root = AURA_ROOT / exp_root
         model_preds: dict[str, list[Event]] = {}
         for exp_dir in sorted(exp_root.iterdir()):
             if not exp_dir.is_dir() or exp_dir.name.startswith("."):
                 continue
-            # Use first rep's predictions
             rep_dirs = sorted(exp_dir.glob("rep_*"))
             if not rep_dirs:
                 continue
-            dec_session = _find_session(rep_dirs[0], "decision_engine")
-            if dec_session:
-                preds = load_predictions(dec_session)
-                model_preds[exp_dir.name] = preds
+            dec_dir = _find_call_dir(rep_dirs[0], "decision_engine")
+            if dec_dir:
+                model_preds[exp_dir.name] = load_predictions(dec_dir)
 
         if not model_preds:
             print("No experiment predictions found.", file=sys.stderr)
@@ -569,29 +867,27 @@ def main() -> None:
         out = args.output or output_dir / "fig_timeline_comparison.pdf"
         fig.savefig(str(out))
         print(f"Saved multi-model timeline to {out}")
-        # Also save PNG
         fig.savefig(str(out).replace(".pdf", ".png"))
         plt.close(fig)
         return
 
     # ── Mode 2: Single experiment from --rep-dir ─────────────────────────
     if args.rep_dir:
-        dec_session = args.decision_session or _find_session(args.rep_dir, "decision_engine")
-        int_session = args.intent_session or _find_session(args.rep_dir, "intent_monitor")
+        dec_dir = args.decision_session or _find_call_dir(args.rep_dir, "decision_engine")
+        int_dir = args.intent_session or _find_call_dir(args.rep_dir, "intent_monitor")
     else:
-        dec_session = args.decision_session
-        int_session = args.intent_session
+        dec_dir = args.decision_session
+        int_dir = args.intent_session
 
-    if dec_session is None:
+    if dec_dir is None:
         print("Error: provide --decision-session or --rep-dir", file=sys.stderr)
         sys.exit(1)
 
-    pred_events = load_predictions(dec_session)
-    intent_events = load_intent_timeline(int_session) if int_session else None
+    pred_events = load_predictions(dec_dir)
+    intent_events = load_intent_timeline(int_dir) if int_dir else None
 
     model_name = "unknown"
-    # Try to get model name from first call's meta
-    first_meta = next(dec_session.glob("call_*/meta.json"), None)
+    first_meta = next(dec_dir.glob("call_*/meta.json"), None)
     if first_meta:
         model_name = json.loads(first_meta.read_text()).get("model", "unknown")
 

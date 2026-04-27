@@ -89,24 +89,33 @@ class VideoFileSource(FrameSource):
         if self._max_frames is not None and self._delivered >= self._max_frames:
             return None
 
-        while True:
-            if self._raw_pos >= self._total_frames:
-                if self._loop:
-                    self._cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                    self._raw_pos = 0
-                    continue
-                return None
+        # CAP_PROP_FRAME_COUNT is unreliable on some encodes (can under-report
+        # by a wide margin), so treat _total_frames as a hint only. Real EOF
+        # is signalled by a run of consecutive failed reads.
+        consecutive_failures = 0
+        max_failures = 30
 
-            # Seek to the desired frame position
+        while True:
+            if self._loop and self._total_frames and self._raw_pos >= self._total_frames:
+                self._cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                self._raw_pos = 0
+
             self._cap.set(cv2.CAP_PROP_POS_FRAMES, self._raw_pos)
             ret, image = self._cap.read()
             current_pos = self._raw_pos
             self._raw_pos += self._frame_skip
 
             if not ret:
-                # Corrupted frame — skip ahead
+                consecutive_failures += 1
+                if consecutive_failures >= max_failures:
+                    logger.info(
+                        "VideoFileSource EOF at raw_pos=%d (reported total=%d)",
+                        current_pos, self._total_frames,
+                    )
+                    return None
                 continue
 
+            consecutive_failures = 0
             ts = current_pos / self._native_fps
             frame = Frame(
                 image=image,

@@ -39,7 +39,7 @@
     }
   ],
   "workflow_config": {
-    "active_monitors": ["intent", "gesture"],
+    "active_monitors": ["intent"],
     "decision_mode": "hybrid",
     "graph_topology": "sense_decide_act",
     "predict_interval_sec": 3.0,

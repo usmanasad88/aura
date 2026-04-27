@@ -274,6 +274,8 @@ async def run_workflow(
     pose_endpoint: str = "tcp://localhost:5556",
     intent_num_frames: int = 5,
     frame_buffer_size: int = 300,
+    intent_include_previous_state: bool = True,
+    intent_previous_state_source: str = "self",
 ) -> None:
     """Build and run the LangGraph workflow loop."""
     from aura.workflow.builder import build_task_graph
@@ -288,7 +290,64 @@ async def run_workflow(
         backend_defs = aura_cfg.backend_defaults.get(effective_backend, {})
         intent_max_tokens = backend_defs.get("intent_max_tokens", 4096)
 
+    # ── Create unified per-run log directory ────────────────────────
+    run_log_dir = _project_root / "logs" / (
+        f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{task_name}"
+    )
+    run_log_dir.mkdir(parents=True, exist_ok=True)
+    settings = {
+        "started_at": datetime.now().isoformat(),
+        "task_name": task_name,
+        "video_path": video_path,
+        "webcam_device": webcam_device,
+        "robot_url": robot_url,
+        "speed": speed,
+        "model": model,
+        "dry_run": dry_run,
+        "screen_capture": screen_capture,
+        "screen_monitor": screen_monitor,
+        "screen_region": screen_region,
+        "gopro_stream": gopro_stream,
+        "gopro_ip": gopro_ip,
+        "gopro_lens": gopro_lens,
+        "dashboard_port": dashboard_port,
+        "no_dashboard": no_dashboard,
+        "realtime": realtime,
+        "frame_skip": frame_skip,
+        "max_cycles": max_cycles,
+        "use_ground_truth_robot_status": use_ground_truth_robot_status,
+        "intent_source": intent_source,
+        "intent_gt_path": intent_gt_path,
+        "llm_backend": llm_backend,
+        "sglang_base_url": sglang_base_url,
+        "intent_backend": intent_backend,
+        "intent_model": intent_model,
+        "decision_backend": decision_backend,
+        "decision_model": decision_model,
+        "intent_max_tokens": intent_max_tokens,
+        "enable_audio": enable_audio,
+        "audio_input_device": audio_input_device,
+        "audio_output_device": audio_output_device,
+        "audio_sample_rate": audio_sample_rate,
+        "audio_voice": audio_voice,
+        "enable_gesture": enable_gesture,
+        "enable_perception": enable_perception,
+        "enable_pose": enable_pose,
+        "enable_activity": enable_activity,
+        "intent_blocking": intent_blocking,
+        "pose_endpoint": pose_endpoint,
+        "intent_num_frames": intent_num_frames,
+        "frame_buffer_size": frame_buffer_size,
+        "intent_include_previous_state": intent_include_previous_state,
+        "intent_previous_state_source": intent_previous_state_source,
+    }
+    (run_log_dir / "settings.json").write_text(
+        json.dumps(settings, indent=2, default=str)
+    )
+    logger.info("Run log directory: %s", run_log_dir)
+
     extra = {
+        "run_log_dir": str(run_log_dir),
         "realtime": realtime,
         "frame_skip": frame_skip,
         "use_ground_truth_robot_status": use_ground_truth_robot_status,
@@ -311,6 +370,8 @@ async def run_workflow(
         "pose_server_endpoint": pose_endpoint,
         "intent_num_frames": intent_num_frames,
         "frame_buffer_size": frame_buffer_size,
+        "intent_include_previous_state": intent_include_previous_state,
+        "intent_previous_state_source": intent_previous_state_source,
         # Default: realtime → non-blocking intent; offline → blocking. Override
         # explicitly via --intent-blocking / --no-intent-blocking.
         "intent_blocking": (
@@ -370,7 +431,7 @@ async def run_workflow(
     )
 
     # ── Export LangGraph graph visualization ─────────────────────────
-    graph_image_path = _project_root / "logs" / f"graph_{task_name}.png"
+    graph_image_path = run_log_dir / f"graph_{task_name}.png"
     try:
         graph_image_path.parent.mkdir(parents=True, exist_ok=True)
         png_bytes = compiled_graph.get_graph().draw_mermaid_png()
@@ -628,6 +689,12 @@ def run_launcher(dashboard_port: int = 5555) -> None:
                 pose_endpoint=config.get("pose_endpoint", "tcp://localhost:5556"),
                 intent_num_frames=config.get("intent_num_frames", 5),
                 frame_buffer_size=config.get("frame_buffer_size", 300),
+                intent_include_previous_state=config.get(
+                    "intent_include_previous_state", True
+                ),
+                intent_previous_state_source=config.get(
+                    "intent_previous_state_source", "self"
+                ),
             )
         )
 
@@ -830,6 +897,20 @@ def main() -> None:
         help="Force non-blocking intent dispatch even in offline mode "
              "(threadpool fire-and-forget; results land on later cycles).",
     )
+    parser.add_argument(
+        "--no-intent-previous-state", dest="intent_include_previous_state",
+        action="store_false", default=True,
+        help="Drop the previous-cycle state section from the intent prompt "
+             "(turns RCWPS into a stateless rolling-window prompt).",
+    )
+    parser.add_argument(
+        "--intent-previous-state-source", choices=["self", "ground_truth"],
+        default="self",
+        help="Where the previous-cycle state in the intent prompt comes from: "
+             "'self' (default, uses the monitor's last LLM output) or "
+             "'ground_truth' (reads GT annotations at the previous predict's "
+             "frame; requires a GT file — see --intent-gt-path).",
+    )
     args = parser.parse_args()
 
     # ── UI launcher mode ────────────────────────────────────────────
@@ -889,6 +970,8 @@ def main() -> None:
             pose_endpoint=args.pose_endpoint,
             intent_num_frames=args.intent_num_frames,
             frame_buffer_size=args.frame_buffer_size,
+            intent_include_previous_state=args.intent_include_previous_state,
+            intent_previous_state_source=args.intent_previous_state_source,
         )
     )
 

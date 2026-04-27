@@ -127,6 +127,15 @@ function updateStatusBadge(s) {
             stopBtn.classList.add("hidden");
         }
     }
+
+    const pauseBtn = document.getElementById("pause-workflow-btn");
+    if (pauseBtn) {
+        if (!s.is_complete && !s.error) {
+            pauseBtn.classList.remove("hidden");
+        } else {
+            pauseBtn.classList.add("hidden");
+        }
+    }
 }
 
 // ── Frame Info ──────────────────────────────────────────────────
@@ -451,6 +460,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Stop failed", e);
                 stopBtn.textContent = prev;
                 stopBtn.disabled = false;
+            }
+        });
+    }
+
+    const pauseBtn = document.getElementById("pause-workflow-btn");
+    if (pauseBtn) {
+        const renderPauseBtn = (paused) => {
+            if (paused) {
+                pauseBtn.textContent = "▶ Resume";
+                pauseBtn.style.background = "#00ff88";
+            } else {
+                pauseBtn.textContent = "⏸ Pause";
+                pauseBtn.style.background = "#ffc107";
+            }
+        };
+
+        // Sync initial state from server
+        fetch("/api/pause-status")
+            .then(r => r.json())
+            .then(d => renderPauseBtn(!!d.paused))
+            .catch(() => {});
+
+        pauseBtn.addEventListener("click", async () => {
+            pauseBtn.disabled = true;
+            try {
+                const r = await fetch("/api/pause", { method: "POST" });
+                const d = await r.json();
+                renderPauseBtn(!!d.paused);
+            } catch (e) {
+                console.error("Pause failed", e);
+            } finally {
+                pauseBtn.disabled = false;
             }
         });
     }

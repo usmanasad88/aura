@@ -31,6 +31,23 @@
       "justMyCode": false
     },
     {
+      "name": "AURA Tea Making (No Realtime Debug)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/run_aura.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task", "tea_making",
+        "--video", "demo_data/layup_demo/tea_making.mp4",
+        "--dry-run",
+        "--model", "gemini-3.1-flash-lite-preview",
+        "--no-realtime",
+        "--frame-skip", "90"
+      ],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
       "name": "AURA Workflow (No RealtimeDebug)",
       "type": "python",
       "request": "launch",

@@ -1,0 +1,43 @@
+{
+  "task_id": "hand_layup",
+  "video": "/home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4",
+  "duration_sec": 270.0,
+  "operator_id": "manual_annotation",
+  "schema_version": "1.0",
+  "description": "Robot intervention ground truth for the hand layup demo. Each entry is a contiguous interval during which the human-in-the-loop teleoperator drove the robot through one skill. Skill ids and arg keys mirror tasks/hand_layup/config/robot_skills.json.",
+  "interventions": [
+    {
+      "id": "iv_001",
+      "skill": "move_resin_to_workplace",
+      "args": {},
+      "t_start": 3.5,
+      "t_end": 51.0,
+      "rationale": "Resin needed at workplace before human can pour into cup."
+    },
+    {
+      "id": "iv_002",
+      "skill": "move_hardener_to_workplace",
+      "args": {},
+      "t_start": 54.5,
+      "t_end": 90.0,
+      "rationale": "Hardener needed at workplace once resin pour is underway."
+    },
+    {
+      "id": "iv_003",
+      "skill": "consolidate_with_roller_force",
+      "args": {},
+      "t_start": 130.0,
+      "t_end": 195.0,
+      "rationale": "All four resined layers placed; force-controlled roller consolidates the stack."
+    },
+    {
+      "id": "iv_004",
+      "skill": "return_hardener_to_storage",
+      "args": {},
+      "t_start": 195.0,
+      "t_end": 236.0,
+      "rationale": "Cleanup: human returns resin manually, robot returns hardener."
+    }
+  ],
+  "notes": "Skills with no parameters carry an empty args object; this mirrors the program-only skills in robot_skills.json. Picking/returning of hardener vs resin is split between robot and human in this recording — only the robot-driven half appears here."
+}

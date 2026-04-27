@@ -76,6 +76,11 @@ _intent_slot: Dict[str, Any] = {}   # {config_dir: intent_result_dict}
 _intent_executor = _futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="aura-intent")
 _intent_futures: Dict[str, "_futures.Future"] = {}
 _intent_last_dispatch: Dict[str, float] = {}
+# Tracks the (frame_num, timestamp) of the most recent predict() dispatch so
+# that the next cycle can look up the GT "previous state" at that point when
+# ``intent_previous_state_source=ground_truth`` is set.
+_intent_last_dispatched_frame: Dict[str, int] = {}
+_intent_last_dispatched_ts: Dict[str, float] = {}
 
 # Audio bridge singleton — set externally by run_aura.py when audio is enabled.
 # The bridge is NOT part of LangGraph state (it's not serialisable); it lives
@@ -169,14 +174,21 @@ def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
         # Per-component overrides fall back to shared defaults
         intent_backend = config.get("intent_backend") or config.get("llm_backend", "gemini")
         intent_model = config.get("intent_model") or config.get("model", "gemini-3.1-pro-preview")
+        run_log_dir = config.get("run_log_dir")
+        intent_log_dir = (
+            str(Path(run_log_dir) / "intent_monitor") if run_log_dir else None
+        )
         _intent_monitors[config_dir] = AURAIntentMonitor(
             config_dir=config_dir,
             model=intent_model,
+            max_frames=int(config.get("intent_num_frames", 5)),
             realtime=config.get("realtime", True),
             enable_logging=True,
+            log_dir=intent_log_dir,
             llm_backend=intent_backend,
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
             max_tokens=config.get("intent_max_tokens", 4096),
+            include_previous_state=config.get("intent_include_previous_state", True),
         )
     return _intent_monitors[config_dir]
 
@@ -335,6 +347,10 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
         if "description" in goal_policy:
             sys_instr += f"\n\nGoal Policy: {goal_policy['description']}"
 
+        run_log_dir = config.get("run_log_dir")
+        decision_log_dir = (
+            str(Path(run_log_dir) / "decision_engine") if run_log_dir else None
+        )
         engine_config = DecisionEngineConfig(
             gemini_model=decision_model,
             enable_llm_reasoning=(decision_mode in ("llm", "hybrid")),
@@ -344,6 +360,7 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
             task_system_instruction=sys_instr,
             decision_mode=decision_mode,
+            log_dir=decision_log_dir,
         )
         engine = DecisionEngine(config_dir=config_dir, config=engine_config)
 
@@ -437,100 +454,116 @@ def _get_robot_client(state: AuraGraphState):
     return _robot_clients.get(url)
 
 
-def _get_ground_truth_data(state: AuraGraphState) -> Dict[str, Any] | None:
-    """Load and cache the task's ground-truth file.
+def _resolve_robot_gt_path(state: AuraGraphState) -> Path | None:
+    """Resolve the per-video ``<stem>.robot_gt.json`` file.
 
-    Expected format: ``tasks/<task>/config/ground_truth.json`` with an
-    ``events`` array and optional ``total_duration_seconds``.
+    Path: ``tasks/<task>/ground_truth/<video_stem>.robot_gt.json``, mirroring
+    the intent-GT layout (see ``intent_ground_truth.default_gt_path``).
     """
     config = state.get("config", {})
     config_dir = config.get("config_dir", "")
-    if not config_dir:
+    video_path = config.get("video_path") or ""
+    if not config_dir or not video_path:
+        return None
+    cfg = Path(config_dir)
+    task_dir = cfg.parent if cfg.name == "config" else cfg
+    return task_dir / "ground_truth" / f"{Path(video_path).stem}.robot_gt.json"
+
+
+def _get_robot_gt_data(state: AuraGraphState) -> Dict[str, Any] | None:
+    """Load and cache the task's per-video robot ground-truth file.
+
+    Schema: ``{interventions: [{skill, args, t_start, t_end, ...}, ...],
+    duration_sec: float}``.
+    """
+    gt_path = _resolve_robot_gt_path(state)
+    if gt_path is None:
         return None
 
-    path = str(Path(config_dir) / "ground_truth.json")
-    if path in _ground_truth_data_cache:
-        return _ground_truth_data_cache[path]
+    key = str(gt_path)
+    if key in _ground_truth_data_cache:
+        return _ground_truth_data_cache[key]
 
-    gt_path = Path(path)
     if not gt_path.exists():
-        logger.warning("Ground-truth robot status requested but file missing: %s", gt_path)
-        _ground_truth_data_cache[path] = None
+        logger.warning("Robot ground-truth requested but file missing: %s", gt_path)
+        _ground_truth_data_cache[key] = None
         return None
 
     try:
-        with open(gt_path, "r", encoding="utf-8") as handle:
-            gt_data = json.load(handle)
+        with gt_path.open("r", encoding="utf-8") as handle:
+            raw = json.load(handle)
     except Exception as exc:
-        logger.warning("Failed to read ground truth file %s: %s", gt_path, exc)
-        _ground_truth_data_cache[path] = None
+        logger.warning("Failed to read robot ground truth file %s: %s", gt_path, exc)
+        _ground_truth_data_cache[key] = None
         return None
 
-    events = gt_data.get("events", [])
-    if not isinstance(events, list):
-        logger.warning("Invalid ground truth format (events not a list): %s", gt_path)
-        _ground_truth_data_cache[path] = None
+    interventions = raw.get("interventions", [])
+    if not isinstance(interventions, list):
+        logger.warning("Invalid robot GT format (interventions not a list): %s", gt_path)
+        _ground_truth_data_cache[key] = None
         return None
 
-    events = sorted(
-        [event for event in events if isinstance(event, dict)],
-        key=lambda event: float(event.get("timestamp", 0.0)),
-    )
+    parsed: List[Dict[str, Any]] = []
+    for iv in interventions:
+        if not isinstance(iv, dict):
+            continue
+        try:
+            t_start = float(iv["t_start"])
+            t_end = float(iv["t_end"])
+            skill = str(iv["skill"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        args = iv.get("args") or {}
+        if not isinstance(args, dict):
+            args = {}
+        parsed.append({
+            "skill": skill,
+            "args": args,
+            "t_start": t_start,
+            "t_end": t_end,
+        })
+    parsed.sort(key=lambda iv: iv["t_start"])
+
     cached = {
-        "events": events,
-        "total_duration_seconds": float(gt_data.get("total_duration_seconds", 0.0) or 0.0),
+        "interventions": parsed,
+        "duration_sec": float(raw.get("duration_sec", 0.0) or 0.0),
     }
-    _ground_truth_data_cache[path] = cached
+    _ground_truth_data_cache[key] = cached
     return cached
 
 
+def _format_skill_call(skill: str, args: Dict[str, Any]) -> str:
+    """Render ``skill(k=v, k=v)`` for the active-program field. Empty args → ``skill``."""
+    if not args:
+        return skill
+    inner = ", ".join(f"{k}={v}" for k, v in args.items())
+    return f"{skill}({inner})"
+
+
 def _robot_status_from_ground_truth(state: AuraGraphState, timestamp_sec: float) -> Dict[str, Any]:
-    """Derive robot status at ``timestamp_sec`` from ground-truth events.
+    """Derive robot status at ``timestamp_sec`` from the per-video robot GT.
 
-    Rules:
-    - when the latest robot-tagged event at/under timestamp has a non-null
-      ``robot_action``, robot is BUSY running that action;
-    - if a completion marker ``<action>_complete`` is observed later, robot
-      returns to IDLE with empty active action;
-    - otherwise defaults to unknown.
+    Rule: robot is BUSY iff some intervention has ``t_start <= t < t_end``;
+    otherwise IDLE. The active program string is ``skill(args)``. If multiple
+    intervals overlap the timestamp (rare), the latest-starting one wins.
     """
-    gt_data = _get_ground_truth_data(state)
+    gt_data = _get_robot_gt_data(state)
     if not gt_data:
-        return {
-            "robot_state": "unknown",
-            "robot_active_program": "",
-        }
+        return {"robot_state": "unknown", "robot_active_program": ""}
 
-    events: List[Dict[str, Any]] = gt_data.get("events", [])
-    if not events:
-        return {
-            "robot_state": "unknown",
-            "robot_active_program": "",
-        }
+    interventions: List[Dict[str, Any]] = gt_data.get("interventions", [])
+    t = float(timestamp_sec)
+    active = None
+    for iv in interventions:
+        if iv["t_start"] <= t < iv["t_end"]:
+            if active is None or iv["t_start"] > active["t_start"]:
+                active = iv
 
-    active_action = ""
-    robot_state = "idle"
-
-    for event in events:
-        event_ts = float(event.get("timestamp", 0.0) or 0.0)
-        if event_ts > float(timestamp_sec):
-            break
-
-        robot_action = event.get("robot_action")
-        action_name = str(event.get("action", "") or "")
-
-        if isinstance(robot_action, str) and robot_action.strip():
-            active_action = robot_action.strip()
-            robot_state = "busy"
-            continue
-
-        if active_action and action_name == f"{active_action}_complete":
-            active_action = ""
-            robot_state = "idle"
-
+    if active is None:
+        return {"robot_state": "idle", "robot_active_program": ""}
     return {
-        "robot_state": robot_state,
-        "robot_active_program": active_action,
+        "robot_state": "busy",
+        "robot_active_program": _format_skill_call(active["skill"], active["args"]),
     }
 
 
@@ -1043,17 +1076,37 @@ def run_intent_node(state: AuraGraphState) -> dict:
             min_interval = float(config.get("predict_interval", 0.0) or 0.0)
             now = time.monotonic()
             last_ts = _intent_last_dispatch.get(key, 0.0)
+            num_frames = int(config.get("intent_num_frames", 5))
+            intent_backend = config.get("intent_backend") or config.get("llm_backend", "gemini")
+            if realtime:
+                num_frames = min(num_frames, 3)
+            if intent_backend == "sglang":
+                num_frames = min(num_frames, 2)
+            frame_skip = int(config.get("frame_skip", 30))
+            stride = max(num_frames, 1) * max(frame_skip, 1)
+            cur_fn = int(state.get("current_frame_num") or 0)
+            last_fn = _intent_last_dispatched_frame.get(key)
             if min_interval > 0 and (now - last_ts) < min_interval:
+                # Sleep instead of skip — keeps us under provider rate limits
+                # (e.g. Gemini Flash Lite free tier: 15 RPM → 4s spacing) while
+                # still dispatching this cycle so non-realtime stride sampling
+                # picks up the next [last_fn+frame_skip, …] window rather than
+                # racing ahead to the buffer tail.
+                wait_s = min_interval - (now - last_ts)
+                time.sleep(wait_s)
+                now = time.monotonic()
+            if last_fn is not None and (cur_fn - last_fn) < stride:
                 skip_reason = (
-                    f"throttled ({(now - last_ts):.1f}s < {min_interval:.1f}s)"
+                    f"frame stride ({cur_fn - last_fn} < {stride}; "
+                    f"each frame sent to VLM at most once)"
                 )
             else:
                 frames, frame_nums, timestamps = sample_intent_frames(
                     state.get("frames_buffer") or [],
                     state.get("frames_buffer_frame_nums") or [],
                     state.get("frames_buffer_timestamps") or [],
-                    n=int(config.get("intent_num_frames", 5)),
-                    frame_skip=int(config.get("frame_skip", 30)),
+                    n=num_frames,
+                    frame_skip=frame_skip,
                     realtime=realtime,
                 )
                 if not frames:
@@ -1099,7 +1152,46 @@ def run_intent_node(state: AuraGraphState) -> dict:
                                 list(external_vars.keys()),
                             )
 
+                        # Optionally override the "previous-cycle" state in
+                        # the prompt with ground-truth annotations, keyed on
+                        # the frame_num of the last dispatched predict().
+                        prev_state_source = (
+                            config.get("intent_previous_state_source") or "self"
+                        )
+                        include_prev = bool(
+                            config.get("intent_include_previous_state", True)
+                        )
+                        if prev_state_source == "ground_truth" and include_prev:
+                            prev_frame = _intent_last_dispatched_frame.get(key)
+                            prev_ts = _intent_last_dispatched_ts.get(key)
+                            if prev_frame is not None:
+                                try:
+                                    gt_provider = _get_intent_gt_provider(state)
+                                except Exception as exc:
+                                    logger.warning(
+                                        "intent_previous_state_source=ground_truth "
+                                        "but GT provider unavailable (%s) — "
+                                        "falling back to self-tracked previous state",
+                                        exc,
+                                    )
+                                    gt_provider = None
+                                if gt_provider is not None:
+                                    gt_res = gt_provider.get_at_frame(
+                                        prev_frame, timestamp_sec=prev_ts,
+                                    )
+                                    if gt_res.reasoning != "no_ground_truth":
+                                        monitor.set_previous_state(
+                                            gt_res.state, timestamp=prev_ts,
+                                        )
+                                        logger.debug(
+                                            "Intent monitor previous state "
+                                            "overridden from GT at frame=%d",
+                                            prev_frame,
+                                        )
+
                         _intent_last_dispatch[key] = now
+                        _intent_last_dispatched_frame[key] = int(last_frame_num)
+                        _intent_last_dispatched_ts[key] = float(last_ts_val)
                         _intent_futures[key] = _intent_executor.submit(
                             monitor.predict,
                             frames=frames,
@@ -1138,6 +1230,20 @@ def run_intent_node(state: AuraGraphState) -> dict:
     }
     if dispatched:
         update["last_predict_time"] = time.time()
+
+    # Pause gate: when the dashboard pause toggle is on, block here until the
+    # user resumes (or stops the workflow). Placed after intent runs/returns
+    # so the latest prediction is visible while the rest of the cycle is
+    # held — pausing the entire workflow downstream of this node.
+    try:
+        from aura.dashboard import get_dashboard
+        dash = get_dashboard()
+    except Exception:
+        dash = None
+    if dash is not None:
+        while getattr(dash, "paused", False) and not getattr(dash, "stop_requested", False):
+            time.sleep(0.1)
+
     return update
 
 
@@ -1651,16 +1757,14 @@ def check_complete_node(state: AuraGraphState) -> dict:
     for the next iteration (gesture must be re-detected each cycle).
     """
     cycle = (state.get("cycle_count") or 0) + 1
-    max_cycles = state.get("config", {}).get("max_cycles", 500)
+    max_cycles = state.get("config", {}).get("max_cycles", 1500)
 
-    # Check for explicit completion — find terminal nodes (no step depends on them)
-    dag = state.get("dag") or []
-    all_ids = {step["id"] for step in dag if isinstance(step, dict)}
-    depended_on = {d for step in dag if isinstance(step, dict) for d in step.get("dependencies", [])}
-    end_nodes = all_ids - depended_on if all_ids else {"task_complete"}
-    completed = set(state.get("completed_steps") or [])
-
-    is_complete = bool(completed & end_nodes) or state.get("is_complete", False)
+    # Termination is driven only by video EOF (set by capture_frame_node),
+    # explicit error, or max_cycles. The LLM's ``task_complete`` prediction
+    # is intentionally ignored — for evaluation runs we want the loop to
+    # drain the entire video regardless of when the model thinks the task
+    # has ended.
+    is_complete = state.get("is_complete", False)
 
     if state.get("error"):
         is_complete = True

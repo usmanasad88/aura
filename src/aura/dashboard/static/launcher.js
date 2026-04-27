@@ -497,6 +497,9 @@ function collectConfig() {
         intent_source: document.getElementById("intent-ground-truth").checked
             ? "ground_truth" : "llm",
         intent_gt_path: val("intent-gt-path") || null,
+        intent_include_previous_state: document.getElementById(
+            "intent-include-previous-state").checked,
+        intent_previous_state_source: val("intent-previous-state-source") || "self",
         enable_gesture: document.getElementById("enable-gesture").checked,
         enable_perception: document.getElementById("enable-perception").checked,
         enable_audio: document.getElementById("enable-audio").checked,

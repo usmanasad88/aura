@@ -19,8 +19,8 @@
       "valid_values": [
         "idle", "setup_workspace", "fill_pot_with_water", "place_pot_on_stove",
         "turn_on_stove", "wait_for_boil", "add_chai_powder", "simmer_tea",
-        "add_milk_to_pot", "stir_pot", "pour_tea", "ask_sugar_preference",
-        "add_sugar", "skip_sugar", "stir_cup", "serve_tea", "cleanup",
+        "add_milk_to_cup", "stir_pot", "pour_tea", "ask_sugar_preference",
+        "add_sugar", "skip_sugar", "stir_cup", "cleanup",
         "task_complete",
         "Other", "Unknown"
       ],
@@ -73,6 +73,7 @@
       "default": false
     },
     "sugar_preference_known": {
+      "source": "system",
       "type": "boolean",
       "description": "Whether the human's sugar preference has been determined",
       "default": false
@@ -93,8 +94,8 @@
       "valid_values": [
         "idle", "setup_workspace", "fill_pot_with_water", "place_pot_on_stove",
         "turn_on_stove", "wait_for_boil", "add_chai_powder", "simmer_tea",
-        "add_milk_to_pot", "stir_pot", "pour_tea", "ask_sugar_preference",
-        "add_sugar", "skip_sugar", "stir_cup", "serve_tea", "cleanup",
+        "add_milk_to_cup", "stir_pot", "pour_tea", "ask_sugar_preference",
+        "add_sugar", "skip_sugar", "stir_cup", "cleanup",
         "task_complete",
         "Other", "Unknown"
       ],

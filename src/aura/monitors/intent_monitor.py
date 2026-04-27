@@ -105,9 +105,15 @@ class PromptLogger:
             self.session_dir = None
             return
 
-        base = Path(log_dir) if log_dir else Path("logs/intent_monitor")
-        session_name = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        self.session_dir = base / session_name
+        # When log_dir is provided, use it directly as the session dir
+        # (the caller owns the unique per-run layout). Otherwise fall back
+        # to the legacy ``logs/intent_monitor/session_<timestamp>/`` scheme
+        # so standalone usage (tests, ad-hoc scripts) still works.
+        if log_dir:
+            self.session_dir = Path(log_dir)
+        else:
+            session_name = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            self.session_dir = Path("logs/intent_monitor") / session_name
         self.session_dir.mkdir(parents=True, exist_ok=True)
         self.call_counter = 0
         logger.info(f"Prompt logger session: {self.session_dir}")
@@ -197,10 +203,12 @@ class AURAIntentMonitor:
         llm_backend: str = "gemini",
         sglang_base_url: str = "http://localhost:8100/v1",
         max_tokens: int = 4096,
+        include_previous_state: bool = True,
     ):
         self.realtime = realtime
         self.llm_backend = llm_backend
         self.max_tokens = max_tokens
+        self.include_previous_state = include_previous_state
 
         if realtime:           
             max_frames = min(max_frames, 3)
@@ -366,7 +374,15 @@ class AURAIntentMonitor:
         window_duration_sec: float = 0.0,
         previous_state_timestamp: Optional[float] = None,
     ) -> str:
-        prev_state_str = json.dumps(previous_state, indent=2) if previous_state else "{}"
+        if self.include_previous_state:
+            prev_state_str = json.dumps(previous_state, indent=2) if previous_state else "{}"
+            prev_state_section = (
+                f"\nThe state of the system as previously estimated"
+                f"{f' at {previous_state_timestamp:.2f} seconds ({timestamp - previous_state_timestamp:.1f}s ago)' if previous_state_timestamp is not None else ''}:\n"
+                f"```json\n{prev_state_str}\n```\n"
+            )
+        else:
+            prev_state_section = ""
 
         if window_duration_sec > 0:
             window_desc = (
@@ -404,12 +420,7 @@ Your goal is to update the state variables based on the provided task graph, sta
 ## Instructions
 {window_desc}
 Your task is to update the state variables based on the images and the schemas above.
-
-The state of the system as previously estimated{f" at {previous_state_timestamp:.2f} seconds ({timestamp - previous_state_timestamp:.1f}s ago)" if previous_state_timestamp is not None else ""}:
-```json
-{prev_state_str}
-```
-
+{prev_state_section}
 For each state variable, decide its current value. Boolean variables can be False, True, or "Unknown".
 
 Additionally, classify every step in the task graph into one of three categories:
@@ -448,6 +459,26 @@ Here are the frames:
                 img = img.resize(new_size, Image.Resampling.LANCZOS)
             pil_images.append(img)
         return pil_images
+
+    def set_previous_state(
+        self,
+        state: Optional[Dict[str, Any]],
+        timestamp: Optional[float] = None,
+    ) -> None:
+        """Override the previous-cycle state that will appear in the next prompt.
+
+        Normally ``self.previous_state`` is auto-populated from each call's
+        parsed LLM output. Callers that want to inject a different source
+        (e.g. ground-truth annotations for ablation studies) can overwrite
+        it here. The override persists until the next ``predict()`` call,
+        which will again clobber it with its own parsed output — so
+        external code must call this before every ``predict()`` to keep
+        the ground-truth source in effect.
+
+        Passing ``state=None`` clears the previous state.
+        """
+        self.previous_state = dict(state) if state else None
+        self._previous_state_timestamp = timestamp
 
     def inject_external_state(self, external_vars: Dict[str, Any]) -> None:
         """Merge externally-sourced state variables (robot status, perception
@@ -528,10 +559,16 @@ Here are the frames:
 
         # Merge externally-sourced state (robot status, perception) into the
         # previous-state context so the LLM sees up-to-date system info.
-        effective_previous_state = dict(self.previous_state) if self.previous_state else {}
-        if self._external_state:
-            effective_previous_state.update(self._external_state)
-            self._external_state = {}  # consume after merging
+        if self.include_previous_state:
+            effective_previous_state = dict(self.previous_state) if self.previous_state else {}
+            if self._external_state:
+                effective_previous_state.update(self._external_state)
+                self._external_state = {}  # consume after merging
+            effective_prev_ts = self._previous_state_timestamp
+        else:
+            effective_previous_state = {}
+            self._external_state = {}
+            effective_prev_ts = None
 
         prompt_text = self._build_prompt(
             num_frames=num_task_frames,
@@ -539,7 +576,7 @@ Here are the frames:
             timestamp=timestamp,
             frame_num=frame_num,
             window_duration_sec=effective_window_duration,
-            previous_state_timestamp=self._previous_state_timestamp,
+            previous_state_timestamp=effective_prev_ts,
         )
 
         result = IntentResult(timestamp=timestamp, frame_num=frame_num)

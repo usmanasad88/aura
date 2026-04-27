@@ -160,9 +160,12 @@ def build_task_graph(
         "decision_mode": decision_mode,
         "active_monitors": active_monitors,
         "headless": headless,
-        "predict_interval": wf_cfg.get("predict_interval_sec", 3.0),
+        # Default 4.0s keeps us under Gemini 3.1 Flash Lite free-tier RPM
+        # (15 req/min → 4s minimum spacing). Tasks may override via
+        # task_profile.json's `predict_interval_sec`.
+        "predict_interval": wf_cfg.get("predict_interval_sec", 4.0),
         "resume_gestures": wf_cfg.get("resume_gestures", ["Thumb_Up"]),
-        "max_cycles": wf_cfg.get("max_cycles_sec", 500),
+        "max_cycles": wf_cfg.get("max_cycles_sec", 1500),
         **_backend_defaults,
         **(extra_config or {}),
     }
@@ -283,7 +286,13 @@ def _build_sense_decide_act(
     #    after the first run sequentially within the branch). ──
     branches: list[list[str]] = []
 
+    # Perception runs as a prerequisite of the intent chain so the intent
+    # monitor's external-state injection sees this cycle's object_locations
+    # rather than the previous cycle's. Without this, parallel sibling
+    # branches race and run_intent_node reads stale locations.
     intent_chain: list[str] = []
+    if use_perception:
+        intent_chain.append("run_perception")
     if use_pose:
         intent_chain.append("run_pose")
     if use_activity:
@@ -292,9 +301,10 @@ def _build_sense_decide_act(
         intent_chain.append("run_intent")
     if intent_chain:
         branches.append(intent_chain)
-
-    if use_perception:
+    elif use_perception:
+        # Perception enabled but no intent chain — run it standalone.
         branches.append(["run_perception"])
+
     if use_gesture:
         branches.append(["run_gesture"])
 

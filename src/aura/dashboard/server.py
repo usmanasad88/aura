@@ -84,6 +84,7 @@ class DashboardServer:
         self._workflow_thread: Optional[threading.Thread] = None
         self._launch_callback: Optional[Callable[[dict], None]] = None
         self._stop_requested: bool = False
+        self._paused: bool = False
 
         self.app = Flask(
             __name__,
@@ -136,6 +137,10 @@ class DashboardServer:
     @property
     def stop_requested(self) -> bool:
         return self._stop_requested
+
+    @property
+    def paused(self) -> bool:
+        return self._paused
 
     # ── Publishing API (called from workflow nodes) ─────────────────
 
@@ -378,6 +383,7 @@ class DashboardServer:
 
             # Reset dashboard state for fresh run
             self._stop_requested = False
+            self._paused = False
             self._reset_state()
 
             # Start workflow in background thread
@@ -396,6 +402,19 @@ class DashboardServer:
             )
             self._workflow_thread.start()
             return jsonify({"status": "started", "monitor_url": "/monitor"})
+
+        @app.route("/api/pause", methods=["POST"])
+        def api_pause():
+            body = request.get_json(silent=True) or {}
+            if "paused" in body:
+                self._paused = bool(body["paused"])
+            else:
+                self._paused = not self._paused
+            return jsonify({"paused": self._paused}), 200
+
+        @app.route("/api/pause-status")
+        def api_pause_status():
+            return jsonify({"paused": self._paused})
 
         @app.route("/api/stop", methods=["POST"])
         def api_stop():

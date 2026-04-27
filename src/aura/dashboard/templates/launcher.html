@@ -319,6 +319,20 @@
                  placeholder="Auto-resolved from video when blank">
         </div>
       </div>
+      <div class="field-row align-center">
+        <label class="toggle-label">
+          <input type="checkbox" id="intent-include-previous-state" checked>
+          <span class="toggle-switch"></span>
+          Include previous state in intent prompt
+        </label>
+        <div class="field" style="max-width:220px">
+          <label for="intent-previous-state-source">Previous state source</label>
+          <select id="intent-previous-state-source">
+            <option value="self" selected>Self (monitor's last output)</option>
+            <option value="ground_truth">Ground truth (from GT file)</option>
+          </select>
+        </div>
+      </div>
     </section>
 
     <!-- ── Launch ──────────────────────────────────────────────── -->
