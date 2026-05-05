@@ -1,0 +1,107 @@
+{
+  "name": "Dummy Task Robot Skills",
+  "description": "Synthetic skill catalogue for A-Score adversary validation. task_1..task_5 appear in the GT track; task_6..task_10 are unused intervention-level skills, available as the candidate pool for the wrong-action adversary.",
+  "version": "1.0",
+  "skills": [
+    {
+      "id": "task_1",
+      "name": "Task 1",
+      "description": "Synthetic Task 1 — appears in GT.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 15.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_2",
+      "name": "Task 2",
+      "description": "Synthetic Task 2 — appears in GT.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 15.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_3",
+      "name": "Task 3",
+      "description": "Synthetic Task 3 — appears in GT.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 15.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_4",
+      "name": "Task 4",
+      "description": "Synthetic Task 4 — appears in GT.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_5",
+      "name": "Task 5",
+      "description": "Synthetic Task 5 — appears in GT.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_6",
+      "name": "Task 6",
+      "description": "Synthetic Task 6 — not in GT; available to wrong-action adversary.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_7",
+      "name": "Task 7",
+      "description": "Synthetic Task 7 — not in GT; available to wrong-action adversary.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_8",
+      "name": "Task 8",
+      "description": "Synthetic Task 8 — not in GT; available to wrong-action adversary.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_9",
+      "name": "Task 9",
+      "description": "Synthetic Task 9 — not in GT; available to wrong-action adversary.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "task_10",
+      "name": "Task 10",
+      "description": "Synthetic Task 10 — not in GT; available to wrong-action adversary.",
+      "category": "program",
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": false
+    }
+  ]
+}

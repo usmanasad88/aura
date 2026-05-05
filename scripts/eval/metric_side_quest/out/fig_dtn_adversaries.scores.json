@@ -1,0 +1,871 @@
+{
+  "gt_file": "/home/mani/Repos/aura/scripts/eval/metric_side_quest/toy_dtn_three_tasks.robot_gt.json",
+  "schema_version": "2.0",
+  "weights": {
+    "w_disj": 0.4,
+    "w_act": 0.2,
+    "w_cons": 0.2,
+    "w_nec": 0.2
+  },
+  "duration_sec": 45.0,
+  "interventions": [
+    {
+      "id": "task_1",
+      "skill": "task_1",
+      "n_options": 2,
+      "phases_per_option": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "task_2",
+      "skill": "task_2",
+      "n_options": 2,
+      "phases_per_option": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "task_3",
+      "skill": "task_3",
+      "n_options": 2,
+      "phases_per_option": [
+        1,
+        1
+      ]
+    }
+  ],
+  "adversaries": {
+    "Oracle (consistent)": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 1.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            1.0,
+            1.0
+          ],
+          "task_2": [
+            1.0,
+            1.0
+          ],
+          "task_3": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 5.0,
+          "end": 10.0
+        },
+        {
+          "skill": "task_1",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "skill": "task_2",
+          "start": 0.0,
+          "end": 5.0
+        },
+        {
+          "skill": "task_2",
+          "start": 10.0,
+          "end": 15.0
+        },
+        {
+          "skill": "task_3",
+          "start": 35.0,
+          "end": 40.0
+        }
+      ]
+    },
+    "Oracle (first option)": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 0.0,
+        "a_nec": 1.0,
+        "a_score": 0.8,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_task_disj": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            1.0,
+            1.0
+          ],
+          "task_2": [
+            1.0,
+            1.0
+          ],
+          "task_3": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 5.0,
+          "end": 10.0
+        },
+        {
+          "skill": "task_1",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "skill": "task_2",
+          "start": 0.0,
+          "end": 5.0
+        },
+        {
+          "skill": "task_2",
+          "start": 10.0,
+          "end": 15.0
+        },
+        {
+          "skill": "task_3",
+          "start": 0.0,
+          "end": 5.0
+        }
+      ]
+    },
+    "Conflict-prone": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 0.0,
+        "a_nec": 1.0,
+        "a_score": 0.8,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 1,
+          "task_3": 0
+        },
+        "per_task_disj": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            1.0,
+            1.0
+          ],
+          "task_2": [
+            1.0,
+            1.0
+          ],
+          "task_3": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 5.0,
+          "end": 10.0
+        },
+        {
+          "skill": "task_1",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "skill": "task_2",
+          "start": 10.0,
+          "end": 15.0
+        },
+        {
+          "skill": "task_2",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "skill": "task_3",
+          "start": 0.0,
+          "end": 5.0
+        }
+      ]
+    },
+    "Phase-collapsed": {
+      "score": {
+        "a_disj": 0.6666666666666666,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.8666666666666667,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 0.5,
+          "task_2": 0.5,
+          "task_3": 1.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            1.0,
+            0.0
+          ],
+          "task_2": [
+            1.0,
+            0.0
+          ],
+          "task_3": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 5.0,
+          "end": 10.0
+        },
+        {
+          "skill": "task_2",
+          "start": 0.0,
+          "end": 5.0
+        },
+        {
+          "skill": "task_3",
+          "start": 35.0,
+          "end": 40.0
+        }
+      ]
+    },
+    "Half-coverage": {
+      "score": {
+        "a_disj": 0.6666666666666666,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.8666666666666667,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 1.0,
+          "task_2": 0.0,
+          "task_3": 1.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            1.0,
+            1.0
+          ],
+          "task_2": [
+            0.0,
+            0.0
+          ],
+          "task_3": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 5.0,
+          "end": 10.0
+        },
+        {
+          "skill": "task_1",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "skill": "task_3",
+          "start": 35.0,
+          "end": 40.0
+        }
+      ]
+    },
+    "Wrong-skill": {
+      "score": {
+        "a_disj": 0.6666666666666666,
+        "a_act": 0.6,
+        "a_cons": 0.0,
+        "a_nec": 1.0,
+        "a_score": 0.5866666666666667,
+        "selected_options": {
+          "task_1": 1,
+          "task_2": 1,
+          "task_3": 0
+        },
+        "per_task_disj": {
+          "task_1": 0.5,
+          "task_2": 0.5,
+          "task_3": 1.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.0,
+            1.0
+          ],
+          "task_2": [
+            0.0,
+            1.0
+          ],
+          "task_3": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_2",
+          "start": 5.0,
+          "end": 10.0
+        },
+        {
+          "skill": "task_2",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "skill": "task_3",
+          "start": 0.0,
+          "end": 5.0
+        },
+        {
+          "skill": "task_3",
+          "start": 10.0,
+          "end": 15.0
+        },
+        {
+          "skill": "task_1",
+          "start": 35.0,
+          "end": 40.0
+        }
+      ]
+    },
+    "Near-miss timing": {
+      "score": {
+        "a_disj": 0.5384615384615384,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.82,
+        "a_score": 0.7793846153846155,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 0.5384615384615384,
+          "task_2": 0.5384615384615384,
+          "task_3": 0.5384615384615384
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.5384615384615384,
+            0.5384615384615384
+          ],
+          "task_2": [
+            0.5384615384615384,
+            0.5384615384615384
+          ],
+          "task_3": [
+            0.5384615384615384
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 6.5,
+          "end": 11.5
+        },
+        {
+          "skill": "task_1",
+          "start": 26.5,
+          "end": 31.5
+        },
+        {
+          "skill": "task_2",
+          "start": 1.5,
+          "end": 6.5
+        },
+        {
+          "skill": "task_2",
+          "start": 11.5,
+          "end": 16.5
+        },
+        {
+          "skill": "task_3",
+          "start": 36.5,
+          "end": 41.5
+        }
+      ]
+    },
+    "Far-shifted": {
+      "score": {
+        "a_disj": 0.18452380952380953,
+        "a_act": 1.0,
+        "a_cons": 0.0,
+        "a_nec": 0.45454545454545453,
+        "a_score": 0.3647186147186148,
+        "selected_options": {
+          "task_1": 1,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_task_disj": {
+          "task_1": 0.3392857142857143,
+          "task_2": 0.21428571428571427,
+          "task_3": 0.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.25,
+            0.42857142857142855
+          ],
+          "task_2": [
+            0.0,
+            0.42857142857142855
+          ],
+          "task_3": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 13.0,
+          "end": 18.0
+        },
+        {
+          "skill": "task_1",
+          "start": 33.0,
+          "end": 38.0
+        },
+        {
+          "skill": "task_2",
+          "start": 8.0,
+          "end": 13.0
+        },
+        {
+          "skill": "task_2",
+          "start": 18.0,
+          "end": 23.0
+        },
+        {
+          "skill": "task_3",
+          "start": 43.0,
+          "end": 45.0
+        }
+      ]
+    },
+    "Premature firer": {
+      "score": {
+        "a_disj": 0.5653846153846154,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.8723404255319149,
+        "a_score": 0.8006219312602292,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 0.5384615384615384,
+          "task_2": 0.6192307692307693,
+          "task_3": 0.5384615384615384
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.5384615384615384,
+            0.5384615384615384
+          ],
+          "task_2": [
+            0.7,
+            0.5384615384615384
+          ],
+          "task_3": [
+            0.5384615384615384
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 3.5,
+          "end": 8.5
+        },
+        {
+          "skill": "task_1",
+          "start": 23.5,
+          "end": 28.5
+        },
+        {
+          "skill": "task_2",
+          "start": 0.0,
+          "end": 3.5
+        },
+        {
+          "skill": "task_2",
+          "start": 8.5,
+          "end": 13.5
+        },
+        {
+          "skill": "task_3",
+          "start": 33.5,
+          "end": 38.5
+        }
+      ]
+    },
+    "Over-extender": {
+      "score": {
+        "a_disj": 0.5555555555555556,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.7333333333333333,
+        "a_score": 0.768888888888889,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 0.5555555555555556,
+          "task_2": 0.5555555555555556,
+          "task_3": 0.5555555555555556
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.5555555555555556,
+            0.5555555555555556
+          ],
+          "task_2": [
+            0.5555555555555556,
+            0.5555555555555556
+          ],
+          "task_3": [
+            0.5555555555555556
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 5.0,
+          "end": 14.0
+        },
+        {
+          "skill": "task_1",
+          "start": 25.0,
+          "end": 34.0
+        },
+        {
+          "skill": "task_2",
+          "start": 0.0,
+          "end": 9.0
+        },
+        {
+          "skill": "task_2",
+          "start": 10.0,
+          "end": 19.0
+        },
+        {
+          "skill": "task_3",
+          "start": 35.0,
+          "end": 44.0
+        }
+      ]
+    },
+    "One-shot blanket": {
+      "score": {
+        "a_disj": 0.037037037037037035,
+        "a_act": 1.0,
+        "a_cons": 0.0,
+        "a_nec": 0.5555555555555556,
+        "a_score": 0.32592592592592595,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_task_disj": {
+          "task_1": 0.1111111111111111,
+          "task_2": 0.0,
+          "task_3": 0.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.1111111111111111,
+            0.1111111111111111
+          ],
+          "task_2": [
+            0.0,
+            0.0
+          ],
+          "task_3": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 0.0,
+          "end": 45.0
+        }
+      ]
+    },
+    "Spammer": {
+      "score": {
+        "a_disj": 0.13333333333333333,
+        "a_act": 0.7777777777777778,
+        "a_cons": 0.0,
+        "a_nec": 0.5333333333333333,
+        "a_score": 0.3155555555555556,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_task_disj": {
+          "task_1": 0.4,
+          "task_2": 0.0,
+          "task_3": 0.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.4,
+            0.4
+          ],
+          "task_2": [
+            0.0,
+            0.0
+          ],
+          "task_3": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 0.0,
+          "end": 2.0
+        },
+        {
+          "skill": "task_1",
+          "start": 3.0,
+          "end": 5.0
+        },
+        {
+          "skill": "task_1",
+          "start": 6.0,
+          "end": 8.0
+        },
+        {
+          "skill": "task_1",
+          "start": 9.0,
+          "end": 11.0
+        },
+        {
+          "skill": "task_1",
+          "start": 12.0,
+          "end": 14.0
+        },
+        {
+          "skill": "task_1",
+          "start": 15.0,
+          "end": 17.0
+        },
+        {
+          "skill": "task_1",
+          "start": 18.0,
+          "end": 20.0
+        },
+        {
+          "skill": "task_1",
+          "start": 21.0,
+          "end": 23.0
+        },
+        {
+          "skill": "task_1",
+          "start": 24.0,
+          "end": 26.0
+        },
+        {
+          "skill": "task_1",
+          "start": 27.0,
+          "end": 29.0
+        },
+        {
+          "skill": "task_1",
+          "start": 30.0,
+          "end": 32.0
+        },
+        {
+          "skill": "task_1",
+          "start": 33.0,
+          "end": 35.0
+        },
+        {
+          "skill": "task_1",
+          "start": 36.0,
+          "end": 38.0
+        },
+        {
+          "skill": "task_1",
+          "start": 39.0,
+          "end": 41.0
+        },
+        {
+          "skill": "task_1",
+          "start": 42.0,
+          "end": 44.0
+        }
+      ]
+    },
+    "Silent": {
+      "score": {
+        "a_disj": 0.0,
+        "a_act": 1.0,
+        "a_cons": 0.0,
+        "a_nec": 1.0,
+        "a_score": 0.4,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_task_disj": {
+          "task_1": 0.0,
+          "task_2": 0.0,
+          "task_3": 0.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.0,
+            0.0
+          ],
+          "task_2": [
+            0.0,
+            0.0
+          ],
+          "task_3": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": []
+    }
+  }
+}

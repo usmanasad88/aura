@@ -1,0 +1,47 @@
+{
+  "task_id": "hand_layup",
+  "schema_version": "2.0",
+  "duration_sec": 270.0,
+  "video": "/home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4",
+  "operator_id": "manual_annotation",
+  "description": "Disjunctive robot intervention ground truth (schema v2.0). Each intervention declares one or more options; each option is a conjunction of phases. The original v1.0 GT is the degenerate single-option/single-phase case, preserved verbatim here.",
+  "interventions": [
+    {
+      "id": "iv_001",
+      "skill": "move_resin_to_workplace",
+      "args": {},
+      "rationale": "Resin needed at workplace before human can pour into cup.",
+      "options": [
+        {"phases": [{"t_start": 3.5, "t_end": 51.0}]}
+      ]
+    },
+    {
+      "id": "iv_002",
+      "skill": "move_hardener_to_workplace",
+      "args": {},
+      "rationale": "Hardener needed at workplace once resin pour is underway.",
+      "options": [
+        {"phases": [{"t_start": 54.5, "t_end": 90.0}]}
+      ]
+    },
+    {
+      "id": "iv_003",
+      "skill": "consolidate_with_roller_force",
+      "args": {},
+      "rationale": "All four resined layers placed; force-controlled roller consolidates the stack.",
+      "options": [
+        {"phases": [{"t_start": 130.0, "t_end": 195.0}]}
+      ]
+    },
+    {
+      "id": "iv_004",
+      "skill": "return_hardener_to_storage",
+      "args": {},
+      "rationale": "Cleanup: human returns resin manually, robot returns hardener.",
+      "options": [
+        {"phases": [{"t_start": 195.0, "t_end": 236.0}]}
+      ]
+    }
+  ],
+  "notes": "Skills with no parameters carry an empty args object; this mirrors the program-only skills in robot_skills.json. Picking/returning of hardener vs resin is split between robot and human in this recording — only the robot-driven half appears here."
+}

@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{bm}
+\usepackage[margin=1in]{geometry}
+
+\title{Analysis of Metrics for Proactive Intervention}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Evaluating proactive robotic interventions requires metrics that capture not only the correctness of an action but also its necessity and temporal alignment. Standard event-level metrics such as F1 score or mean Intersection over Union (mIoU) frequently fail to penalize specific types of prediction errors, as demonstrated by our synthetic adversaries analysis. We propose the A-Score to address these gaps.
+
+\section{Methodology}
+We simulate diverse failure modes using synthetic prediction tracks generated from ground truth (GT) interventions. The behaviors include a "Spammer" that fires rapidly, a "One-shot blanket" prediction covering the entire task window, and "Right-time-wrong-action". We score these adversaries using base event-level baselines (F1, mIoU, mAcc) alongside the component scores of A-Score: $A_{time}$, $A_{act}$, and $A_{nec}$.
+
+\section{Results}
+Table~\ref{tab:results} summarizes the performance of various synthetic adversaries. Noticeably, standard metrics provide incomplete pictures. For example, a predictive model that triggers right before or right after the ideal window ("Near-miss timing") might score highly on F1 if its bounding box partially overlaps the GT event appropriately, but it falls short representing an actual precise supportive action. Notice how \textit{Spammer} achieves non-trivial Event-F1 (0.40) despite being fundamentally useless for robotic assistance, whereas its A-Score properly collapses to 0.15 precisely due to $A_{act}$ and $A_{time}$ penalties. Conversely, \textit{Right-time-wrong-action} achieves perfect Event-F1 on boundary detection but fails entirely on matching the correct skill.
+
+Figure~\ref{fig:timeline} visually portrays these adversarial prediction timelines against the GT track. The visualization clearly shows the qualitative differences between predicting broadly over the entire timeline vs precise temporal coverage.
+
+\begin{table}[h]
+\centering
+\input{../../../figures/generated/fig_ascore_adversaries_dummy.tex}
+\caption{Quantitative evaluation of synthetic adversaries against ground truth interventions across different evaluation metrics.}
+\label{tab:results}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../../../figures/generated/fig_ascore_adversaries_dummy.pdf}
+\caption{Visualized timelines of adversary behaviors compared to Ground Truth.}
+\label{fig:timeline}
+\end{figure}
+
+\end{document}

@@ -17615,3 +17615,167 @@ torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 h
 2026-04-27 04:56:32,981 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
 2026-04-27 04:56:36,473 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
 2026-04-27 04:56:38,209 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=7980 (reported total=7093)
+2026-05-01 05:05:29,679 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-05-01 05:05:29,679 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260501_050529_hand_layup
+2026-05-01 05:05:29,698 - aura.core.scene_graph.graph - INFO - Initialized task state with 17 variables (4 system-sourced)
+2026-05-01 05:05:29,698 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-05-01 05:05:29,734 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['activity', 'intent', 'perception', 'pose'], branches=[['run_perception', 'run_pose', 'run_activity', 'run_intent']])
+2026-05-01 05:05:31,023 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260501_050529_hand_layup/graph_hand_layup.png
+2026-05-01 05:05:31,071 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4  1920x1080 @ 30.0 fps  7093 frames (236.5s)  skip=30  max=None
+2026-05-01 05:05:33,025 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'robot_active_program', 'hardener_bottle_location', 'resin_bottle_location', 'robot_state'}
+2026-05-01 05:05:33,159 - aura.monitors.intent_monitor - INFO - Intent monitor: loaded anchor image from /home/mani/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png
+2026-05-01 05:05:33,159 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-05-01 05:05:33,253 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-05-01 05:05:33,283 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260501_050529_hand_layup/intent_monitor
+2026-05-01 05:05:33,283 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-pro-preview, backend: gemini
+2026-05-01 05:05:36,184 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-05-01 05:05:47,495 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-05-01 05:05:47,839 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-05-01 05:05:52,354 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-05-01 05:05:52,355 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-05-01 05:05:53,161 - tasks.hand_layup.perception.layup_perception_monitor - INFO - Table identity resolved: {'storage_area': (276.0, 895.0), 'workplace': (857.0, 810.0)}
+2026-05-01 05:05:53,161 - tasks.hand_layup.perception.layup_perception_monitor - INFO - Bottle identity resolved by initial x-position: left=resin_bottle @ x=361.0, right=hardener_bottle @ x=436.0
+2026-05-01 05:05:53,195 - aura.monitors.body_pose_monitor - INFO - BodyPoseMonitor connected to tcp://localhost:5556
+2026-05-01 05:05:55,169 - aura.monitors.base_monitor - WARNING - BODY_POSE monitor timed out
+2026-05-01 05:05:55,202 - aura.monitors.body_pose_monitor - WARNING - BodyPoseMonitor: server did not respond in time
+2026-05-01 05:05:55,664 - aura.monitors.body_pose_monitor - ERROR - BodyPoseMonitor ZMQ error: Operation cannot be accomplished in current state
+2026-05-01 05:05:55,665 - aura.workflow.nodes - WARNING - Pose monitor failed 2 times (last error: Operation cannot be accomplished in current state) — disabling pose gate; intent monitor will run without pose pre-check
+2026-05-01 05:05:55,670 - aura.workflow.nodes - INFO - run_intent_node dispatched — 2 frames, span=1.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:05:55,746 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:05:57,427 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-05-01 05:05:57,429 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\nPlease retry in 2.650902524s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '2s'}]}}
+2026-05-01 05:06:01,200 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-05-01 05:06:24,708 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-05-01 05:06:24,709 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260501_050624_hand_layup
+2026-05-01 05:06:24,725 - aura.core.scene_graph.graph - INFO - Initialized task state with 17 variables (4 system-sourced)
+2026-05-01 05:06:24,725 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-05-01 05:06:24,761 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['activity', 'intent', 'perception', 'pose'], branches=[['run_perception', 'run_pose', 'run_activity', 'run_intent']])
+2026-05-01 05:06:24,810 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260501_050624_hand_layup/graph_hand_layup.png
+2026-05-01 05:06:24,831 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_stationary_with_overlay.mp4  1920x1080 @ 30.0 fps  7093 frames (236.5s)  skip=30  max=None
+2026-05-01 05:06:25,645 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'hardener_bottle_location', 'robot_active_program', 'robot_state'}
+2026-05-01 05:06:25,747 - aura.monitors.intent_monitor - INFO - Intent monitor: loaded anchor image from /home/mani/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png
+2026-05-01 05:06:25,748 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-05-01 05:06:25,794 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-05-01 05:06:25,832 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260501_050624_hand_layup/intent_monitor
+2026-05-01 05:06:25,832 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-05-01 05:06:27,126 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-05-01 05:06:36,215 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-05-01 05:06:36,559 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-05-01 05:06:39,567 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-05-01 05:06:39,568 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-05-01 05:06:40,128 - tasks.hand_layup.perception.layup_perception_monitor - INFO - Table identity resolved: {'storage_area': (276.0, 895.0), 'workplace': (857.0, 810.0)}
+2026-05-01 05:06:40,128 - tasks.hand_layup.perception.layup_perception_monitor - INFO - Bottle identity resolved by initial x-position: left=resin_bottle @ x=361.0, right=hardener_bottle @ x=436.0
+2026-05-01 05:06:40,144 - aura.monitors.body_pose_monitor - INFO - BodyPoseMonitor connected to tcp://localhost:5556
+2026-05-01 05:06:42,138 - aura.monitors.base_monitor - WARNING - BODY_POSE monitor timed out
+2026-05-01 05:06:42,151 - aura.monitors.body_pose_monitor - WARNING - BodyPoseMonitor: server did not respond in time
+2026-05-01 05:06:42,615 - aura.monitors.body_pose_monitor - ERROR - BodyPoseMonitor ZMQ error: Operation cannot be accomplished in current state
+2026-05-01 05:06:42,617 - aura.workflow.nodes - WARNING - Pose monitor failed 2 times (last error: Operation cannot be accomplished in current state) — disabling pose gate; intent monitor will run without pose pre-check
+2026-05-01 05:06:42,621 - aura.workflow.nodes - INFO - run_intent_node dispatched — 2 frames, span=1.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:06:42,716 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:07:14,006 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:07:14,035 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260501_050624_hand_layup/decision_engine
+2026-05-01 05:07:14,035 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-05-01 05:07:14,035 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-05-01 05:07:14,035 - aura.core.scene_graph.graph - INFO - Initialized task state with 28 variables (4 system-sourced)
+2026-05-01 05:07:14,035 - aura.brain.decision_engine - INFO - Initialized 28 state variables
+2026-05-01 05:07:14,036 - aura.brain.skill_registry - INFO - Loaded 13 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-05-01 05:07:14,036 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-05-01 05:07:14,092 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 1 safety rules, 1 timers, 5 scheduled skills)
+2026-05-01 05:07:16,501 - aura.monitors.intent_ground_truth - INFO - Loaded 17 intent GT keyframes from /home/mani/Repos/aura/tasks/hand_layup/ground_truth/layup_gesture_demo_stationary_with_overlay.intent_gt.json
+2026-05-01 05:07:16,501 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:07:16,669 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:07:37,424 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:07:39,887 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:07:40,060 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:07:45,507 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:07:45,508 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:07:50,519 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:08:31,292 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:08:31,328 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-05-01 05:08:33,851 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:08:34,030 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:08:38,783 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:08:38,784 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:08:43,808 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:08:49,735 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:08:49,737 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:08:59,753 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:09:08,011 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-05-01 05:09:41,933 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-05-01 05:09:41,933 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260501_050941_hand_layup
+2026-05-01 05:09:41,950 - aura.core.scene_graph.graph - INFO - Initialized task state with 17 variables (4 system-sourced)
+2026-05-01 05:09:41,950 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-05-01 05:09:41,984 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['activity', 'intent', 'pose'], branches=[['run_pose', 'run_activity', 'run_intent']])
+2026-05-01 05:09:43,211 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260501_050941_hand_layup/graph_hand_layup.png
+2026-05-01 05:09:43,234 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/layup_demo/layup_gesture_demo_with_overlay.mp4  1280x720 @ 30.0 fps  7044 frames (235.0s)  skip=30  max=None
+2026-05-01 05:09:44,026 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'hardener_bottle_location', 'robot_state', 'robot_active_program', 'resin_bottle_location'}
+2026-05-01 05:09:44,117 - aura.monitors.intent_monitor - INFO - Intent monitor: loaded anchor image from /home/mani/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png
+2026-05-01 05:09:44,118 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-05-01 05:09:44,164 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-05-01 05:09:44,194 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260501_050941_hand_layup/intent_monitor
+2026-05-01 05:09:44,194 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-05-01 05:09:44,208 - aura.monitors.body_pose_monitor - INFO - BodyPoseMonitor connected to tcp://localhost:5556
+2026-05-01 05:09:46,202 - aura.monitors.base_monitor - WARNING - BODY_POSE monitor timed out
+2026-05-01 05:09:46,213 - aura.monitors.body_pose_monitor - WARNING - BodyPoseMonitor: server did not respond in time
+2026-05-01 05:09:46,253 - aura.monitors.body_pose_monitor - ERROR - BodyPoseMonitor ZMQ error: Operation cannot be accomplished in current state
+2026-05-01 05:09:46,254 - aura.workflow.nodes - WARNING - Pose monitor failed 2 times (last error: Operation cannot be accomplished in current state) — disabling pose gate; intent monitor will run without pose pre-check
+2026-05-01 05:09:46,257 - aura.workflow.nodes - INFO - run_intent_node dispatched — 2 frames, span=1.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:09:46,306 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:09:48,687 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:09:48,688 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:09:53,697 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:10:25,747 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:10:25,826 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260501_050941_hand_layup/decision_engine
+2026-05-01 05:10:25,827 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-05-01 05:10:25,827 - aura.brain.decision_engine - INFO - Loaded task DAG: 18 steps
+2026-05-01 05:10:25,827 - aura.core.scene_graph.graph - INFO - Initialized task state with 28 variables (4 system-sourced)
+2026-05-01 05:10:25,827 - aura.brain.decision_engine - INFO - Initialized 28 state variables
+2026-05-01 05:10:25,827 - aura.brain.skill_registry - INFO - Loaded 13 skills from /home/mani/Repos/aura/tasks/hand_layup/config/robot_skills.json
+2026-05-01 05:10:25,828 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-05-01 05:10:25,842 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 1 safety rules, 1 timers, 5 scheduled skills)
+2026-05-01 05:10:25,844 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-05-01 05:10:26,094 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:10:26,188 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:10:30,237 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:10:30,239 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:10:35,256 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:10:53,031 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:10:53,033 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:11:03,046 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:11:20,562 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:11:20,592 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: move_resin_to_workplace resin_bottle (api_call={'method': 'POST', 'endpoint': '/api/program/execute', 'body': {'program': 'move_resin_from_storage_to_workplace.prog'}}) — SSG updated, robot API skipped
+2026-05-01 05:11:20,866 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:11:20,951 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:11:39,885 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:11:40,250 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:11:40,335 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:11:52,621 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:11:52,902 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:11:52,987 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:11:54,990 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:11:54,991 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:12:00,000 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:12:30,355 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:12:30,731 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:12:30,816 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:12:44,181 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:12:44,529 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:12:44,616 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:12:52,371 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:12:52,372 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:12:57,390 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:13:18,350 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:13:18,670 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:13:18,755 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:13:39,419 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:13:39,794 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:13:39,887 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:13:43,904 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-01 05:13:43,906 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-01 05:13:48,923 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:14:11,377 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:14:11,724 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:14:11,813 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-01 05:14:34,275 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-05-01 05:14:34,693 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
+2026-05-01 05:14:34,777 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.

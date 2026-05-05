@@ -80,6 +80,7 @@ class AScore:
     weights: tuple[float, float, float]
     matched_iou_mean: float    # diagnostic: IoU averaged only over matched pairs
     matched_act_acc: float     # diagnostic: action accuracy on matched pairs
+    psa: float                 # project schedule adherence: LIS length / n_gt
 
 
 def _strip_args(action: str) -> str:
@@ -93,8 +94,53 @@ def _interval_iou(a: Event, b: Event) -> float:
     return inter / union if union > 0 else 0.0
 
 
+def _project_schedule_adherence(gt_events: list[Event],
+                                pred_events: list[Event],
+                                total_duration: float) -> float:
+    """Schedule adherence = (actual time worked or available) / (total time scheduled).
+
+    The GT schedule covers the full project: each instant is either an active
+    intervention (Move Resin, Move Hardener, Consolidate, Return Hardener, …)
+    or implicit WAIT. Adherence at instant t requires the prediction to match
+    the GT at t — same skill during an active interval, or also-WAIT during a
+    WAIT interval. Returned as a fraction in [0, 1] (×100 for percentage).
+
+    Computed analytically over the disjoint intervals (no discretisation):
+      adherent = total_duration
+                 - missed_gt_time            (GT active but pred not matching)
+                 - pred_outside_gt_time      (FP into a WAIT slot)
+                 - pred_in_gt_wrong_skill    (active during GT but wrong skill)
+    """
+    if total_duration <= 0:
+        return 1.0
+
+    def _overlap(a: Event, b: Event) -> float:
+        return max(0.0, min(a.end, b.end) - max(a.start, b.start))
+
+    # Pred time that overlaps a GT interval with the matching skill.
+    adherent_active = sum(
+        _overlap(g, p)
+        for g in gt_events for p in pred_events
+        if _strip_args(g.action) == _strip_args(p.action)
+    )
+    # Pred time that overlaps any GT interval (regardless of skill).
+    pred_in_gt = sum(_overlap(g, p) for g in gt_events for p in pred_events)
+
+    gt_total = sum(max(g.end - g.start, 0.0) for g in gt_events)
+    pred_total = sum(max(p.end - p.start, 0.0) for p in pred_events)
+
+    missed_gt = gt_total - adherent_active                # GT active, pred silent/wrong
+    pred_outside_gt = pred_total - pred_in_gt             # pred fired during WAIT
+    pred_wrong_skill = pred_in_gt - adherent_active       # pred during GT, wrong skill
+
+    non_adherent = missed_gt + pred_outside_gt + pred_wrong_skill
+    adherent = total_duration - non_adherent
+    return max(0.0, min(1.0, adherent / total_duration))
+
+
 def compute_a_score(gt_events: list[Event],
                     pred_events: list[Event],
+                    total_duration: float,
                     weights: tuple[float, float, float] = DEFAULT_WEIGHTS,
                     tolerance: float = MATCH_TOLERANCE_SEC) -> AScore:
     """Compute the Appropriateness Score for one ablation vs shared GT.
@@ -135,6 +181,8 @@ def compute_a_score(gt_events: list[Event],
     w_t, w_a, w_n = weights
     a_score = w_t * a_time + w_a * a_act + w_n * a_nec
 
+    psa = _project_schedule_adherence(robot_gt, pred_events, total_duration)
+
     return AScore(
         n_gt=n_gt,
         n_pred=len(pred_events),
@@ -148,13 +196,14 @@ def compute_a_score(gt_events: list[Event],
         weights=weights,
         matched_iou_mean=matched_iou_mean,
         matched_act_acc=matched_act_acc,
+        psa=psa,
     )
 
 
 def format_score_table(scores: dict[str, AScore]) -> str:
     """Pretty-print a fixed-width A-Score table for the terminal."""
     headers = ["Ablation", "GT", "TP", "FP", "FN",
-               "A_time", "A_act", "A_nec", "A_score"]
+               "A_time", "A_act", "A_nec", "A_score", "PSA"]
     rows = []
     for label, s in scores.items():
         rows.append([
@@ -167,6 +216,7 @@ def format_score_table(scores: dict[str, AScore]) -> str:
             f"{s.a_act:.3f}",
             f"{s.a_nec:.3f}",
             f"{s.a_score:.3f}",
+            f"{s.psa:.3f}",
         ])
     widths = [max(len(h), *(len(r[i]) for r in rows)) for i, h in enumerate(headers)]
     fmt = "  ".join(f"{{:<{w}}}" for w in widths)
@@ -349,6 +399,7 @@ def main() -> None:
     scores: dict[str, AScore] = {}
     for label, preds in model_preds.items():
         scores[label] = compute_a_score(gt_events, preds,
+                                        total_duration=total_duration,
                                         weights=weights,
                                         tolerance=args.tolerance)
 

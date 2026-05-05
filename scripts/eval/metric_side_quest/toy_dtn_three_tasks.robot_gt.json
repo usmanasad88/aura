@@ -1,0 +1,39 @@
+{
+  "task_id": "toy_dtn_three_tasks",
+  "schema_version": "2.0",
+  "duration_sec": 45.0,
+  "description": "Toy disjunctive scenario from the metric side quest. Three tasks with overlapping options; only one global selection of options achieves 100% completion (Task1 opt-A, Task2 opt-A, Task3 opt-B).",
+  "interventions": [
+    {
+      "id": "task_1",
+      "skill": "task_1",
+      "args": {},
+      "options": [
+        {"phases": [{"t_start": 5.0,  "t_end": 10.0},
+                    {"t_start": 25.0, "t_end": 30.0}]},
+        {"phases": [{"t_start": 10.0, "t_end": 15.0},
+                    {"t_start": 35.0, "t_end": 40.0}]}
+      ]
+    },
+    {
+      "id": "task_2",
+      "skill": "task_2",
+      "args": {},
+      "options": [
+        {"phases": [{"t_start": 0.0,  "t_end": 5.0},
+                    {"t_start": 10.0, "t_end": 15.0}]},
+        {"phases": [{"t_start": 10.0, "t_end": 15.0},
+                    {"t_start": 25.0, "t_end": 30.0}]}
+      ]
+    },
+    {
+      "id": "task_3",
+      "skill": "task_3",
+      "args": {},
+      "options": [
+        {"phases": [{"t_start": 0.0,  "t_end": 5.0}]},
+        {"phases": [{"t_start": 35.0, "t_end": 40.0}]}
+      ]
+    }
+  ]
+}

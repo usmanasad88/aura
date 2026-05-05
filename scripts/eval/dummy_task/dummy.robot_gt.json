@@ -1,0 +1,64 @@
+{
+  "task_id": "dummy_task",
+  "video": "synthetic://dummy_task_100s",
+  "duration_sec": 100.0,
+  "operator_id": "synthetic",
+  "schema_version": "1.0",
+  "description": "Synthetic 100-second ground-truth track for A-Score adversary validation. Five robot interventions (task_1..task_5) interleaved with WAIT periods. Skills task_6..task_10 in robot_skills.json are intentionally absent here, so the wrong-action adversary has a clean candidate pool.",
+  "schedule_summary": {
+    "WAIT_1":  [0.0,  10.0],
+    "task_1":  [10.0, 25.0],
+    "WAIT_2":  [25.0, 30.0],
+    "task_2":  [30.0, 45.0],
+    "WAIT_3":  [45.0, 50.0],
+    "task_3":  [50.0, 65.0],
+    "WAIT_4":  [65.0, 70.0],
+    "task_4":  [70.0, 80.0],
+    "WAIT_5":  [80.0, 85.0],
+    "task_5":  [85.0, 95.0],
+    "WAIT_6":  [95.0, 100.0]
+  },
+  "interventions": [
+    {
+      "id": "iv_001",
+      "skill": "task_1",
+      "args": {},
+      "t_start": 10.0,
+      "t_end": 25.0,
+      "rationale": "Synthetic Task 1."
+    },
+    {
+      "id": "iv_002",
+      "skill": "task_2",
+      "args": {},
+      "t_start": 30.0,
+      "t_end": 45.0,
+      "rationale": "Synthetic Task 2."
+    },
+    {
+      "id": "iv_003",
+      "skill": "task_3",
+      "args": {},
+      "t_start": 50.0,
+      "t_end": 65.0,
+      "rationale": "Synthetic Task 3."
+    },
+    {
+      "id": "iv_004",
+      "skill": "task_4",
+      "args": {},
+      "t_start": 70.0,
+      "t_end": 80.0,
+      "rationale": "Synthetic Task 4."
+    },
+    {
+      "id": "iv_005",
+      "skill": "task_5",
+      "args": {},
+      "t_start": 85.0,
+      "t_end": 95.0,
+      "rationale": "Synthetic Task 5."
+    }
+  ],
+  "notes": "Task durations: 15, 15, 15, 10, 10 s (65 s total). WAIT durations: 10, 5, 5, 5, 5, 5 s (35 s total)."
+}

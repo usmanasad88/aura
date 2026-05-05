@@ -1,0 +1,1250 @@
+{
+  "gt_file": "scripts/eval/metric_side_quest/layup_gesture_demo_stationary_with_overlay.robot_gt.v2.json",
+  "schema_version": "2.0",
+  "weights": {
+    "w_disj": 0.4,
+    "w_act": 0.2,
+    "w_cons": 0.2,
+    "w_nec": 0.2
+  },
+  "duration_sec": 270.0,
+  "interventions": [
+    {
+      "id": "iv_001",
+      "skill": "move_resin_to_workplace",
+      "n_options": 1,
+      "phases_per_option": [
+        1
+      ]
+    },
+    {
+      "id": "iv_002",
+      "skill": "move_hardener_to_workplace",
+      "n_options": 1,
+      "phases_per_option": [
+        1
+      ]
+    },
+    {
+      "id": "iv_003",
+      "skill": "consolidate_with_roller_force",
+      "n_options": 1,
+      "phases_per_option": [
+        1
+      ]
+    },
+    {
+      "id": "iv_004",
+      "skill": "return_hardener_to_storage",
+      "n_options": 1,
+      "phases_per_option": [
+        1
+      ]
+    }
+  ],
+  "adversaries": {
+    "Oracle (consistent)": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 1.0,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 1.0,
+          "iv_002": 1.0,
+          "iv_003": 1.0,
+          "iv_004": 1.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            1.0
+          ],
+          "iv_002": [
+            1.0
+          ],
+          "iv_003": [
+            1.0
+          ],
+          "iv_004": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 3.5,
+          "end": 51.0
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 54.5,
+          "end": 90.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 130.0,
+          "end": 195.0
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 195.0,
+          "end": 236.0
+        }
+      ]
+    },
+    "Oracle (first option)": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 1.0,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 1.0,
+          "iv_002": 1.0,
+          "iv_003": 1.0,
+          "iv_004": 1.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            1.0
+          ],
+          "iv_002": [
+            1.0
+          ],
+          "iv_003": [
+            1.0
+          ],
+          "iv_004": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 3.5,
+          "end": 51.0
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 54.5,
+          "end": 90.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 130.0,
+          "end": 195.0
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 195.0,
+          "end": 236.0
+        }
+      ]
+    },
+    "Conflict-prone": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 1.0,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 1.0,
+          "iv_002": 1.0,
+          "iv_003": 1.0,
+          "iv_004": 1.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            1.0
+          ],
+          "iv_002": [
+            1.0
+          ],
+          "iv_003": [
+            1.0
+          ],
+          "iv_004": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 3.5,
+          "end": 51.0
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 54.5,
+          "end": 90.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 130.0,
+          "end": 195.0
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 195.0,
+          "end": 236.0
+        }
+      ]
+    },
+    "Phase-collapsed": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 1.0,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 1.0,
+          "iv_002": 1.0,
+          "iv_003": 1.0,
+          "iv_004": 1.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            1.0
+          ],
+          "iv_002": [
+            1.0
+          ],
+          "iv_003": [
+            1.0
+          ],
+          "iv_004": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 3.5,
+          "end": 51.0
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 54.5,
+          "end": 90.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 130.0,
+          "end": 195.0
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 195.0,
+          "end": 236.0
+        }
+      ]
+    },
+    "Half-coverage": {
+      "score": {
+        "a_disj": 0.5,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.8,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 1.0,
+          "iv_002": 0.0,
+          "iv_003": 1.0,
+          "iv_004": 0.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            1.0
+          ],
+          "iv_002": [
+            0.0
+          ],
+          "iv_003": [
+            1.0
+          ],
+          "iv_004": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 3.5,
+          "end": 51.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 130.0,
+          "end": 195.0
+        }
+      ]
+    },
+    "Wrong-skill": {
+      "score": {
+        "a_disj": 0.0,
+        "a_act": 0.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.4,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.0,
+          "iv_002": 0.0,
+          "iv_003": 0.0,
+          "iv_004": 0.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.0
+          ],
+          "iv_002": [
+            0.0
+          ],
+          "iv_003": [
+            0.0
+          ],
+          "iv_004": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 3.5,
+          "end": 51.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 54.5,
+          "end": 90.0
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 130.0,
+          "end": 195.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 195.0,
+          "end": 236.0
+        }
+      ]
+    },
+    "Near-miss timing": {
+      "score": {
+        "a_disj": 0.9354983529684989,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.9761904761904762,
+        "a_score": 0.9694374364254947,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.9387755102040817,
+          "iv_002": 0.918918918918919,
+          "iv_003": 0.9548872180451128,
+          "iv_004": 0.9294117647058824
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.9387755102040817
+          ],
+          "iv_002": [
+            0.918918918918919
+          ],
+          "iv_003": [
+            0.9548872180451128
+          ],
+          "iv_004": [
+            0.9294117647058824
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 5.0,
+          "end": 52.5
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 56.0,
+          "end": 91.5
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 131.5,
+          "end": 196.5
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 196.5,
+          "end": 237.5
+        }
+      ]
+    },
+    "Far-shifted": {
+      "score": {
+        "a_disj": 0.6995467313302525,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.8968253968253969,
+        "a_score": 0.8591837718971804,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.7117117117117117,
+          "iv_002": 0.632183908045977,
+          "iv_003": 0.7808219178082192,
+          "iv_004": 0.673469387755102
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.7117117117117117
+          ],
+          "iv_002": [
+            0.632183908045977
+          ],
+          "iv_003": [
+            0.7808219178082192
+          ],
+          "iv_004": [
+            0.673469387755102
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 11.5,
+          "end": 59.0
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 62.5,
+          "end": 98.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 138.0,
+          "end": 203.0
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 203.0,
+          "end": 244.0
+        }
+      ]
+    },
+    "Premature firer": {
+      "score": {
+        "a_disj": 0.9354983529684989,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.9761904761904762,
+        "a_score": 0.9694374364254947,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.9387755102040817,
+          "iv_002": 0.918918918918919,
+          "iv_003": 0.9548872180451128,
+          "iv_004": 0.9294117647058824
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.9387755102040817
+          ],
+          "iv_002": [
+            0.918918918918919
+          ],
+          "iv_003": [
+            0.9548872180451128
+          ],
+          "iv_004": [
+            0.9294117647058824
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 2.0,
+          "end": 49.5
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 53.0,
+          "end": 88.5
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 128.5,
+          "end": 193.5
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 193.5,
+          "end": 234.5
+        }
+      ]
+    },
+    "Over-extender": {
+      "score": {
+        "a_disj": 0.9185510927302315,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.9439024390243902,
+        "a_score": 0.9562009248969705,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.9223300970873787,
+          "iv_002": 0.8987341772151899,
+          "iv_003": 0.9420289855072463,
+          "iv_004": 0.9111111111111111
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.9223300970873787
+          ],
+          "iv_002": [
+            0.8987341772151899
+          ],
+          "iv_003": [
+            0.9420289855072463
+          ],
+          "iv_004": [
+            0.9111111111111111
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 3.5,
+          "end": 55.0
+        },
+        {
+          "skill": "move_hardener_to_workplace",
+          "start": 54.5,
+          "end": 94.0
+        },
+        {
+          "skill": "consolidate_with_roller_force",
+          "start": 130.0,
+          "end": 199.0
+        },
+        {
+          "skill": "return_hardener_to_storage",
+          "start": 195.0,
+          "end": 240.0
+        }
+      ]
+    },
+    "One-shot blanket": {
+      "score": {
+        "a_disj": 0.04398148148148148,
+        "a_act": 0.0,
+        "a_cons": 1.0,
+        "a_nec": 0.7,
+        "a_score": 0.3575925925925926,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.17592592592592593,
+          "iv_002": 0.0,
+          "iv_003": 0.0,
+          "iv_004": 0.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.17592592592592593
+          ],
+          "iv_002": [
+            0.0
+          ],
+          "iv_003": [
+            0.0
+          ],
+          "iv_004": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 0.0,
+          "end": 270.0
+        }
+      ]
+    },
+    "Spammer": {
+      "score": {
+        "a_disj": 0.010526315789473684,
+        "a_act": 0.25,
+        "a_cons": 1.0,
+        "a_nec": 0.7,
+        "a_score": 0.39421052631578946,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.042105263157894736,
+          "iv_002": 0.0,
+          "iv_003": 0.0,
+          "iv_004": 0.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.042105263157894736
+          ],
+          "iv_002": [
+            0.0
+          ],
+          "iv_003": [
+            0.0
+          ],
+          "iv_004": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": [
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 0.0,
+          "end": 2.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 3.0,
+          "end": 5.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 6.0,
+          "end": 8.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 9.0,
+          "end": 11.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 12.0,
+          "end": 14.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 15.0,
+          "end": 17.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 18.0,
+          "end": 20.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 21.0,
+          "end": 23.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 24.0,
+          "end": 26.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 27.0,
+          "end": 29.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 30.0,
+          "end": 32.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 33.0,
+          "end": 35.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 36.0,
+          "end": 38.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 39.0,
+          "end": 41.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 42.0,
+          "end": 44.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 45.0,
+          "end": 47.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 48.0,
+          "end": 50.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 51.0,
+          "end": 53.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 54.0,
+          "end": 56.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 57.0,
+          "end": 59.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 60.0,
+          "end": 62.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 63.0,
+          "end": 65.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 66.0,
+          "end": 68.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 69.0,
+          "end": 71.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 72.0,
+          "end": 74.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 75.0,
+          "end": 77.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 78.0,
+          "end": 80.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 81.0,
+          "end": 83.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 84.0,
+          "end": 86.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 87.0,
+          "end": 89.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 90.0,
+          "end": 92.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 93.0,
+          "end": 95.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 96.0,
+          "end": 98.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 99.0,
+          "end": 101.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 102.0,
+          "end": 104.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 105.0,
+          "end": 107.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 108.0,
+          "end": 110.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 111.0,
+          "end": 113.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 114.0,
+          "end": 116.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 117.0,
+          "end": 119.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 120.0,
+          "end": 122.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 123.0,
+          "end": 125.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 126.0,
+          "end": 128.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 129.0,
+          "end": 131.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 132.0,
+          "end": 134.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 135.0,
+          "end": 137.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 138.0,
+          "end": 140.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 141.0,
+          "end": 143.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 144.0,
+          "end": 146.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 147.0,
+          "end": 149.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 150.0,
+          "end": 152.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 153.0,
+          "end": 155.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 156.0,
+          "end": 158.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 159.0,
+          "end": 161.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 162.0,
+          "end": 164.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 165.0,
+          "end": 167.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 168.0,
+          "end": 170.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 171.0,
+          "end": 173.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 174.0,
+          "end": 176.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 177.0,
+          "end": 179.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 180.0,
+          "end": 182.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 183.0,
+          "end": 185.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 186.0,
+          "end": 188.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 189.0,
+          "end": 191.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 192.0,
+          "end": 194.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 195.0,
+          "end": 197.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 198.0,
+          "end": 200.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 201.0,
+          "end": 203.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 204.0,
+          "end": 206.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 207.0,
+          "end": 209.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 210.0,
+          "end": 212.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 213.0,
+          "end": 215.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 216.0,
+          "end": 218.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 219.0,
+          "end": 221.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 222.0,
+          "end": 224.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 225.0,
+          "end": 227.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 228.0,
+          "end": 230.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 231.0,
+          "end": 233.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 234.0,
+          "end": 236.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 237.0,
+          "end": 239.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 240.0,
+          "end": 242.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 243.0,
+          "end": 245.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 246.0,
+          "end": 248.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 249.0,
+          "end": 251.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 252.0,
+          "end": 254.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 255.0,
+          "end": 257.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 258.0,
+          "end": 260.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 261.0,
+          "end": 263.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 264.0,
+          "end": 266.0
+        },
+        {
+          "skill": "move_resin_to_workplace",
+          "start": 267.0,
+          "end": 269.0
+        }
+      ]
+    },
+    "Silent": {
+      "score": {
+        "a_disj": 0.0,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.6000000000000001,
+        "selected_options": {
+          "iv_001": 0,
+          "iv_002": 0,
+          "iv_003": 0,
+          "iv_004": 0
+        },
+        "per_task_disj": {
+          "iv_001": 0.0,
+          "iv_002": 0.0,
+          "iv_003": 0.0,
+          "iv_004": 0.0
+        },
+        "per_task_phase_ious": {
+          "iv_001": [
+            0.0
+          ],
+          "iv_002": [
+            0.0
+          ],
+          "iv_003": [
+            0.0
+          ],
+          "iv_004": [
+            0.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "preds": []
+    }
+  }
+}

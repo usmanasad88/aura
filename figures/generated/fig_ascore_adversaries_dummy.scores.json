@@ -1,0 +1,309 @@
+{
+  "gt_track": "scripts/eval/dummy_task/dummy.robot_gt.json",
+  "skill_catalogue": "scripts/eval/dummy_task/robot_skills.json",
+  "skill_pool_for_wrong_action": [
+    "task_6",
+    "task_7",
+    "task_8",
+    "task_9",
+    "task_10"
+  ],
+  "weights": {
+    "w_t": 0.3333333333333333,
+    "w_a": 0.3333333333333333,
+    "w_n": 0.3333333333333333
+  },
+  "match_tolerance_sec": 15.0,
+  "adversaries": {
+    "Oracle": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "a_time": 1.0,
+        "a_act": 1.0,
+        "a_nec": 1.0,
+        "a_score": 1.0,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 1.0,
+        "psa": 1.0
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 1.0,
+        "event_f1": 1.0,
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 1.0,
+        "p_agree": 1.0
+      }
+    },
+    "Silent": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "a_time": 0.0,
+        "a_act": 0.0,
+        "a_nec": 1.0,
+        "a_score": 0.3333333333333333,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.0,
+        "matched_act_acc": 0.0,
+        "psa": 0.35
+      },
+      "baselines": {
+        "event_precision": 0.0,
+        "event_recall": 0.0,
+        "event_f1": 0.0,
+        "matched_iou_mean": 0.0,
+        "matched_act_acc": 0.0,
+        "p_agree": 0.35
+      }
+    },
+    "Spammer": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 20,
+        "tp": 5,
+        "fp": 15,
+        "fn": 0,
+        "a_time": 0.0,
+        "a_act": 0.2,
+        "a_nec": 0.25,
+        "a_score": 0.15,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.0,
+        "matched_act_acc": 0.2,
+        "psa": 0.0
+      },
+      "baselines": {
+        "event_precision": 0.25,
+        "event_recall": 1.0,
+        "event_f1": 0.4,
+        "matched_iou_mean": 0.0,
+        "matched_act_acc": 0.2,
+        "p_agree": 0.19
+      }
+    },
+    "One-shot blanket": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 1,
+        "tp": 1,
+        "fp": 0,
+        "fn": 4,
+        "a_time": 0.03,
+        "a_act": 0.2,
+        "a_nec": 1.0,
+        "a_score": 0.41,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.15,
+        "matched_act_acc": 1.0,
+        "psa": 0.0
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 0.2,
+        "event_f1": 0.33333333333333337,
+        "matched_iou_mean": 0.15,
+        "matched_act_acc": 1.0,
+        "p_agree": 0.15
+      }
+    },
+    "Right-time-wrong-action": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "a_time": 1.0,
+        "a_act": 0.0,
+        "a_nec": 1.0,
+        "a_score": 0.6666666666666666,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 0.0,
+        "psa": 0.0
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 1.0,
+        "event_f1": 1.0,
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 0.0,
+        "p_agree": 0.35
+      }
+    },
+    "Near-miss timing": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 5,
+        "tp": 4,
+        "fp": 1,
+        "fn": 1,
+        "a_time": 0.3072092159048681,
+        "a_act": 0.0,
+        "a_nec": 0.9482758620689655,
+        "a_score": 0.41849502599127786,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.3840115198810851,
+        "matched_act_acc": 0.0,
+        "psa": 0.0
+      },
+      "baselines": {
+        "event_precision": 0.8,
+        "event_recall": 0.8,
+        "event_f1": 0.8000000000000002,
+        "matched_iou_mean": 0.3840115198810851,
+        "matched_act_acc": 0.0,
+        "p_agree": 0.23
+      }
+    },
+    "Far-shifted": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 3,
+        "tp": 3,
+        "fp": 0,
+        "fn": 2,
+        "a_time": 0.21333333333333332,
+        "a_act": 0.0,
+        "a_nec": 1.0,
+        "a_score": 0.4044444444444444,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.35555555555555557,
+        "matched_act_acc": 0.0,
+        "psa": 0.0
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 0.6,
+        "event_f1": 0.7499999999999999,
+        "matched_iou_mean": 0.35555555555555557,
+        "matched_act_acc": 0.0,
+        "p_agree": 0.2
+      }
+    },
+    "Premature firer": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "a_time": 0.0,
+        "a_act": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.6666666666666666,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.0,
+        "matched_act_acc": 1.0,
+        "psa": 0.0
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 1.0,
+        "event_f1": 1.0,
+        "matched_iou_mean": 0.0,
+        "matched_act_acc": 1.0,
+        "p_agree": 0.15
+      }
+    },
+    "Over-extender": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "a_time": 0.34285714285714286,
+        "a_act": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.7809523809523808,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.34285714285714286,
+        "matched_act_acc": 1.0,
+        "psa": 0.0
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 1.0,
+        "event_f1": 1.0,
+        "matched_iou_mean": 0.34285714285714286,
+        "matched_act_acc": 1.0,
+        "p_agree": 0.75
+      }
+    },
+    "Half-coverage perfect": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 3,
+        "tp": 3,
+        "fp": 0,
+        "fn": 2,
+        "a_time": 0.6,
+        "a_act": 0.6,
+        "a_nec": 1.0,
+        "a_score": 0.7333333333333333,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 1.0,
+        "psa": 0.75
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 0.6,
+        "event_f1": 0.7499999999999999,
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 1.0,
+        "p_agree": 0.75
+      }
+    }
+  }
+}
