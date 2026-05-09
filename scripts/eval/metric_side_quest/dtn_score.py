@@ -28,6 +28,7 @@ strategy to land near 1.0.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import Iterable
 
@@ -319,3 +320,279 @@ def find_consistent_selection(gt: RobotGT) -> dict[str, int] | None:
         return False
 
     return dict(selection) if backtrack(0) else None
+
+
+# ── Disjunctive TWSS (the time-weighted soft schedule score, lifted) ─────────
+#
+# Implements eq. (twss-disj) from `twss_metric.tex` §6:
+#
+#   TWSS_disj = Σ_i [ (L_i*/Z) · Q_i · C_i ]  +  w_w · (T_wait*/Z) · q_wait
+#
+# with
+#   Z            = Σ L_i*  +  w_w · T_wait*
+#   q_{i,k,j}    = Gaussian on (Δs, Δe) with σ = α · ℓ_{i,k,j}
+#   q̃_{i,k}     = phase-length-weighted mean over j of q_{i,k,j}
+#   Q_i, k*_i   = max-option quality and the chosen option index
+#   Φ*           = union of selected-option phases
+#   L_i*         = total length of the selected option's phases
+#   T_wait*      = T − |Φ*|
+#   T_fp_eff     = Σ_p √(ℓ_p² + 2δℓ_p),  ℓ_p = pollution length of p
+#                  against the same-skill slice of Φ*
+#   q_wait       = exp(− T_fp_eff / (β · T_wait*))   (vacuous → 1)
+#   C_i          = 1 − max cross-task IoU of option i against any other selected option
+#   C            = length-weighted average of C_i (for reporting)
+#
+# Defaults mirror the tuned single-window TWSS in
+# `generate_timeline_comparison.py` so the two scores are directly
+# comparable when an intervention has one option / one phase.
+
+
+DEFAULT_DTWSS_ALPHA = 1.0
+DEFAULT_DTWSS_BETA = 1.5
+DEFAULT_DTWSS_WAIT_WEIGHT = 0.6
+DEFAULT_DTWSS_BLIP_TAX = 4.0
+
+
+@dataclass
+class DisjunctiveTWSS:
+    twss: float
+    task_score: float           # Σ (L_i*/T) · Q_i  (before C)
+    wait_score: float           # w_w · (T_wait*/T) · q_wait  (before C)
+    wait_quality: float         # q_wait
+    wait_mass: float            # T_wait* / T
+    consistency: float          # C
+    fp_time: float              # raw pollution sum (s)
+    fp_time_eff: float          # blip-tax inflated pollution (s)
+    total_wait_time: float      # T_wait*
+    total_pred_time: float
+    selected_options: dict[str, int] = field(default_factory=dict)
+    per_intervention_q: dict[str, float] = field(default_factory=dict)
+    alpha: float = DEFAULT_DTWSS_ALPHA
+    beta: float = DEFAULT_DTWSS_BETA
+    wait_weight: float = DEFAULT_DTWSS_WAIT_WEIGHT
+    blip_tax_delta: float = DEFAULT_DTWSS_BLIP_TAX
+
+
+def _phase_quality(ph: Phase, preds_for_skill: list[Pred],
+                   alpha: float) -> float:
+    """Best Gaussian (Δs, Δe) decay over same-skill predictions."""
+    L = ph.t_end - ph.t_start
+    sigma = alpha * L if L > 0 else 0.0
+    best = 0.0
+    for p in preds_for_skill:
+        ds = abs(p.start - ph.t_start)
+        de = abs(p.end - ph.t_end)
+        if sigma > 0:
+            q = math.exp(-((ds / sigma) ** 2 + (de / sigma) ** 2))
+        else:
+            q = 1.0 if (ds == 0.0 and de == 0.0) else 0.0
+        if q > best:
+            best = q
+    return best
+
+
+def _option_quality(opt: Option, preds_for_skill: list[Pred],
+                    alpha: float) -> float:
+    """Phase-length-weighted mean of phase qualities (eq. option-q)."""
+    num = 0.0
+    denom = 0.0
+    for ph in opt.phases:
+        L = max(0.0, ph.t_end - ph.t_start)
+        q = _phase_quality(ph, preds_for_skill, alpha)
+        num += L * q
+        denom += L
+    return num / denom if denom > 0 else 0.0
+
+
+def _union_length(intervals: list[tuple[float, float]]) -> float:
+    if not intervals:
+        return 0.0
+    iv = sorted((s, t) for s, t in intervals if t > s)
+    if not iv:
+        return 0.0
+    total = 0.0
+    cur_s, cur_t = iv[0]
+    for s, t in iv[1:]:
+        if s <= cur_t:
+            cur_t = max(cur_t, t)
+        else:
+            total += cur_t - cur_s
+            cur_s, cur_t = s, t
+    total += cur_t - cur_s
+    return total
+
+
+def _overlap_with_union(p_start: float, p_end: float,
+                        merged: list[tuple[float, float]]) -> float:
+    overlap = 0.0
+    for s, t in merged:
+        a = max(p_start, s)
+        b = min(p_end, t)
+        if b > a:
+            overlap += b - a
+    return overlap
+
+
+def compute_disjunctive_twss(
+    gt: RobotGT,
+    preds: Iterable[Pred],
+    *,
+    alpha: float = DEFAULT_DTWSS_ALPHA,
+    beta: float = DEFAULT_DTWSS_BETA,
+    wait_weight: float = DEFAULT_DTWSS_WAIT_WEIGHT,
+    blip_tax_delta: float = DEFAULT_DTWSS_BLIP_TAX,
+) -> DisjunctiveTWSS:
+    """Time-Weighted Soft Schedule Score on a disjunctive GT (twss_metric §6)."""
+    preds = list(preds)
+    T = max(0.0, gt.duration_sec)
+    total_pred_time = sum(p.duration for p in preds)
+
+    if T <= 0 or not gt.interventions:
+        return DisjunctiveTWSS(
+            twss=0.0, task_score=0.0, wait_score=0.0,
+            wait_quality=1.0, wait_mass=1.0 if T > 0 else 0.0,
+            consistency=1.0,
+            fp_time=0.0, fp_time_eff=0.0,
+            total_wait_time=T, total_pred_time=total_pred_time,
+            selected_options={}, per_intervention_q={},
+            alpha=alpha, beta=beta,
+            wait_weight=wait_weight, blip_tax_delta=blip_tax_delta,
+        )
+
+    # Per-intervention: pick the best option (max over options of phase-length
+    # weighted mean phase quality). Track which interventions the agent has
+    # actually committed to (fired any same-skill prediction): a silent agent
+    # has not committed to any plan, so we keep it out of the C calculation
+    # later — otherwise an arbitrary default tiebreak would penalise silence.
+    selected: dict[str, int] = {}
+    Q_per: dict[str, float] = {}
+    L_star: dict[str, float] = {}
+    committed: set[str] = set()
+    selected_phases_by_skill: dict[str, list[tuple[float, float]]] = {}
+    selected_phases_by_iv: dict[str, list[tuple[float, float]]] = {}
+    for iv in gt.interventions:
+        skill_preds = [p for p in preds
+                       if _strip_args(p.skill) == _strip_args(iv.skill)]
+        best_idx = 0
+        best_q = -1.0
+        for k, opt in enumerate(iv.options):
+            q = _option_quality(opt, skill_preds, alpha)
+            if q > best_q:
+                best_q = q
+                best_idx = k
+        if best_q < 0:
+            best_q = 0.0
+        
+        # Only consider the agent committed to an option if it made a prediction
+        # that actually matches the option functionally (q > 0). This prevents
+        # completely wild predictions (like Far-shifted) from defaulting to 
+        # option 0 and causing fake cross-task conflicts.
+        if best_q > 0:
+            committed.add(iv.id)
+
+        selected[iv.id] = best_idx
+        Q_per[iv.id] = best_q
+        chosen = iv.options[best_idx]
+        L_star[iv.id] = sum(max(0.0, ph.t_end - ph.t_start)
+                            for ph in chosen.phases)
+        ivs_phases: list[tuple[float, float]] = []
+        for ph in chosen.phases:
+            s = max(0.0, min(T, ph.t_start))
+            t = max(0.0, min(T, ph.t_end))
+            if t > s:
+                selected_phases_by_skill.setdefault(
+                    _strip_args(iv.skill), []).append((s, t))
+                ivs_phases.append((s, t))
+        selected_phases_by_iv[iv.id] = ivs_phases
+
+    # Wait region = complement of union of selected phases.
+    all_selected_intervals = [iv for ivs in selected_phases_by_iv.values()
+                              for iv in ivs]
+    selected_union_len = _union_length(all_selected_intervals)
+    total_wait_time = max(0.0, T - selected_union_len)
+    
+    L_total = sum(L_star.values())
+    Z = L_total + wait_weight * total_wait_time
+    if Z <= 0:
+        Z = T if T > 0 else 1.0
+
+    wait_mass = total_wait_time / Z
+
+    # Pollution: per-prediction time outside the same-skill selected union.
+    union_by_skill: dict[str, list[tuple[float, float]]] = {}
+    for sk, ivs in selected_phases_by_skill.items():
+        merged: list[tuple[float, float]] = []
+        for s, t in sorted(ivs):
+            if merged and s <= merged[-1][1]:
+                merged[-1] = (merged[-1][0], max(merged[-1][1], t))
+            else:
+                merged.append((s, t))
+        union_by_skill[sk] = merged
+
+    fp_time = 0.0
+    fp_time_eff = 0.0
+    for p in preds:
+        ps = max(0.0, min(T, p.start))
+        pt = max(0.0, min(T, p.end))
+        if pt <= ps:
+            continue
+        sanctioned = union_by_skill.get(_strip_args(p.skill), [])
+        sanc_overlap = _overlap_with_union(ps, pt, sanctioned)
+        ell = (pt - ps) - sanc_overlap
+        if ell <= 0:
+            continue
+        fp_time += ell
+        fp_time_eff += math.sqrt(ell * ell + 2 * blip_tax_delta * ell)
+
+    if total_wait_time <= 0:
+        wait_quality = 1.0
+    else:
+        sigma_w = beta * total_wait_time
+        wait_quality = (math.exp(-fp_time_eff / sigma_w)
+                        if sigma_w > 0 else 0.0)
+    wait_score = wait_weight * wait_mass * wait_quality
+
+    # Consistency: 1 − max cross-task pair IoU, restricted to interventions
+    # the agent committed to (i.e. fired at least one same-skill prediction).
+    # We compute this *per-intervention* to avoid global task-score wipeout.
+    C_per: dict[str, float] = {iid: 1.0 for iid in Q_per}
+    if len(committed) >= 2:
+        ids = list(committed)
+        for i in range(len(ids)):
+            C_worst_i = 0.0
+            for ph_a in selected_phases_by_iv[ids[i]]:
+                for j in range(len(ids)):
+                    if i == j:
+                        continue
+                    for ph_b in selected_phases_by_iv[ids[j]]:
+                        C_worst_i = max(C_worst_i, _iou(
+                            ph_a[0], ph_a[1], ph_b[0], ph_b[1]))
+            C_per[ids[i]] = max(0.0, min(1.0, 1.0 - C_worst_i))
+
+    if L_total > 0:
+        consistency = sum(L_star[iid] * C_per[iid] for iid in Q_per) / L_total
+    else:
+        consistency = 1.0
+
+    # task_score = Σ (L_i*/Z) · Q_i · C_i
+    task_score = sum((L_star[iid] / Z) * Q_per[iid] * C_per[iid] for iid in Q_per)
+
+    # The consistency is now baked into task_score locally.
+    twss = task_score + wait_score
+
+    return DisjunctiveTWSS(
+        twss=twss,
+        task_score=task_score,
+        wait_score=wait_score,
+        wait_quality=wait_quality,
+        wait_mass=wait_mass,
+        consistency=consistency,
+        fp_time=fp_time,
+        fp_time_eff=fp_time_eff,
+        total_wait_time=total_wait_time,
+        total_pred_time=total_pred_time,
+        selected_options=selected,
+        per_intervention_q=Q_per,
+        alpha=alpha, beta=beta,
+        wait_weight=wait_weight, blip_tax_delta=blip_tax_delta,
+    )

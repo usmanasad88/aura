@@ -14,6 +14,19 @@
     "w_n": 0.3333333333333333
   },
   "match_tolerance_sec": 15.0,
+  "twss_alpha": 1.0,
+  "twss_vanilla": {
+    "beta": 0.5,
+    "gamma": 1.0,
+    "wait_weight": 1.0,
+    "blip_tax_delta": 0.0
+  },
+  "twss_tuned": {
+    "beta": 1.5,
+    "gamma": 0.5,
+    "wait_weight": 0.6,
+    "blip_tax_delta": 4.0
+  },
   "adversaries": {
     "Oracle": {
       "ascore": {
@@ -42,6 +55,148 @@
         "matched_iou_mean": 1.0,
         "matched_act_acc": 1.0,
         "p_agree": 1.0
+      },
+      "twss_vanilla": {
+        "twss": 0.9999999999999999,
+        "task_score": 0.6499999999999999,
+        "task_mass_available": 0.65,
+        "wait_score": 0.35,
+        "wait_quality": 1.0,
+        "wait_mass": 0.35,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 1.0,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 1.0,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 1.0,
+        "task_score": 0.7558139534883722,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.2441860465116279,
+        "wait_quality": 1.0,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 1.0,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 1.0,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Silent": {
@@ -71,6 +226,148 @@
         "matched_iou_mean": 0.0,
         "matched_act_acc": 0.0,
         "p_agree": 0.35
+      },
+      "twss_vanilla": {
+        "twss": 0.35,
+        "task_score": 0.0,
+        "task_mass_available": 0.65,
+        "wait_score": 0.35,
+        "wait_quality": 1.0,
+        "wait_mass": 0.35,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 0,
+        "n_gt": 5,
+        "n_pred": 0,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.2441860465116279,
+        "task_score": 0.0,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.2441860465116279,
+        "wait_quality": 1.0,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 0,
+        "n_gt": 5,
+        "n_pred": 0,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Spammer": {
@@ -100,6 +397,148 @@
         "matched_iou_mean": 0.0,
         "matched_act_acc": 0.2,
         "p_agree": 0.19
+      },
+      "twss_vanilla": {
+        "twss": 0.1215663698354211,
+        "task_score": 0.11437976489191995,
+        "task_mass_available": 0.65,
+        "wait_score": 0.0071866049435011445,
+        "wait_quality": 0.020533156981431842,
+        "wait_mass": 0.35,
+        "fp_time": 68.0,
+        "fp_time_eff": 68.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 80.0,
+        "n_gt": 5,
+        "n_pred": 20,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.762531765946133,
+            "matched_pred_idx": 3,
+            "dstart": 5.0,
+            "dend": 6.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.1503043414198358,
+        "task_score": 0.12439736657185213,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.025906974847983693,
+        "wait_quality": 0.10609523032983799,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 68.0,
+        "fp_time_eff": 117.77945491468368,
+        "total_wait_time": 35.0,
+        "total_pred_time": 80.0,
+        "n_gt": 5,
+        "n_pred": 20,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.762531765946133,
+            "matched_pred_idx": 3,
+            "dstart": 5.0,
+            "dend": 6.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "One-shot blanket": {
@@ -129,6 +568,148 @@
         "matched_iou_mean": 0.15,
         "matched_act_acc": 1.0,
         "p_agree": 0.15
+      },
+      "twss_vanilla": {
+        "twss": 0.0027204309297969393,
+        "task_score": 1.3357015862746575e-12,
+        "task_mass_available": 0.65,
+        "wait_score": 0.002720430928461238,
+        "wait_quality": 0.0077726597956035365,
+        "wait_mass": 0.35,
+        "fp_time": 85.0,
+        "fp_time_eff": 85.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 100.0,
+        "n_gt": 5,
+        "n_pred": 1,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 8.90467724183105e-12,
+            "matched_pred_idx": 0,
+            "dstart": 10.0,
+            "dend": 75.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.04489854263770287,
+        "task_score": 1.4526849221575092e-12,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.044898542636250184,
+        "wait_quality": 0.1838702222246436,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 85.0,
+        "fp_time_eff": 88.91006692158093,
+        "total_wait_time": 35.0,
+        "total_pred_time": 100.0,
+        "n_gt": 5,
+        "n_pred": 1,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 8.90467724183105e-12,
+            "matched_pred_idx": 0,
+            "dstart": 10.0,
+            "dend": 75.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Right-time-wrong-action": {
@@ -158,6 +739,148 @@
         "matched_iou_mean": 1.0,
         "matched_act_acc": 0.0,
         "p_agree": 0.35
+      },
+      "twss_vanilla": {
+        "twss": 0.00853049542564786,
+        "task_score": 0.0,
+        "task_mass_available": 0.65,
+        "wait_score": 0.00853049542564786,
+        "wait_quality": 0.0243728440732796,
+        "wait_mass": 0.35,
+        "fp_time": 65.0,
+        "fp_time_eff": 65.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.0506757607416738,
+        "task_score": 0.0,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.0506757607416738,
+        "wait_quality": 0.20752930589447366,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 65.0,
+        "fp_time_eff": 82.5553425930176,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Near-miss timing": {
@@ -187,6 +910,148 @@
         "matched_iou_mean": 0.3840115198810851,
         "matched_act_acc": 0.0,
         "p_agree": 0.23
+      },
+      "twss_vanilla": {
+        "twss": 0.17046573580547594,
+        "task_score": 0.14918221388664965,
+        "task_mass_available": 0.65,
+        "wait_score": 0.02128352191882629,
+        "wait_quality": 0.06081006262521797,
+        "wait_mass": 0.35,
+        "fp_time": 49.0,
+        "fp_time_eff": 49.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 58.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.2780373004531941,
+            "matched_pred_idx": 0,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.2780373004531941,
+            "matched_pred_idx": 1,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.2780373004531941,
+            "matched_pred_idx": 2,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.056134762834133725,
+            "matched_pred_idx": 3,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.18451952399298926,
+            "matched_pred_idx": 4,
+            "dstart": 12.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.23807494735778972,
+        "task_score": 0.1681301573070961,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.06994479005069364,
+        "wait_quality": 0.28644056877903107,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 49.0,
+        "fp_time_eff": 65.63677066602577,
+        "total_wait_time": 35.0,
+        "total_pred_time": 58.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.2780373004531941,
+            "matched_pred_idx": 0,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.2780373004531941,
+            "matched_pred_idx": 1,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.2780373004531941,
+            "matched_pred_idx": 2,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.056134762834133725,
+            "matched_pred_idx": 3,
+            "dstart": 12.0,
+            "dend": 12.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.18451952399298926,
+            "matched_pred_idx": 4,
+            "dstart": 12.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Far-shifted": {
@@ -216,6 +1081,148 @@
         "matched_iou_mean": 0.35555555555555557,
         "matched_act_acc": 0.0,
         "p_agree": 0.2
+      },
+      "twss_vanilla": {
+        "twss": 0.026900158629324954,
+        "task_score": 0.00015095818255613031,
+        "task_mass_available": 0.65,
+        "wait_score": 0.026749200446768824,
+        "wait_quality": 0.07642628699076807,
+        "wait_mass": 0.35,
+        "fp_time": 45.0,
+        "fp_time_eff": 45.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 45.0,
+        "n_gt": 5,
+        "n_pred": 3,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.00033546262790251185,
+            "matched_pred_idx": 0,
+            "dstart": 30.0,
+            "dend": 30.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.00033546262790251185,
+            "matched_pred_idx": 1,
+            "dstart": 30.0,
+            "dend": 30.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.00033546262790251185,
+            "matched_pred_idx": 2,
+            "dstart": 30.0,
+            "dend": 30.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.08464706328839339,
+        "task_score": 0.00016417939300889482,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.0844828838953845,
+        "wait_quality": 0.3459775245239556,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 45.0,
+        "fp_time_eff": 55.72252686302013,
+        "total_wait_time": 35.0,
+        "total_pred_time": 45.0,
+        "n_gt": 5,
+        "n_pred": 3,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.00033546262790251185,
+            "matched_pred_idx": 0,
+            "dstart": 30.0,
+            "dend": 30.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.00033546262790251185,
+            "matched_pred_idx": 1,
+            "dstart": 30.0,
+            "dend": 30.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.00033546262790251185,
+            "matched_pred_idx": 2,
+            "dstart": 30.0,
+            "dend": 30.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Premature firer": {
@@ -245,6 +1252,148 @@
         "matched_iou_mean": 0.0,
         "matched_act_acc": 1.0,
         "p_agree": 0.15
+      },
+      "twss_vanilla": {
+        "twss": 0.0895555810396657,
+        "task_score": 0.07820394672648727,
+        "task_mass_available": 0.65,
+        "wait_score": 0.011351634313178432,
+        "wait_quality": 0.032433240894795524,
+        "wait_mass": 0.35,
+        "fp_time": 60.0,
+        "fp_time_eff": 60.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 60.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.2358770829857,
+            "matched_pred_idx": 0,
+            "dstart": 10.0,
+            "dend": 15.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.1353352832366127,
+            "matched_pred_idx": 1,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.1353352832366127,
+            "matched_pred_idx": 2,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.011108996538242306,
+            "matched_pred_idx": 3,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.011108996538242306,
+            "matched_pred_idx": 4,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.14150334396118927,
+        "task_score": 0.08559627106890863,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.05590707289228063,
+        "wait_quality": 0.2289527747017207,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 60.0,
+        "fp_time_eff": 77.39757483700964,
+        "total_wait_time": 35.0,
+        "total_pred_time": 60.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.2358770829857,
+            "matched_pred_idx": 0,
+            "dstart": 10.0,
+            "dend": 15.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.1353352832366127,
+            "matched_pred_idx": 1,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.1353352832366127,
+            "matched_pred_idx": 2,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.011108996538242306,
+            "matched_pred_idx": 3,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.011108996538242306,
+            "matched_pred_idx": 4,
+            "dstart": 15.0,
+            "dend": 15.0,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Over-extender": {
@@ -254,26 +1403,510 @@
         "tp": 5,
         "fp": 0,
         "fn": 0,
-        "a_time": 0.34285714285714286,
+        "a_time": 0.7166666666666666,
         "a_act": 1.0,
         "a_nec": 1.0,
-        "a_score": 0.7809523809523808,
+        "a_score": 0.9055555555555554,
         "weights": [
           0.3333333333333333,
           0.3333333333333333,
           0.3333333333333333
         ],
-        "matched_iou_mean": 0.34285714285714286,
+        "matched_iou_mean": 0.7166666666666666,
         "matched_act_acc": 1.0,
-        "psa": 0.0
+        "psa": 0.75
       },
       "baselines": {
         "event_precision": 1.0,
         "event_recall": 1.0,
         "event_f1": 1.0,
-        "matched_iou_mean": 0.34285714285714286,
+        "matched_iou_mean": 0.7166666666666666,
         "matched_act_acc": 1.0,
         "p_agree": 0.75
+      },
+      "twss_vanilla": {
+        "twss": 0.6423157119353688,
+        "task_score": 0.5584378491807473,
+        "task_mass_available": 0.65,
+        "wait_score": 0.08387786275462153,
+        "wait_quality": 0.2396510364417758,
+        "wait_mass": 0.35,
+        "fp_time": 25.0,
+        "fp_time_eff": 25.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 90.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.8948393168143698,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.8948393168143698,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.8948393168143698,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.7587256137701693,
+        "task_score": 0.6454191349604661,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.11330647880970325,
+        "wait_quality": 0.46401700845878474,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 25.0,
+        "fp_time_eff": 40.311288741492746,
+        "total_wait_time": 35.0,
+        "total_pred_time": 90.0,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.8948393168143698,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.8948393168143698,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.8948393168143698,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      }
+    },
+    "Late-start early-stop": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "a_time": 0.25,
+        "a_act": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.75,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.25,
+        "matched_act_acc": 1.0,
+        "psa": 0.5125
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 1.0,
+        "event_f1": 1.0,
+        "matched_iou_mean": 0.25,
+        "matched_act_acc": 1.0,
+        "p_agree": 0.5125
+      },
+      "twss_vanilla": {
+        "twss": 0.8406457412928547,
+        "task_score": 0.49064574129285476,
+        "task_mass_available": 0.65,
+        "wait_score": 0.35,
+        "wait_quality": 1.0,
+        "wait_mass": 0.35,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 16.25,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 0,
+            "dstart": 5.625,
+            "dend": 5.625,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 1,
+            "dstart": 5.625,
+            "dend": 5.625,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 2,
+            "dstart": 5.625,
+            "dend": 5.625,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 3,
+            "dstart": 3.75,
+            "dend": 3.75,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 4,
+            "dstart": 3.75,
+            "dend": 3.75,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.8147043503405289,
+        "task_score": 0.570518303828901,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.2441860465116279,
+        "wait_quality": 1.0,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 16.25,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 0,
+            "dstart": 5.625,
+            "dend": 5.625,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 1,
+            "dstart": 5.625,
+            "dend": 5.625,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 2,
+            "dstart": 5.625,
+            "dend": 5.625,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 3,
+            "dstart": 3.75,
+            "dend": 3.75,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.7548396019890073,
+            "matched_pred_idx": 4,
+            "dstart": 3.75,
+            "dend": 3.75,
+            "sigma": 10.0
+          }
+        ]
+      }
+    },
+    "Wait-period blip": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 6,
+        "tp": 5,
+        "fp": 1,
+        "fn": 0,
+        "a_time": 1.0,
+        "a_act": 1.0,
+        "a_nec": 0.9285714285714286,
+        "a_score": 0.9761904761904762,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 1.0,
+        "psa": 0.95
+      },
+      "baselines": {
+        "event_precision": 0.8333333333333334,
+        "event_recall": 1.0,
+        "event_f1": 0.9090909090909091,
+        "matched_iou_mean": 1.0,
+        "matched_act_acc": 1.0,
+        "p_agree": 0.95
+      },
+      "twss_vanilla": {
+        "twss": 0.9130170525763499,
+        "task_score": 0.6499999999999999,
+        "task_mass_available": 0.65,
+        "wait_score": 0.26301705257635005,
+        "wait_quality": 0.751477293075286,
+        "wait_mass": 0.35,
+        "fp_time": 5.0,
+        "fp_time_eff": 5.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 70.0,
+        "n_gt": 5,
+        "n_pred": 6,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 1.0,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 1.0,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.9652385191746446,
+        "task_score": 0.7558139534883722,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.2094245656862724,
+        "wait_quality": 0.8576434594771156,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 5.0,
+        "fp_time_eff": 8.06225774829855,
+        "total_wait_time": 35.0,
+        "total_pred_time": 70.0,
+        "n_gt": 5,
+        "n_pred": 6,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 1.0,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 1.0,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          }
+        ]
       }
     },
     "Half-coverage perfect": {
@@ -303,6 +1936,148 @@
         "matched_iou_mean": 1.0,
         "matched_act_acc": 1.0,
         "p_agree": 0.75
+      },
+      "twss_vanilla": {
+        "twss": 0.75,
+        "task_score": 0.4,
+        "task_mass_available": 0.65,
+        "wait_score": 0.35,
+        "wait_quality": 1.0,
+        "wait_mass": 0.35,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 40.0,
+        "n_gt": 5,
+        "n_pred": 3,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 1.0,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 1.0,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.7036616687387354,
+        "task_score": 0.4594756222271074,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.2441860465116279,
+        "wait_quality": 1.0,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 40.0,
+        "n_gt": 5,
+        "n_pred": 3,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584265,
+            "q_i": 1.0,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.13320104029542212,
+            "q_i": 1.0,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 0.0,
+            "sigma": 10.0
+          }
+        ]
       }
     }
   }

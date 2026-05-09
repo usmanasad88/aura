@@ -37,6 +37,12 @@
       ]
     }
   ],
+  "twss": {
+    "alpha": 1.0,
+    "beta": 1.5,
+    "wait_weight": 0.6,
+    "blip_tax_delta": 4.0
+  },
   "adversaries": {
     "Oracle (consistent)": {
       "score": {
@@ -74,6 +80,32 @@
           0.2,
           0.2
         ]
+      },
+      "twss": {
+        "twss": 1.0,
+        "task_score": 0.6756756756756757,
+        "wait_score": 0.32432432432432434,
+        "wait_quality": 1.0,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 20.0,
+        "total_pred_time": 25.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
       },
       "preds": [
         {
@@ -140,6 +172,32 @@
           0.2
         ]
       },
+      "twss": {
+        "twss": 0.625,
+        "task_score": 0.25,
+        "wait_score": 0.375,
+        "wait_quality": 1.0,
+        "wait_mass": 0.625,
+        "consistency": 0.4,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 25.0,
+        "total_pred_time": 25.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_intervention_q": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
       "preds": [
         {
           "skill": "task_1",
@@ -204,6 +262,32 @@
           0.2,
           0.2
         ]
+      },
+      "twss": {
+        "twss": 0.5,
+        "task_score": 0.125,
+        "wait_score": 0.375,
+        "wait_quality": 1.0,
+        "wait_mass": 0.625,
+        "consistency": 0.2,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 25.0,
+        "total_pred_time": 25.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 1,
+          "task_3": 0
+        },
+        "per_intervention_q": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
       },
       "preds": [
         {
@@ -270,6 +354,32 @@
           0.2
         ]
       },
+      "twss": {
+        "twss": 0.7297750625172859,
+        "task_score": 0.4054507381929615,
+        "wait_score": 0.32432432432432434,
+        "wait_quality": 1.0,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 20.0,
+        "total_pred_time": 15.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 0.5000000000000063,
+          "task_2": 0.5001677313139512,
+          "task_3": 1.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
       "preds": [
         {
           "skill": "task_1",
@@ -325,6 +435,32 @@
           0.2
         ]
       },
+      "twss": {
+        "twss": 0.7297297297297298,
+        "task_score": 0.40540540540540543,
+        "wait_score": 0.32432432432432434,
+        "wait_quality": 1.0,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 20.0,
+        "total_pred_time": 15.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 1.0,
+          "task_2": 0.0,
+          "task_3": 1.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
       "preds": [
         {
           "skill": "task_1",
@@ -379,6 +515,32 @@
           0.2,
           0.2
         ]
+      },
+      "twss": {
+        "twss": 0.3689440622803043,
+        "task_score": 0.125,
+        "wait_score": 0.24394406228030427,
+        "wait_quality": 0.6505174994141447,
+        "wait_mass": 0.625,
+        "consistency": 0.2,
+        "fp_time": 10.0,
+        "fp_time_eff": 16.1245154965971,
+        "total_wait_time": 25.0,
+        "total_pred_time": 25.0,
+        "selected_options": {
+          "task_1": 1,
+          "task_2": 1,
+          "task_3": 0
+        },
+        "per_intervention_q": {
+          "task_1": 0.5,
+          "task_2": 0.5676676416183064,
+          "task_3": 1.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
       },
       "preds": [
         {
@@ -445,6 +607,32 @@
           0.2
         ]
       },
+      "twss": {
+        "twss": 0.7372506293962833,
+        "task_score": 0.5643717644670757,
+        "wait_score": 0.17287886492920757,
+        "wait_quality": 0.5330431668650566,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 7.5,
+        "fp_time_eff": 18.874586088176876,
+        "total_wait_time": 20.0,
+        "total_pred_time": 25.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 0.835270211411272,
+          "task_2": 0.835270211411272,
+          "task_3": 0.835270211411272
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
       "preds": [
         {
           "skill": "task_1",
@@ -509,6 +697,32 @@
           0.2,
           0.2
         ]
+      },
+      "twss": {
+        "twss": 0.22859829506816753,
+        "task_score": 0.0,
+        "wait_score": 0.22859829506816753,
+        "wait_quality": 0.546095927107289,
+        "wait_mass": 0.6976744186046512,
+        "consistency": 0.0,
+        "fp_time": 14.0,
+        "fp_time_eff": 27.223228259835317,
+        "total_wait_time": 30.0,
+        "total_pred_time": 22.0,
+        "selected_options": {
+          "task_1": 1,
+          "task_2": 1,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 0.6064506465168312,
+          "task_2": 0.37299506590903053,
+          "task_3": 0.028438824714184498
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
       },
       "preds": [
         {
@@ -575,6 +789,32 @@
           0.2
         ]
       },
+      "twss": {
+        "twss": 0.7710618190378267,
+        "task_score": 0.5750016257995022,
+        "wait_score": 0.19606019323832446,
+        "wait_quality": 0.6045189291515004,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 6.0,
+        "fp_time_eff": 15.0996688705415,
+        "total_wait_time": 20.0,
+        "total_pred_time": 23.5,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 0.835270211411272,
+          "task_2": 0.8746006983412501,
+          "task_3": 0.835270211411272
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
       "preds": [
         {
           "skill": "task_1",
@@ -640,6 +880,32 @@
           0.2
         ]
       },
+      "twss": {
+        "twss": 0.4584900914903417,
+        "task_score": 0.3562786648939517,
+        "wait_score": 0.10221142659638997,
+        "wait_quality": 0.3151518986722024,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 20.0,
+        "fp_time_eff": 34.64101615137754,
+        "total_wait_time": 20.0,
+        "total_pred_time": 45.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 0.5272924240430485,
+          "task_2": 0.5272924240430485,
+          "task_3": 0.5272924240430485
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
       "preds": [
         {
           "skill": "task_1",
@@ -665,6 +931,193 @@
           "skill": "task_3",
           "start": 35.0,
           "end": 44.0
+        }
+      ]
+    },
+    "Late-start early-stop": {
+      "score": {
+        "a_disj": 0.25,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.7,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 0.25,
+          "task_2": 0.25,
+          "task_3": 0.25
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            0.25,
+            0.25
+          ],
+          "task_2": [
+            0.25,
+            0.25
+          ],
+          "task_3": [
+            0.25
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "twss": {
+        "twss": 0.834351082425005,
+        "task_score": 0.5100267581006807,
+        "wait_score": 0.32432432432432434,
+        "wait_quality": 1.0,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 20.0,
+        "total_pred_time": 6.25,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 0.7548396019890073,
+          "task_2": 0.7548396019890073,
+          "task_3": 0.7548396019890073
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 6.875,
+          "end": 8.125
+        },
+        {
+          "skill": "task_1",
+          "start": 26.875,
+          "end": 28.125
+        },
+        {
+          "skill": "task_2",
+          "start": 1.875,
+          "end": 3.125
+        },
+        {
+          "skill": "task_2",
+          "start": 11.875,
+          "end": 13.125
+        },
+        {
+          "skill": "task_3",
+          "start": 36.875,
+          "end": 38.125
+        }
+      ]
+    },
+    "Wait-period blip": {
+      "score": {
+        "a_disj": 1.0,
+        "a_act": 1.0,
+        "a_cons": 1.0,
+        "a_nec": 0.9433962264150944,
+        "a_score": 0.9886792452830189,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_task_disj": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "per_task_phase_ious": {
+          "task_1": [
+            1.0,
+            1.0
+          ],
+          "task_2": [
+            1.0,
+            1.0
+          ],
+          "task_3": [
+            1.0
+          ]
+        },
+        "weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "twss": {
+        "twss": 0.9616532631299832,
+        "task_score": 0.6756756756756757,
+        "wait_score": 0.28597758745430757,
+        "wait_quality": 0.881764227984115,
+        "wait_mass": 0.5405405405405406,
+        "consistency": 1.0,
+        "fp_time": 1.5,
+        "fp_time_eff": 3.774917217635375,
+        "total_wait_time": 20.0,
+        "total_pred_time": 26.5,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 1
+        },
+        "per_intervention_q": {
+          "task_1": 1.0,
+          "task_2": 1.0,
+          "task_3": 1.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
+      },
+      "preds": [
+        {
+          "skill": "task_1",
+          "start": 5.0,
+          "end": 10.0
+        },
+        {
+          "skill": "task_1",
+          "start": 25.0,
+          "end": 30.0
+        },
+        {
+          "skill": "task_2",
+          "start": 0.0,
+          "end": 5.0
+        },
+        {
+          "skill": "task_2",
+          "start": 10.0,
+          "end": 15.0
+        },
+        {
+          "skill": "task_3",
+          "start": 35.0,
+          "end": 40.0
+        },
+        {
+          "skill": "spurious_action",
+          "start": 19.25,
+          "end": 20.75
         }
       ]
     },
@@ -704,6 +1157,32 @@
           0.2,
           0.2
         ]
+      },
+      "twss": {
+        "twss": 0.1332744549588496,
+        "task_score": 2.1423857805212475e-16,
+        "wait_score": 0.13327445495884938,
+        "wait_quality": 0.35539854655693165,
+        "wait_mass": 0.625,
+        "consistency": 1.0,
+        "fp_time": 35.0,
+        "fp_time_eff": 38.79432948254165,
+        "total_wait_time": 25.0,
+        "total_pred_time": 45.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_intervention_q": {
+          "task_1": 8.56954312208499e-16,
+          "task_2": 0.0,
+          "task_3": 0.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
       },
       "preds": [
         {
@@ -749,6 +1228,32 @@
           0.2,
           0.2
         ]
+      },
+      "twss": {
+        "twss": 0.29074740033496377,
+        "task_score": 0.20468268826949548,
+        "wait_score": 0.08606471206546829,
+        "wait_quality": 0.22950589884124875,
+        "wait_mass": 0.625,
+        "consistency": 1.0,
+        "fp_time": 24.0,
+        "fp_time_eff": 55.193495504995376,
+        "total_wait_time": 25.0,
+        "total_pred_time": 30.0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_intervention_q": {
+          "task_1": 0.8187307530779819,
+          "task_2": 0.0,
+          "task_3": 0.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
       },
       "preds": [
         {
@@ -864,6 +1369,32 @@
           0.2,
           0.2
         ]
+      },
+      "twss": {
+        "twss": 0.375,
+        "task_score": 0.0,
+        "wait_score": 0.375,
+        "wait_quality": 1.0,
+        "wait_mass": 0.625,
+        "consistency": 1.0,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 25.0,
+        "total_pred_time": 0,
+        "selected_options": {
+          "task_1": 0,
+          "task_2": 0,
+          "task_3": 0
+        },
+        "per_intervention_q": {
+          "task_1": 0.0,
+          "task_2": 0.0,
+          "task_3": 0.0
+        },
+        "alpha": 1.0,
+        "beta": 1.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0
       },
       "preds": []
     }

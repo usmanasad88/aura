@@ -6,82 +6,591 @@
     "w_n": 0.3333333333333333
   },
   "match_tolerance_sec": 15.0,
+  "twss_alpha": 1.0,
+  "twss_vanilla": {
+    "beta": 0.5,
+    "gamma": 1.0,
+    "wait_weight": 1.0,
+    "blip_tax_delta": 0.0
+  },
+  "twss_tuned": {
+    "beta": 1.5,
+    "gamma": 0.5,
+    "wait_weight": 0.6,
+    "blip_tax_delta": 4.0
+  },
   "ablations": {
     "GT intent results (skip intent monitor) + perception": {
-      "n_gt": 4,
-      "n_pred": 5,
-      "tp": 4,
-      "fp": 1,
-      "fn": 0,
-      "a_time": 0.51644683255089,
-      "a_act": 1.0,
-      "a_nec": 0.9090881546455788,
-      "a_score": 0.8085116623988229,
-      "weights": [
-        0.3333333333333333,
-        0.3333333333333333,
-        0.3333333333333333
-      ],
-      "matched_iou_mean": 0.51644683255089,
-      "matched_act_acc": 1.0,
-      "psa": 0.6078444444444444
-    },
-    "GT intent prev-state, no perception": {
-      "n_gt": 4,
-      "n_pred": 5,
-      "tp": 3,
-      "fp": 2,
-      "fn": 1,
-      "a_time": 0.31583076923076925,
-      "a_act": 0.5,
-      "a_nec": 0.7714304759365419,
-      "a_score": 0.529087081722437,
-      "weights": [
-        0.3333333333333333,
-        0.3333333333333333,
-        0.3333333333333333
-      ],
-      "matched_iou_mean": 0.42110769230769235,
-      "matched_act_acc": 0.6666666666666666,
-      "psa": 0.6592592592592592
+      "ascore": {
+        "n_gt": 4,
+        "n_pred": 5,
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "a_time": 0.5541319584090135,
+        "a_act": 1.0,
+        "a_nec": 0.9090881546455788,
+        "a_score": 0.8210733710181974,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.5541319584090135,
+        "matched_act_acc": 1.0,
+        "psa": 0.6559925925925926
+      },
+      "twss_vanilla": {
+        "twss": 0.7630734851128612,
+        "task_score": 0.5561362911755038,
+        "task_mass_available": 0.6518518518518519,
+        "wait_score": 0.2069371939373574,
+        "wait_quality": 0.5943940676924095,
+        "wait_mass": 0.34814814814814815,
+        "fp_time": 24.449999999999996,
+        "fp_time_eff": 24.449999999999996,
+        "total_wait_time": 94.0,
+        "total_pred_time": 132.018,
+        "n_gt": 4,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1277777777777778,
+            "q_i": 0.8631414883089557,
+            "matched_pred_idx": 0,
+            "dstart": 2.5010000000000003,
+            "dend": 12.997,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.1314814814814815,
+            "q_i": 0.8703976229220933,
+            "matched_pred_idx": 1,
+            "dstart": 2.493000000000002,
+            "dend": 12.989000000000004,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.24074074074074076,
+            "q_i": 0.9378591596394846,
+            "matched_pred_idx": 2,
+            "dstart": 3.9819999999999993,
+            "dend": 15.974999999999994,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.15185185185185188,
+            "q_i": 0.6955721044006395,
+            "matched_pred_idx": 4,
+            "dstart": 5.973000000000013,
+            "dend": 23.97,
+            "sigma": 41.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.8284969996792529,
+        "task_score": 0.6413632916352761,
+        "task_mass_available": 0.7573149741824441,
+        "wait_score": 0.18713370804397692,
+        "wait_quality": 0.7710970522946851,
+        "wait_mass": 0.4044750430292599,
+        "fp_time": 24.449999999999996,
+        "fp_time_eff": 36.6516859178276,
+        "total_wait_time": 94.0,
+        "total_pred_time": 132.018,
+        "n_gt": 4,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1691515285884785,
+            "q_i": 0.8631414883089557,
+            "matched_pred_idx": 0,
+            "dstart": 2.5010000000000003,
+            "dend": 12.997,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.17158548861360662,
+            "q_i": 0.8703976229220933,
+            "matched_pred_idx": 1,
+            "dstart": 2.493000000000002,
+            "dend": 12.989000000000004,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.23217906480092607,
+            "q_i": 0.9378591596394846,
+            "matched_pred_idx": 2,
+            "dstart": 3.9819999999999993,
+            "dend": 15.974999999999994,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.18439889217943292,
+            "q_i": 0.6955721044006395,
+            "matched_pred_idx": 4,
+            "dstart": 5.973000000000013,
+            "dend": 23.97,
+            "sigma": 41.0
+          }
+        ]
+      }
     },
     "GT intent prev-state + perception": {
-      "n_gt": 4,
-      "n_pred": 6,
-      "tp": 4,
-      "fp": 2,
-      "fn": 0,
-      "a_time": 0.16426680732166277,
-      "a_act": 0.5,
-      "a_nec": 0.2978587612087946,
-      "a_score": 0.3207085228434858,
-      "weights": [
-        0.3333333333333333,
-        0.3333333333333333,
-        0.3333333333333333
-      ],
-      "matched_iou_mean": 0.16426680732166277,
-      "matched_act_acc": 0.5,
-      "psa": 0.5743148148148148
+      "ascore": {
+        "n_gt": 4,
+        "n_pred": 6,
+        "tp": 4,
+        "fp": 2,
+        "fn": 0,
+        "a_time": 0.1781493397396643,
+        "a_act": 0.5,
+        "a_nec": 0.2978587612087946,
+        "a_score": 0.32533603364948627,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.1781493397396643,
+        "matched_act_acc": 0.5,
+        "psa": 0.622462962962963
+      },
+      "twss_vanilla": {
+        "twss": 0.797121165056498,
+        "task_score": 0.5155355294980574,
+        "task_mass_available": 0.6518518518518519,
+        "wait_score": 0.2815856355584407,
+        "wait_quality": 0.8088098042636063,
+        "wait_mass": 0.34814814814814815,
+        "fp_time": 9.973000000000013,
+        "fp_time_eff": 9.973000000000013,
+        "total_wait_time": 94.0,
+        "total_pred_time": 94.01100000000001,
+        "n_gt": 4,
+        "n_pred": 6,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1277777777777778,
+            "q_i": 0.6816214525997493,
+            "matched_pred_idx": 0,
+            "dstart": 7.502000000000001,
+            "dend": 19.998,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.1314814814814815,
+            "q_i": 0.7938551018756829,
+            "matched_pred_idx": 1,
+            "dstart": 1.5080000000000027,
+            "dend": 16.989999999999995,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.24074074074074076,
+            "q_i": 0.9583808165623641,
+            "matched_pred_idx": 3,
+            "dstart": 6.0190000000000055,
+            "dend": 11.97399999999999,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.15185185185185188,
+            "q_i": 0.6146839916254562,
+            "matched_pred_idx": 5,
+            "dstart": 5.973000000000013,
+            "dend": 27.971000000000004,
+            "sigma": 41.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.8008531866135651,
+        "task_score": 0.5873743349784537,
+        "task_mass_available": 0.7573149741824441,
+        "wait_score": 0.2134788516351114,
+        "wait_quality": 0.8796539914893597,
+        "wait_mass": 0.4044750430292599,
+        "fp_time": 9.973000000000013,
+        "fp_time_eff": 18.079956285020018,
+        "total_wait_time": 94.0,
+        "total_pred_time": 94.01100000000001,
+        "n_gt": 4,
+        "n_pred": 6,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1691515285884785,
+            "q_i": 0.6816214525997493,
+            "matched_pred_idx": 0,
+            "dstart": 7.502000000000001,
+            "dend": 19.998,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.17158548861360662,
+            "q_i": 0.7938551018756829,
+            "matched_pred_idx": 1,
+            "dstart": 1.5080000000000027,
+            "dend": 16.989999999999995,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.23217906480092607,
+            "q_i": 0.9583808165623641,
+            "matched_pred_idx": 3,
+            "dstart": 6.0190000000000055,
+            "dend": 11.97399999999999,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.18439889217943292,
+            "q_i": 0.6146839916254562,
+            "matched_pred_idx": 5,
+            "dstart": 5.973000000000013,
+            "dend": 27.971000000000004,
+            "sigma": 41.0
+          }
+        ]
+      }
+    },
+    "GT intent prev-state, no perception": {
+      "ascore": {
+        "n_gt": 4,
+        "n_pred": 5,
+        "tp": 3,
+        "fp": 2,
+        "fn": 1,
+        "a_time": 0.35946555183946494,
+        "a_act": 0.5,
+        "a_nec": 0.7714304759365419,
+        "a_score": 0.5436320092586688,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.4792874024526199,
+        "matched_act_acc": 0.6666666666666666,
+        "psa": 0.6704148148148148
+      },
+      "twss_vanilla": {
+        "twss": 0.7565657759701354,
+        "task_score": 0.4690960758042969,
+        "task_mass_available": 0.6518518518518519,
+        "wait_score": 0.2874697001658385,
+        "wait_quality": 0.8257108409018765,
+        "wait_mass": 0.34814814814814815,
+        "fp_time": 9.000999999999998,
+        "fp_time_eff": 9.000999999999998,
+        "total_wait_time": 94.0,
+        "total_pred_time": 105.01400000000001,
+        "n_gt": 4,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1277777777777778,
+            "q_i": 0.9340226549884464,
+            "matched_pred_idx": 0,
+            "dstart": 7.502000000000001,
+            "dend": 4.995999999999995,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.1314814814814815,
+            "q_i": 0.8906015804679271,
+            "matched_pred_idx": 3,
+            "dstart": 1.5080000000000027,
+            "dend": 11.989000000000004,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.24074074074074076,
+            "q_i": 0.9663969655914977,
+            "matched_pred_idx": 4,
+            "dstart": 1.0180000000000007,
+            "dend": 11.97399999999999,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.15185185185185188,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 41.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.753809599197429,
+        "task_score": 0.535182810869691,
+        "task_mass_available": 0.7573149741824441,
+        "wait_score": 0.2186267883277379,
+        "wait_quality": 0.9008664114781257,
+        "wait_mass": 0.4044750430292599,
+        "fp_time": 9.000999999999998,
+        "fp_time_eff": 14.720160203604769,
+        "total_wait_time": 94.0,
+        "total_pred_time": 105.01400000000001,
+        "n_gt": 4,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1691515285884785,
+            "q_i": 0.9340226549884464,
+            "matched_pred_idx": 0,
+            "dstart": 7.502000000000001,
+            "dend": 4.995999999999995,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.17158548861360662,
+            "q_i": 0.8906015804679271,
+            "matched_pred_idx": 3,
+            "dstart": 1.5080000000000027,
+            "dend": 11.989000000000004,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.23217906480092607,
+            "q_i": 0.9663969655914977,
+            "matched_pred_idx": 4,
+            "dstart": 1.0180000000000007,
+            "dend": 11.97399999999999,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.18439889217943292,
+            "q_i": 0.0,
+            "matched_pred_idx": null,
+            "dstart": null,
+            "dend": null,
+            "sigma": 41.0
+          }
+        ]
+      }
     },
     "Self intent prev-state + perception": {
-      "n_gt": 4,
-      "n_pred": 4,
-      "tp": 2,
-      "fp": 2,
-      "fn": 2,
-      "a_time": 0.05367969003624392,
-      "a_act": 0.25,
-      "a_nec": 0.5000178552297967,
-      "a_score": 0.2678991817553469,
-      "weights": [
-        0.3333333333333333,
-        0.3333333333333333,
-        0.3333333333333333
-      ],
-      "matched_iou_mean": 0.10735938007248784,
-      "matched_act_acc": 0.5,
-      "psa": 0.32943333333333347
+      "ascore": {
+        "n_gt": 4,
+        "n_pred": 4,
+        "tp": 2,
+        "fp": 2,
+        "fn": 2,
+        "a_time": 0.0675642056731623,
+        "a_act": 0.25,
+        "a_nec": 0.5000178552297967,
+        "a_score": 0.2725273536343197,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.1351284113463246,
+        "matched_act_acc": 0.5,
+        "psa": 0.3775814814814816
+      },
+      "twss_vanilla": {
+        "twss": 0.5720535883804363,
+        "task_score": 0.29079727520122894,
+        "task_mass_available": 0.6518518518518519,
+        "wait_score": 0.2812563131792073,
+        "wait_quality": 0.8078638782807018,
+        "wait_mass": 0.34814814814814815,
+        "fp_time": 10.027999999999995,
+        "fp_time_eff": 10.027999999999995,
+        "total_wait_time": 94.0,
+        "total_pred_time": 28.003000000000014,
+        "n_gt": 4,
+        "n_pred": 4,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1277777777777778,
+            "q_i": 0.7259477302862862,
+            "matched_pred_idx": 0,
+            "dstart": 12.501999999999999,
+            "dend": 14.997,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.1314814814814815,
+            "q_i": 0.0398739455596207,
+            "matched_pred_idx": 1,
+            "dstart": 28.496,
+            "dend": 56.995999999999995,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.24074074074074076,
+            "q_i": 0.413267579699997,
+            "matched_pred_idx": 2,
+            "dstart": 61.02699999999999,
+            "dend": 3.0279999999999916,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.15185185185185188,
+            "q_i": 0.6144426795509412,
+            "matched_pred_idx": 3,
+            "dstart": 6.027999999999992,
+            "dend": 27.971000000000004,
+            "sigma": 41.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.5555035757162111,
+        "task_score": 0.33889158826930504,
+        "task_mass_available": 0.7573149741824441,
+        "wait_score": 0.21661198744690607,
+        "wait_quality": 0.8925642886996626,
+        "wait_mass": 0.4044750430292599,
+        "fp_time": 10.027999999999995,
+        "fp_time_eff": 16.025599743012968,
+        "total_wait_time": 94.0,
+        "total_pred_time": 28.003000000000014,
+        "n_gt": 4,
+        "n_pred": 4,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "per_event": [
+          {
+            "gt_action": "move_resin_to_workplace",
+            "L_i": 34.5,
+            "weight": 0.1691515285884785,
+            "q_i": 0.7259477302862862,
+            "matched_pred_idx": 0,
+            "dstart": 12.501999999999999,
+            "dend": 14.997,
+            "sigma": 34.5
+          },
+          {
+            "gt_action": "move_hardener_to_workplace",
+            "L_i": 35.5,
+            "weight": 0.17158548861360662,
+            "q_i": 0.0398739455596207,
+            "matched_pred_idx": 1,
+            "dstart": 28.496,
+            "dend": 56.995999999999995,
+            "sigma": 35.5
+          },
+          {
+            "gt_action": "consolidate_with_roller_force",
+            "L_i": 65.0,
+            "weight": 0.23217906480092607,
+            "q_i": 0.413267579699997,
+            "matched_pred_idx": 2,
+            "dstart": 61.02699999999999,
+            "dend": 3.0279999999999916,
+            "sigma": 65.0
+          },
+          {
+            "gt_action": "return_hardener_to_storage",
+            "L_i": 41.0,
+            "weight": 0.18439889217943292,
+            "q_i": 0.6144426795509412,
+            "matched_pred_idx": 3,
+            "dstart": 6.027999999999992,
+            "dend": 27.971000000000004,
+            "sigma": 41.0
+          }
+        ]
+      }
     }
   }
 }

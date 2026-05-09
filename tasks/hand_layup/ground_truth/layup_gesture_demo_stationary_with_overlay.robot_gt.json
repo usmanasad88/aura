@@ -11,7 +11,7 @@
       "skill": "move_resin_to_workplace",
       "args": {},
       "t_start": 3.5,
-      "t_end": 51.0,
+      "t_end": 38.0,
       "rationale": "Resin needed at workplace before human can pour into cup."
     },
     {

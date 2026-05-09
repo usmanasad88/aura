@@ -46,8 +46,11 @@ from disjunctive_gt import (  # noqa: E402
     Intervention, Option, Phase, RobotGT, load_disjunctive_robot_gt,
 )
 from dtn_score import (  # noqa: E402
-    DEFAULT_WEIGHTS, DTNAScore, Pred,
-    compute_dtn_a_score, find_consistent_selection, _strip_args,
+    DEFAULT_DTWSS_ALPHA, DEFAULT_DTWSS_BETA,
+    DEFAULT_DTWSS_BLIP_TAX, DEFAULT_DTWSS_WAIT_WEIGHT,
+    DEFAULT_WEIGHTS, DisjunctiveTWSS, DTNAScore, Pred,
+    compute_disjunctive_twss, compute_dtn_a_score,
+    find_consistent_selection, _strip_args,
 )
 
 
@@ -62,6 +65,9 @@ PREMATURE_OFFSET_SEC = -1.5
 OVER_EXTEND_PAD_SEC = 4.0
 SPAMMER_PERIOD_SEC = 3.0
 SPAMMER_DURATION_SEC = 2.0
+TRUNCATED_INNER_FRAC = 0.25
+WAIT_BLIP_DURATION_SEC = 1.5
+WAIT_BLIP_SKILL = "spurious_action"
 
 
 # ── Strategy helpers ─────────────────────────────────────────────────────────
@@ -231,6 +237,62 @@ def adv_one_shot_blanket(gt: RobotGT, total_duration: float, **_) -> list[Pred]:
                  start=0.0, end=total_duration)]
 
 
+def adv_truncated(gt: RobotGT, **_) -> list[Pred]:
+    """Consistent oracle, every phase shrunk to its inner middle window.
+
+    Models an agent that emits the right skill at the right phase but only
+    for a small slice in the middle (late start + early stop).
+    """
+    base = adv_oracle_consistent(gt)
+    out: list[Pred] = []
+    for p in base:
+        dur = p.end - p.start
+        keep = dur * TRUNCATED_INNER_FRAC
+        if keep <= 0:
+            continue
+        centre = 0.5 * (p.start + p.end)
+        out.append(Pred(skill=p.skill,
+                        start=centre - keep / 2,
+                        end=centre + keep / 2))
+    return out
+
+
+def adv_wait_blip(gt: RobotGT, total_duration: float, **_) -> list[Pred]:
+    """Consistent oracle plus one spurious prediction during the largest wait.
+
+    Wait = the complement of the union of selected-option phases inside
+    ``[0, total_duration]``. We pick the longest gap and place a single
+    short ``WAIT_BLIP_SKILL`` prediction at its centre. The skill name is
+    deliberately not in the GT so the prediction is unambiguously a false
+    positive.
+    """
+    base = adv_oracle_consistent(gt)
+    intervals = sorted([(p.start, p.end) for p in base])
+    merged: list[list[float]] = []
+    for s, t in intervals:
+        if merged and s <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], t)
+        else:
+            merged.append([s, t])
+    gaps: list[tuple[float, float]] = []
+    prev_end = 0.0
+    for s, t in merged:
+        if s > prev_end:
+            gaps.append((prev_end, s))
+        prev_end = max(prev_end, t)
+    if total_duration > prev_end:
+        gaps.append((prev_end, total_duration))
+    if not gaps:
+        return base
+    s, t = max(gaps, key=lambda g: g[1] - g[0])
+    centre = 0.5 * (s + t)
+    blip_s = max(s, centre - WAIT_BLIP_DURATION_SEC / 2)
+    blip_e = min(t, centre + WAIT_BLIP_DURATION_SEC / 2)
+    if blip_e <= blip_s:
+        return base
+    return base + [Pred(skill=WAIT_BLIP_SKILL, start=blip_s, end=blip_e)]
+
+
 ADVERSARIES: list[tuple[str, str, Callable[..., list[Pred]]]] = [
     ("Oracle (consistent)",   "Disjunctive-CSP solution; phases as preds",      adv_oracle_consistent),
     ("Oracle (first option)", "Always pick option 0 — may conflict",            adv_oracle_first),
@@ -242,6 +304,8 @@ ADVERSARIES: list[tuple[str, str, Callable[..., list[Pred]]]] = [
     ("Far-shifted",           f"Consistent oracle shifted +{FAR_SHIFT_OFFSET_SEC}s", adv_far_shifted),
     ("Premature firer",       f"Consistent oracle shifted {PREMATURE_OFFSET_SEC:+.1f}s", adv_premature),
     ("Over-extender",         f"Correct starts, ends padded +{OVER_EXTEND_PAD_SEC}s", adv_over_extender),
+    ("Late-start early-stop", f"Consistent oracle, only middle {TRUNCATED_INNER_FRAC:.0%} fired", adv_truncated),
+    ("Wait-period blip",      f"Consistent oracle plus one {WAIT_BLIP_DURATION_SEC}s spurious event in wait", adv_wait_blip),
     ("One-shot blanket",      "Single interval covering whole task",            adv_one_shot_blanket),
     ("Spammer",               "Rapid-fire most-common skill",                   adv_spammer),
     ("Silent",                "Never intervenes",                               adv_silent),
@@ -350,6 +414,30 @@ def format_table(rows: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def format_twss_table(rows: list[dict]) -> str:
+    headers = ["Adversary", "TWSS", "task", "wait", "qwait", "C",
+               "T_fp", "T_fp_eff"]
+    cells: list[list[str]] = [headers]
+    for r in rows:
+        t: DisjunctiveTWSS = r["twss"]
+        cells.append([
+            r["name"],
+            f"{t.twss:.3f}",
+            f"{t.task_score:.3f}",
+            f"{t.wait_score:.3f}",
+            f"{t.wait_quality:.3f}",
+            f"{t.consistency:.3f}",
+            f"{t.fp_time:.1f}",
+            f"{t.fp_time_eff:.1f}",
+        ])
+    widths = [max(len(c[i]) for c in cells) for i in range(len(headers))]
+    fmt = "  ".join(f"{{:<{w}}}" for w in widths)
+    lines = [fmt.format(*cells[0]),
+             "-" * (sum(widths) + 2 * (len(widths) - 1))]
+    lines += [fmt.format(*c) for c in cells[1:]]
+    return "\n".join(lines)
+
+
 def format_latex_table(rows: list[dict],
                        weights: tuple[float, float, float, float]) -> str:
     lines = [
@@ -402,6 +490,22 @@ def main() -> None:
                         help=f"Output PDF path (default: {DEFAULT_OUT}).")
     parser.add_argument("--title", type=str,
                         default="DTN A-Score Adversary Validation")
+    parser.add_argument("--twss-alpha", type=float,
+                        default=DEFAULT_DTWSS_ALPHA,
+                        help=f"Disjunctive TWSS Gaussian timing scale α "
+                             f"(default: {DEFAULT_DTWSS_ALPHA}).")
+    parser.add_argument("--twss-beta", type=float,
+                        default=DEFAULT_DTWSS_BETA,
+                        help=f"Disjunctive TWSS wait-pollution scale β "
+                             f"(default: {DEFAULT_DTWSS_BETA}).")
+    parser.add_argument("--twss-wait-weight", type=float,
+                        default=DEFAULT_DTWSS_WAIT_WEIGHT,
+                        help=f"Disjunctive TWSS wait term multiplier w_w "
+                             f"(default: {DEFAULT_DTWSS_WAIT_WEIGHT}).")
+    parser.add_argument("--twss-blip-tax", type=float,
+                        default=DEFAULT_DTWSS_BLIP_TAX,
+                        help=f"Disjunctive TWSS per-blip tax δ (s) "
+                             f"(default: {DEFAULT_DTWSS_BLIP_TAX}).")
     args = parser.parse_args()
 
     weights = _parse_weights(args.weights)
@@ -427,7 +531,13 @@ def main() -> None:
         preds = ctor(gt, total_duration=total_duration)
         preds = _clip(preds, total_duration)
         score = compute_dtn_a_score(gt, preds, weights=weights)
-        rows.append({"name": name, "preds": preds, "score": score})
+        twss = compute_disjunctive_twss(
+            gt, preds,
+            alpha=args.twss_alpha, beta=args.twss_beta,
+            wait_weight=args.twss_wait_weight,
+            blip_tax_delta=args.twss_blip_tax)
+        rows.append({"name": name, "preds": preds,
+                     "score": score, "twss": twss})
         timeline_data.append((name, preds, score))
 
     print()
@@ -435,6 +545,12 @@ def main() -> None:
           f"w_disj={weights[0]:.2f} w_act={weights[1]:.2f} "
           f"w_cons={weights[2]:.2f} w_nec={weights[3]:.2f}")
     print(format_table(rows))
+
+    print()
+    print(f"Disjunctive TWSS — α={args.twss_alpha}, β={args.twss_beta}, "
+          f"w_wait={args.twss_wait_weight}, δ={args.twss_blip_tax} "
+          f"(exp wait penalty)")
+    print(format_twss_table(rows))
 
     out = args.output
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -460,9 +576,16 @@ def main() -> None:
              "phases_per_option": [len(o.phases) for o in iv.options]}
             for iv in gt.interventions
         ],
+        "twss": {
+            "alpha": args.twss_alpha,
+            "beta": args.twss_beta,
+            "wait_weight": args.twss_wait_weight,
+            "blip_tax_delta": args.twss_blip_tax,
+        },
         "adversaries": {
             r["name"]: {
                 "score": asdict(r["score"]),
+                "twss": asdict(r["twss"]),
                 "preds": [
                     {"skill": p.skill, "start": p.start, "end": p.end}
                     for p in r["preds"]
