@@ -14,7 +14,7 @@ initial scene).
 
 The robot side of the paper (UR5 + Robotiq 2F-85, `.prog` DSL, cuRobo planner,
 Quest/SpaceMouse teleop, Isaac Sim digital twin) lives in the companion
-[ur_ws](https://github.com/usmanasad88/ur_ws) repository.
+[ur_ws](https://github.com/usmanasad88/ur5-robotiq-ros2-control) repository.
 
 ---
 
