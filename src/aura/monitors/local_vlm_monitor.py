@@ -119,6 +119,8 @@ class LocalVLMConfig:
     question: str = "What is the human holding? Output Nothing if the human isn't holding anything."
     max_new_tokens: int = 256
     max_image_dimension: int = 512
+    # Sampling temperature for the sglang backend (0.0 = deterministic).
+    temperature: float = 0.7
     # transformers-only settings
     device: str = "cuda"
     dtype: str = "bfloat16"
@@ -338,7 +340,7 @@ class LocalVLMMonitor(BaseMonitor):
         # Encode image as base64 data URL (standard OpenAI format)
         data_url = _pil_to_data_url(pil_image)
 
-        response = self._openai_client.chat.completions.create(
+        kwargs: Dict[str, Any] = dict(
             model=self.vlm_config.model_id,
             messages=[
                 {
@@ -350,8 +352,14 @@ class LocalVLMMonitor(BaseMonitor):
                 }
             ],
             max_tokens=self.vlm_config.max_new_tokens,
-            temperature=0.7,  # Default Qwen temperature
+            temperature=self.vlm_config.temperature,
         )
+        # Pass-through for backend-specific options, e.g. disabling Qwen3
+        # reasoning: extra={"chat_template_kwargs": {"enable_thinking": False}}.
+        if self.vlm_config.extra:
+            kwargs["extra_body"] = self.vlm_config.extra
+
+        response = self._openai_client.chat.completions.create(**kwargs)
 
         return response.choices[0].message.content or ""
 

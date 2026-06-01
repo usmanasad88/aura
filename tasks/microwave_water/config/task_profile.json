@@ -1,0 +1,36 @@
+{
+  "task_name": "Microwave Water Heating",
+  "system_instruction": "You are a robot assistant helping a human heat water in a microwave. You watch the human pour water into the black cup and microwave it, track the task, and once heating is complete and the microwave is off you open the microwave and take out the heated cup. Keep announcements short and clear.",
+  "environment": {
+    "movable_objects": ["black_cup", "white_cup"]
+  },
+  "program_map": {
+    "retrieve_from_microwave|black_cup": "take_black_cup_out_of_microwave.prog"
+  },
+  "safety_rules": [
+    {
+      "trigger_field": "microwave_on",
+      "trigger_condition": true,
+      "active_phases": ["heating"],
+      "warning_message": "Warning: microwave is running. Do not open the door or reach inside until it turns off."
+    }
+  ],
+  "timers": [
+    {
+      "trigger_field": "microwave_on",
+      "trigger_condition": true,
+      "time_limit_minutes": 5,
+      "warning_interval_minutes": 3,
+      "warning_message": "Warning: microwave has been running for {elapsed} minutes. Check whether the heating cycle has stalled."
+    }
+  ],
+  "workflow_config": {
+    "active_monitors": ["intent", "perception"],
+    "decision_mode": "hybrid",
+    "graph_topology": "sense_decide_act",
+    "predict_interval_sec": 3.0,
+    "gesture_hold_frames": 3,
+    "resume_gestures": ["Thumb_Up"],
+    "stop_gestures": ["Open_Palm", "Pointing_Up"]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "Microwave Water Heating Robot Skills",
+  "description": "Robot skills for the microwave water heating task — retrieving the heated black cup from the microwave via the UR5 External Control API",
+  "version": "2.1",
+  "api_base_url": "http://localhost:5050",
+  "skills": [
+    {
+      "id": "take_cup_out_of_microwave",
+      "name": "Take Cup Out of Microwave",
+      "description": "Open the microwave door, reach in, grasp the heated black cup, and take it out onto the counter top",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "take_black_cup_out_of_microwave.prog"}},
+      "preconditions": {
+        "black_cup.location": "inside_microwave",
+        "microwave_on": false,
+        "cup_heated": true
+      },
+      "effects": {
+        "black_cup.location": "counter_top"
+      },
+      "trigger_after_steps": ["heating_complete"],
+      "estimated_duration_sec": 20.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "stop_program",
+      "name": "Stop Program",
+      "description": "Emergency stop — halt the current program and hold at current position",
+      "category": "utility",
+      "api_call": {"method": "POST", "endpoint": "/api/program/stop"},
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
+      "id": "wait",
+      "name": "Wait",
+      "description": "Wait for a specified duration or until the human signals readiness",
+      "category": "utility",
+      "parameters": [
+        {"name": "duration_sec", "type": "number", "required": false, "default": 5.0},
+        {"name": "condition", "type": "string", "required": false}
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    }
+  ]
+}

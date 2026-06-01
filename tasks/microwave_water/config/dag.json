@@ -1,0 +1,10 @@
+[
+  {"id": "idle", "description": "System initialized, waiting for task to begin", "dependencies": []},
+  {"id": "pour_water_into_cup", "description": "Human pours water into the black cup", "dependencies": ["idle"]},
+  {"id": "place_cup_in_microwave", "description": "Human places the black cup inside the microwave", "dependencies": ["pour_water_into_cup"]},
+  {"id": "start_microwave", "description": "Human closes the door and starts the microwave", "dependencies": ["place_cup_in_microwave"]},
+  {"id": "heat_water", "description": "Microwave runs and heats the water in the black cup", "dependencies": ["start_microwave"]},
+  {"id": "heating_complete", "description": "Microwave turns off and the water in the black cup is heated", "dependencies": ["heat_water"]},
+  {"id": "retrieve_heated_cup", "description": "Robot opens the microwave and takes out the heated black cup", "dependencies": ["heating_complete"]},
+  {"id": "task_complete", "description": "Heated water retrieved from the microwave, task finished", "dependencies": ["retrieve_heated_cup"]}
+]

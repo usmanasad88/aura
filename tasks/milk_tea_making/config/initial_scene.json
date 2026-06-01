@@ -1,0 +1,21 @@
+{
+  "regions": [
+    {"id": "storage_area", "name": "Storage Area", "region_type": "storage"},
+    {"id": "working_area", "name": "Working Area", "region_type": "workspace"},
+    {"id": "stove_area", "name": "Stove", "region_type": "workspace"}
+  ],
+  "objects": [
+    {"id": "pot", "name": "Saucepan", "category": "container", "is_movable": true, "initial_location": "unknown"},
+    {"id": "mug", "name": "Serving Mug", "category": "container", "is_movable": true, "initial_location": "unknown"},
+    {"id": "milk_container", "name": "Milk Container", "category": "container", "is_movable": true, "initial_location": "unknown"},
+    {"id": "tea_container", "name": "Tea Leaves Container", "category": "container", "is_movable": true, "initial_location": "unknown"},
+    {"id": "sugar_container", "name": "Sugar Container", "category": "container", "is_movable": true, "initial_location": "unknown"},
+    {"id": "sieve", "name": "Fine-Mesh Sieve", "category": "tool", "is_movable": true, "initial_location": "unknown"},
+    {"id": "spoon", "name": "Stirring Spoon", "category": "tool", "is_movable": true, "initial_location": "unknown"},
+    {"id": "stove", "name": "Stove", "category": "fixture", "is_movable": false, "initial_location": "unknown"}
+  ],
+  "agents": [
+    {"id": "human", "name": "Human Operator", "agent_type": "human"},
+    {"id": "robot", "name": "Robot Assistant", "agent_type": "robot"}
+  ]
+}

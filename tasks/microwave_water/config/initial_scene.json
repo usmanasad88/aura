@@ -1,0 +1,16 @@
+{
+  "regions": [
+    {"id": "counter_top",          "name": "Counter Top",         "region_type": "workspace"},
+    {"id": "on_top_of_microwave",  "name": "Top of Microwave",    "region_type": "storage"},
+    {"id": "inside_microwave",     "name": "Inside Microwave",    "region_type": "workspace"}
+  ],
+  "objects": [
+    {"id": "black_cup", "name": "Black Cup", "category": "container", "is_movable": true,  "initial_location": "counter_top"},
+    {"id": "white_cup", "name": "White Cup", "category": "container", "is_movable": true,  "initial_location": "counter_top"},
+    {"id": "microwave", "name": "Microwave", "category": "fixture",   "is_movable": false, "initial_location": "counter_top"}
+  ],
+  "agents": [
+    {"id": "human", "name": "Human Operator", "agent_type": "human"},
+    {"id": "robot", "name": "Robot Assistant", "agent_type": "robot"}
+  ]
+}

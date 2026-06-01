@@ -1,0 +1,63 @@
+{
+  "task_name": "Collaborative Milk Tea Making",
+  "system_instruction": "You are a robot assistant helping a human make milk tea (boiled-milk / doodh-patti style). The human boils milk in a saucepan, adds tea and sugar, simmers it, then strains the brewed tea through a fine-mesh sieve into a mug. You proactively retrieve items from storage, hold and position the sieve over the mug for straining, assist with sugar dispensing and stirring, and return items when done. Keep announcements short and clear.",
+  "environment": {
+    "movable_objects": [
+      "pot", "mug", "milk_container",
+      "tea_container", "sugar_container", "sieve", "spoon"
+    ]
+  },
+  "program_map": {
+    "deliver_to_workplace|pot": "retrieve_pot_from_storage_to_working_area.prog",
+    "deliver_to_workplace|mug": "retrieve_mug_from_storage_to_working_area.prog",
+    "deliver_to_workplace|milk_container": "retrieve_milk_container_from_storage_to_working_area.prog",
+    "deliver_to_workplace|tea_container": "retrieve_tea_container_from_storage_to_working_area.prog",
+    "deliver_to_workplace|sugar_container": "retrieve_sugar_container_from_storage_to_working_area.prog",
+    "deliver_to_workplace|sieve": "retrieve_sieve_from_storage_to_working_area.prog",
+    "deliver_to_workplace|spoon": "retrieve_spoon_from_storage_to_working_area.prog",
+    "return_to_storage|milk_container": "return_milk_container_from_working_area_to_storage.prog",
+    "return_to_storage|tea_container": "return_tea_container_from_working_area_to_storage.prog",
+    "return_to_storage|sugar_container": "return_sugar_container_from_working_area_to_storage.prog",
+    "return_to_storage|sieve": "return_sieve_from_working_area_to_storage.prog",
+    "return_to_storage|spoon": "return_spoon_from_working_area_to_storage.prog"
+  },
+  "safety_rules": [
+    {
+      "trigger_field": "stove_on",
+      "trigger_condition": true,
+      "active_phases": ["heating", "brewing"],
+      "warning_message": "Warning: the stove is on. Keep hands clear of the hot saucepan."
+    },
+    {
+      "trigger_field": "milk_boiling",
+      "trigger_condition": true,
+      "active_phases": ["heating", "brewing"],
+      "warning_message": "Warning: the milk is boiling and may froth over. Watch the pot closely."
+    }
+  ],
+  "timers": [
+    {
+      "trigger_field": "milk_boiling",
+      "trigger_condition": true,
+      "time_limit_minutes": 4,
+      "warning_interval_minutes": 2,
+      "warning_message": "Warning: the milk has been boiling for {elapsed} minutes. Consider lowering the heat or adding the tea."
+    },
+    {
+      "trigger_field": "tea_simmered",
+      "trigger_condition": true,
+      "time_limit_minutes": 5,
+      "warning_interval_minutes": 3,
+      "warning_message": "Warning: the tea has been simmering for {elapsed} minutes. Consider turning off the stove and straining."
+    }
+  ],
+  "workflow_config": {
+    "active_monitors": ["intent"],
+    "decision_mode": "hybrid",
+    "graph_topology": "sense_decide_act",
+    "predict_interval_sec": 3.0,
+    "gesture_hold_frames": 3,
+    "resume_gestures": ["Thumb_Up"],
+    "stop_gestures": ["Open_Palm", "Pointing_Up"]
+  }
+}

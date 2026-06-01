@@ -1,0 +1,286 @@
+{
+  "name": "Milk Tea Making Robot Skills",
+  "description": "Robot skills for collaborative milk tea making task — object logistics, sieve handling for straining, sugar dispensing, stirring, and motion primitives via UR5 External Control API",
+  "version": "1.0",
+  "api_base_url": "http://localhost:5050",
+  "skills": [
+    {
+      "id": "retrieve_pot",
+      "name": "Retrieve Saucepan",
+      "description": "Pick up the saucepan from storage and place it in the working area in front of the human",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "retrieve_pot_from_storage_to_working_area.prog"}},
+      "preconditions": {"pot.location": "storage_area"},
+      "effects": {"pot.location": "working_area"},
+      "trigger_steps": ["setup_workspace", "pour_milk_into_pot"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "retrieve_mug",
+      "name": "Retrieve Mug",
+      "description": "Pick up the serving mug from storage and place it in the working area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "retrieve_mug_from_storage_to_working_area.prog"}},
+      "preconditions": {"mug.location": "storage_area"},
+      "effects": {"mug.location": "working_area"},
+      "trigger_steps": ["setup_workspace", "strain_tea_into_cup"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "retrieve_milk_container",
+      "name": "Retrieve Milk Container",
+      "description": "Pick up the milk container from storage and place it in the working area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "retrieve_milk_container_from_storage_to_working_area.prog"}},
+      "preconditions": {"milk_container.location": "storage_area"},
+      "effects": {"milk_container.location": "working_area"},
+      "trigger_steps": ["setup_workspace", "pour_milk_into_pot"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_milk_container",
+      "name": "Return Milk Container",
+      "description": "Return the milk container from the working area to storage (e.g. back to the fridge)",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "return_milk_container_from_working_area_to_storage.prog"}},
+      "preconditions": {"milk_container.location": "working_area", "milk_in_pot": true},
+      "effects": {"milk_container.location": "storage_area"},
+      "trigger_after_steps": ["pour_milk_into_pot"],
+      "estimated_duration_sec": 6.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "retrieve_tea_container",
+      "name": "Retrieve Tea Container",
+      "description": "Pick up the tea leaves / tea bag container from storage and place it in the working area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "retrieve_tea_container_from_storage_to_working_area.prog"}},
+      "preconditions": {"tea_container.location": "storage_area"},
+      "effects": {"tea_container.location": "working_area"},
+      "trigger_steps": ["add_tea"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_tea_container",
+      "name": "Return Tea Container",
+      "description": "Return the tea container from the working area to storage",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "return_tea_container_from_working_area_to_storage.prog"}},
+      "preconditions": {"tea_container.location": "working_area", "tea_added": true},
+      "effects": {"tea_container.location": "storage_area"},
+      "trigger_after_steps": ["add_tea"],
+      "estimated_duration_sec": 6.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "retrieve_sugar_container",
+      "name": "Retrieve Sugar Container",
+      "description": "Pick up the sugar container from storage and place it in the working area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "retrieve_sugar_container_from_storage_to_working_area.prog"}},
+      "preconditions": {"sugar_container.location": "storage_area"},
+      "effects": {"sugar_container.location": "working_area"},
+      "trigger_steps": ["add_sugar"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_sugar_container",
+      "name": "Return Sugar Container",
+      "description": "Return the sugar container from the working area to storage",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "return_sugar_container_from_working_area_to_storage.prog"}},
+      "preconditions": {"sugar_container.location": "working_area", "tea_served": true},
+      "effects": {"sugar_container.location": "storage_area"},
+      "trigger_after_steps": ["cleanup"],
+      "estimated_duration_sec": 6.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "retrieve_sieve",
+      "name": "Retrieve Sieve",
+      "description": "Pick up the fine-mesh sieve from storage and place it in the working area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "retrieve_sieve_from_storage_to_working_area.prog"}},
+      "preconditions": {"sieve.location": "storage_area"},
+      "effects": {"sieve.location": "working_area"},
+      "trigger_steps": ["setup_workspace", "position_sieve"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "hold_sieve_over_mug",
+      "name": "Hold Sieve Over Mug",
+      "description": "Hold and position the fine-mesh sieve steadily over the mug so the human can pour the brewed tea through it",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "hold_sieve_over_mug.prog"}},
+      "preconditions": {"sieve.location": "working_area", "mug.location": "working_area", "stove_off": true},
+      "effects": {"sieve_ready": true},
+      "trigger_steps": ["position_sieve"],
+      "estimated_duration_sec": 6.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "return_sieve",
+      "name": "Return Sieve",
+      "description": "Return the sieve from the working area to storage (after straining)",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "return_sieve_from_working_area_to_storage.prog"}},
+      "preconditions": {"sieve.location": "working_area", "tea_strained": true},
+      "effects": {"sieve.location": "storage_area"},
+      "trigger_after_steps": ["cleanup"],
+      "estimated_duration_sec": 6.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "retrieve_spoon",
+      "name": "Retrieve Spoon",
+      "description": "Pick up the stirring spoon from storage and place it in the working area",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "retrieve_spoon_from_storage_to_working_area.prog"}},
+      "preconditions": {"spoon.location": "storage_area"},
+      "effects": {"spoon.location": "working_area"},
+      "trigger_steps": ["stir_pot"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_spoon",
+      "name": "Return Spoon",
+      "description": "Return the stirring spoon from the working area to storage",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "return_spoon_from_working_area_to_storage.prog"}},
+      "preconditions": {"spoon.location": "working_area", "tea_served": true},
+      "effects": {"spoon.location": "storage_area"},
+      "trigger_after_steps": ["cleanup"],
+      "estimated_duration_sec": 6.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "add_sugar_to_pot",
+      "name": "Add Sugar to Pot",
+      "description": "Dispense sugar into the saucepan using the sugar container held in the gripper",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "add_sugar_to_pot.prog"}},
+      "preconditions": {"pot.location": "stove_area", "sugar_container.location": "working_area", "tea_added": true, "sugar_preference_known": true},
+      "effects": {"sugar_added": true},
+      "trigger_steps": ["add_sugar"],
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "stir_pot_contents",
+      "name": "Stir Pot Contents",
+      "description": "Stir the milk tea in the saucepan using the spoon held in the gripper to mix tea and sugar",
+      "category": "program",
+      "api_call": {"method": "POST", "endpoint": "/api/program/execute", "body": {"program": "stir_pot_contents.prog"}},
+      "preconditions": {"pot.location": "stove_area", "spoon.location": "working_area", "tea_added": true},
+      "effects": {},
+      "trigger_steps": ["stir_pot"],
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "ask_sugar_preference",
+      "name": "Ask Sugar Preference",
+      "description": "Ask the human how much sugar they would like in the milk tea via spoken prompt",
+      "category": "utility",
+      "api_call": {"method": "POST", "endpoint": "/api/speak", "body": {"text": "How much sugar would you like in your milk tea?"}},
+      "preconditions": {"tea_added": true, "sugar_preference_known": false},
+      "effects": {"sugar_preference_known": true},
+      "trigger_steps": ["ask_sugar_preference"],
+      "estimated_duration_sec": 10.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "move_to_named_position",
+      "name": "Move to Named Position",
+      "description": "Move the robot to a predefined named position (Home, Upright, Stowed, neutral, etc.)",
+      "category": "motion",
+      "api_call": {"method": "POST", "endpoint": "/api/move/named", "body": {"name": "<position_name>"}},
+      "parameters": [
+        {
+          "name": "position_name",
+          "type": "string",
+          "required": true,
+          "allowed_values": [
+            "Home", "Upright", "Stowed", "neutral",
+            "Pot_Storage", "Mug_Storage", "Milk_Container_Storage",
+            "Tea_Container_Storage", "Sugar_Container_Storage",
+            "Sieve_Storage", "Spoon_Storage",
+            "Working_Area_Center", "Stove_Area"
+          ]
+        }
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "gripper_open",
+      "name": "Open Gripper",
+      "description": "Open the Robotiq gripper to release an object",
+      "category": "gripper",
+      "api_call": {"method": "POST", "endpoint": "/api/gripper", "body": {"action": "open"}},
+      "preconditions": {},
+      "effects": {"gripper.state": "open"},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "gripper_close",
+      "name": "Close Gripper",
+      "description": "Close the Robotiq gripper to grasp an object",
+      "category": "gripper",
+      "api_call": {"method": "POST", "endpoint": "/api/gripper", "body": {"action": "close"}},
+      "preconditions": {},
+      "effects": {"gripper.state": "closed"},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "set_speed",
+      "name": "Set Speed",
+      "description": "Set the robot speed factor (0.0 to 1.0)",
+      "category": "utility",
+      "api_call": {"method": "POST", "endpoint": "/api/speed", "body": {"speed": "<factor>"}},
+      "parameters": [
+        {"name": "factor", "type": "number", "required": true, "description": "Speed factor between 0.0 and 1.0"}
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
+      "id": "stop_program",
+      "name": "Stop Program",
+      "description": "Emergency stop — halt the current program and hold at current position",
+      "category": "utility",
+      "api_call": {"method": "POST", "endpoint": "/api/program/stop"},
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
+      "id": "wait",
+      "name": "Wait",
+      "description": "Wait for a specified duration or until the human signals readiness",
+      "category": "utility",
+      "parameters": [
+        {"name": "duration_sec", "type": "number", "required": false, "default": 5.0},
+        {"name": "condition", "type": "string", "required": false}
+      ],
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    }
+  ]
+}

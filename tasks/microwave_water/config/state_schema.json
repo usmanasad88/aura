@@ -1,0 +1,103 @@
+{
+  "name": "Microwave Water Heating Task State",
+  "description": "State variables the intent monitor LLM must track from video frames",
+  "version": "2.1",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "Current high-level phase of the task",
+      "valid_values": [
+        "initialization", "filling", "loading", "heating",
+        "retrieval", "complete",
+        "Other", "Unknown"
+      ],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "Specific action currently being performed (must match a DAG node id)",
+      "valid_values": [
+        "idle", "pour_water_into_cup", "place_cup_in_microwave",
+        "start_microwave", "heat_water", "heating_complete",
+        "retrieve_heated_cup", "task_complete",
+        "Other", "Unknown"
+      ],
+      "default": "idle"
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": [
+        "idle", "pouring_water", "loading_microwave",
+        "operating_microwave", "waiting", "done",
+        "Other", "Unknown"
+      ],
+      "default": "idle"
+    },
+    "water_in_cup": {
+      "type": "boolean",
+      "description": "Water has been poured into the black cup",
+      "default": false
+    },
+    "microwave_on": {
+      "type": "boolean",
+      "description": "Microwave is currently running (interior light on / turntable spinning / running sound)",
+      "default": false
+    },
+    "cup_heated": {
+      "type": "boolean",
+      "description": "The water in the black cup has finished heating (microwave completed a heating cycle with the cup inside)",
+      "default": false
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "Predicted next action based on task graph (shares valid_values with current_action)",
+      "valid_values": [
+        "idle", "pour_water_into_cup", "place_cup_in_microwave",
+        "start_microwave", "heat_water", "heating_complete",
+        "retrieve_heated_cup", "task_complete",
+        "Other", "Unknown"
+      ],
+      "default": "pour_water_into_cup"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action (0-1)",
+      "default": 1.0
+    },
+    "robot_state": {
+      "type": "string",
+      "source": "system",
+      "description": "Robot execution status (populated from robot API, not vision)",
+      "valid_values": ["unknown", "idle", "busy"],
+      "default": "unknown"
+    },
+    "robot_active_program": {
+      "type": "string",
+      "source": "system",
+      "description": "Current robot program/action id when busy (populated from robot API, not vision)",
+      "default": ""
+    },
+    "robot_engagement": {
+      "type": "string",
+      "source": "intent_monitor",
+      "description": "Vision-informed judgement from the intent monitor on whether the robot should continue its actions now. 'continue' = safe to proceed with scheduled actions; 'hold' = defer all non-safety robot activity. The BT gates deterministic action branches on this being 'continue'.",
+      "valid_values": ["continue", "hold", "Unknown"],
+      "default": "continue"
+    },
+    "black_cup_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the black cup (the cup that gets filled and microwaved).",
+      "valid_values": ["unknown", "counter_top", "on_top_of_microwave", "inside_microwave"],
+      "default": "unknown"
+    },
+    "white_cup_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the white cup.",
+      "valid_values": ["unknown", "counter_top", "on_top_of_microwave", "inside_microwave"],
+      "default": "unknown"
+    }
+  }
+}
