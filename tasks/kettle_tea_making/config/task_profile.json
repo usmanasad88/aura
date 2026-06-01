@@ -1,0 +1,46 @@
+{
+  "task_name": "Collaborative Kettle Tea Making",
+  "system_instruction": "You are a robot assistant helping a human make tea with an electric kettle, tea bags and powdered milk. The human signals their intent to make tea by opening the kettle lid — you CANNOT open the lid yourself. If the water bottle is in storage and its cap is closed, bring the bottle to the human; if the cap is open, you may pour water into the kettle. Once water is in the kettle, the lid must be closed and the kettle switched on (its blue LED turns on while heating and turns off when the water has boiled). Proactively retrieve the powdered milk container, cup, spoon, tea bag, sugar container and biscuits from storage to the working area; the tea bag and spoon may be dropped into the cup. The human can perform any of these steps themselves. Keep announcements short and clear.",
+  "environment": {
+    "movable_objects": [
+      "water_bottle", "milk_container", "sugar_container",
+      "tea_bag", "cup", "spoon", "biscuits"
+    ]
+  },
+  "program_map": {
+    "move_to_named|": "move_to_named[{name}]",
+    "open_gripper|": "open_gripper",
+    "close_gripper|": "close_gripper",
+    "pick_and_place_item|milk_container->working_area": "pick_and_place_items[object=milk_container, destination=working_area, safe=Home]",
+    "pick_and_place_item|sugar_container->working_area": "pick_and_place_items[object=sugar_container, destination=working_area, safe=Home]",
+    "pick_and_place_item|cup->working_area": "pick_and_place_items[object=cup, destination=working_area, safe=Home]",
+    "pick_and_place_item|biscuits->working_area": "pick_and_place_items[object=biscuits, destination=working_area, safe=Home]",
+    "pick_and_place_item|tea_bag->working_area": "pick_and_place_items[object=tea_bag, destination=working_area, safe=Home]",
+    "pick_and_place_item|tea_bag->cup": "pick_and_place_items[object=tea_bag, destination=cup, safe=Home]",
+    "pick_and_place_item|spoon->working_area": "pick_and_place_items[object=spoon, destination=working_area, safe=Home]",
+    "pick_and_place_item|spoon->cup": "pick_and_place_items[object=spoon, destination=cup, safe=Home]",
+    "bring_water_bottle|": "pick_and_place_items[object=water_bottle, destination=working_area, safe=Home]",
+    "pour_water_into_kettle|": "pour_water_into_kettle[safe=Home]",
+    "close_kettle_lid|": "close_kettle_lid[safe=Home]",
+    "turn_kettle_on|": "turn_kettle_on[safe=Home]"
+  },
+  "safety_rules": [],
+  "timers": [
+    {
+      "trigger_field": "kettle_on",
+      "trigger_condition": true,
+      "time_limit_minutes": 5,
+      "warning_interval_minutes": 3,
+      "warning_message": "Warning: the kettle has been on for {elapsed} minutes. Check whether the water has boiled and the blue LED has turned off."
+    }
+  ],
+  "workflow_config": {
+    "active_monitors": ["intent"],
+    "decision_mode": "hybrid",
+    "graph_topology": "sense_decide_act",
+    "predict_interval_sec": 3.0,
+    "gesture_hold_frames": 3,
+    "resume_gestures": ["Thumb_Up"],
+    "stop_gestures": ["Open_Palm", "Pointing_Up"]
+  }
+}

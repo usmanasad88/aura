@@ -165,7 +165,7 @@ def build_task_graph(
         # task_profile.json's `predict_interval_sec`.
         "predict_interval": wf_cfg.get("predict_interval_sec", 4.0),
         "resume_gestures": wf_cfg.get("resume_gestures", ["Thumb_Up"]),
-        "max_cycles": wf_cfg.get("max_cycles_sec", 1500),
+        "max_cycles": wf_cfg.get("max_cycles_sec", 15000),
         **_backend_defaults,
         **(extra_config or {}),
     }

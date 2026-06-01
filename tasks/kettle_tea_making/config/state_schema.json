@@ -1,0 +1,251 @@
+{
+  "name": "Kettle Tea Making Task State",
+  "description": "State variables the intent monitor LLM must track from video frames. Models electric-kettle tea making: the human signals intent by opening the kettle lid (the robot cannot open it), water is poured into the kettle and the lid closed, the kettle is switched on (blue LED on) until the water boils (blue LED off), and the robot brings the powdered milk, cup, spoon, tea bag, sugar and biscuits from storage to the workspace.",
+  "version": "1.0",
+  "state_variables": {
+    "current_phase": {
+      "type": "string",
+      "description": "Current high-level phase of the task",
+      "valid_values": [
+        "initialization",
+        "setup",
+        "filling",
+        "boiling",
+        "preparation",
+        "cleanup",
+        "complete",
+        "Other",
+        "Unknown"
+      ],
+      "default": "initialization"
+    },
+    "current_action": {
+      "type": "string",
+      "description": "Specific action currently being performed (must match a DAG node id)",
+      "valid_values": [
+        "idle",
+        "open_kettle_lid",
+        "bring_water_bottle",
+        "pour_water_into_kettle",
+        "close_lid_and_turn_on",
+        "boil_water",
+        "setup_workspace",
+        "add_tea_bag",
+        "pour_boiled_water_into_cup",
+        "prepare_tea",
+        "cleanup",
+        "task_complete",
+        "Other",
+        "Unknown"
+      ],
+      "default": "idle"
+    },
+    "human_state": {
+      "type": "string",
+      "description": "Current activity of the human operator",
+      "valid_values": [
+        "idle",
+        "opening_lid",
+        "pouring_water",
+        "closing_lid",
+        "operating_kettle",
+        "adding_ingredient",
+        "stirring",
+        "waiting",
+        "drinking",
+        "done",
+        "Other",
+        "Unknown"
+      ],
+      "default": "idle"
+    },
+    "lid_open": {
+      "type": "boolean",
+      "description": "The kettle lid is open. The human opens the lid to signal intent to make tea; the robot CANNOT open the lid. Must be closed before the kettle is turned on.",
+      "default": false
+    },
+    "water_bottle_cap_open": {
+      "type": "boolean",
+      "description": "The water bottle cap is open. If closed, the robot can only carry the bottle to the human; if open, water can be poured into the kettle.",
+      "default": false
+    },
+    "water_in_kettle": {
+      "type": "boolean",
+      "description": "Water has been poured into the kettle",
+      "default": false
+    },
+    "kettle_on": {
+      "type": "boolean",
+      "description": "The kettle is switched on and heating (blue LED is lit)",
+      "default": false
+    },
+    "water_boiled": {
+      "type": "boolean",
+      "description": "The water in the kettle has finished boiling (the blue LED has turned off after the kettle was on)",
+      "default": false
+    },
+    "tea_bag_in_cup": {
+      "type": "boolean",
+      "description": "A tea bag has been placed into the cup",
+      "default": false
+    },
+    "water_in_cup": {
+      "type": "boolean",
+      "description": "Boiled water has been poured from the kettle into the cup",
+      "default": false
+    },
+    "milk_added": {
+      "type": "boolean",
+      "description": "Powdered milk has been added to the cup",
+      "default": false
+    },
+    "sugar_added": {
+      "type": "boolean",
+      "description": "Sugar has been added to the cup",
+      "default": false
+    },
+    "tea_stirred": {
+      "type": "boolean",
+      "description": "The cup contents have been stirred to dissolve milk and sugar and brew the tea",
+      "default": false
+    },
+    "tea_ready": {
+      "type": "boolean",
+      "description": "The tea is fully prepared and ready",
+      "default": false
+    },
+    "predicted_next_action": {
+      "type": "string",
+      "description": "Predicted next action based on task graph (shares valid_values with current_action)",
+      "valid_values": [
+        "idle",
+        "open_kettle_lid",
+        "bring_water_bottle",
+        "pour_water_into_kettle",
+        "close_lid_and_turn_on",
+        "boil_water",
+        "setup_workspace",
+        "add_tea_bag",
+        "pour_boiled_water_into_cup",
+        "prepare_tea",
+        "cleanup",
+        "task_complete",
+        "Other",
+        "Unknown"
+      ],
+      "default": "open_kettle_lid"
+    },
+    "prediction_confidence": {
+      "type": "number",
+      "description": "Confidence in the predicted next action (0-1)",
+      "default": 1.0
+    },
+    "robot_state": {
+      "type": "string",
+      "source": "system",
+      "description": "Robot execution status (populated from robot API, not vision)",
+      "valid_values": [
+        "unknown",
+        "idle",
+        "busy"
+      ],
+      "default": "unknown"
+    },
+    "robot_active_program": {
+      "type": "string",
+      "source": "system",
+      "description": "Current robot program/action id when busy (populated from robot API, not vision)",
+      "default": ""
+    },
+    "robot_engagement": {
+      "type": "string",
+      "source": "intent_monitor",
+      "description": "Vision-informed judgement from the intent monitor on whether the robot should continue its actions now. 'continue' = safe to proceed with scheduled actions; 'hold' = defer all non-safety robot activity. The BT gates deterministic action branches on this being 'continue'.",
+      "valid_values": [
+        "continue",
+        "hold",
+        "Unknown"
+      ],
+      "default": "continue"
+    },
+    "water_bottle_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the water bottle.",
+      "valid_values": [
+        "storage_area",
+        "working_area",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "milk_container_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the powdered milk container.",
+      "valid_values": [
+        "storage_area",
+        "working_area",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "sugar_container_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the sugar container.",
+      "valid_values": [
+        "storage_area",
+        "working_area",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "tea_bag_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the tea bag (may end up inside the cup).",
+      "valid_values": [
+        "storage_area",
+        "working_area",
+        "cup",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "cup_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the cup.",
+      "valid_values": [
+        "storage_area",
+        "working_area",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "spoon_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the stirring spoon (may end up inside the cup).",
+      "valid_values": [
+        "storage_area",
+        "working_area",
+        "cup",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "biscuits_location": {
+      "type": "string",
+      "source": "perception",
+      "description": "Current location of the biscuits.",
+      "valid_values": [
+        "storage_area",
+        "working_area",
+        "unknown"
+      ],
+      "default": "unknown"
+    }
+  }
+}

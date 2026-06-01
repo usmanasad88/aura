@@ -1,0 +1,203 @@
+{
+  "name": "Kettle Tea Making Robot Skills",
+  "description": "Parametric skills for an electric-kettle tea making task with a UR5 + Robotiq gripper. Mirrors the cuboid_manipulation skill style: the robot controller is the `program_executor` ROS 2 node in ur5_curobo_control, and each skill maps to a program file under ur5_curobo_control/programs/, invoked via the load-then-execute sequence: (1) set ROS 2 parameters `program_file` and `program_args` on the executor node, (2) call service `/program_executor/load_program` (std_srvs/Trigger), (3) call service `/program_executor/execute_program` (std_srvs/Trigger). A single parametric `pick_and_place_items.prog` moves any key item from storage to the workspace using keyword args (`object=...`, `destination=...`); the tea bag and spoon may be dropped into the cup instead of the working area. Dedicated kettle programs pour water into the kettle, close the lid, and turn it on. The robot CANNOT open the kettle lid — the human does that to signal intent to make tea.",
+  "version": "1.0",
+  "api": {
+    "executor_node": "/program_executor",
+    "services": {
+      "load":    {"name": "/program_executor/load_program",    "type": "std_srvs/srv/Trigger"},
+      "execute": {"name": "/program_executor/execute_program", "type": "std_srvs/srv/Trigger"},
+      "stop":    {"name": "/program_executor/stop",            "type": "std_srvs/srv/Trigger"},
+      "pause":   {"name": "/program_executor/pause",           "type": "std_srvs/srv/SetBool"}
+    },
+    "parameters": {
+      "program_file": "string — absolute path or basename of the .prog file under ur5_curobo_control/programs/",
+      "program_args": "string — whitespace-separated `key=value` pairs (e.g., 'object=milk_container_storage destination=milk_container_workplace safe=Home')"
+    },
+    "invocation_template": [
+      "ros2 param set /program_executor program_file '{program_file}'",
+      "ros2 param set /program_executor program_args '{program_args}'",
+      "ros2 service call /program_executor/load_program std_srvs/srv/Trigger",
+      "ros2 service call /program_executor/execute_program std_srvs/srv/Trigger"
+    ]
+  },
+  "skills": [
+    {
+      "id": "move_to_named",
+      "name": "Move to Named Position",
+      "description": "Move the robot to a specific named joint configuration or position (e.g. Home, safe, a storage or workspace pose).",
+      "category": "motion",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "description": "The name of the position to move to",
+          "default": "Home"
+        }
+      },
+      "api_call": {
+        "program_file": "move_to_named.prog",
+        "program_args": "name={name}"
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "pick_and_place_item",
+      "name": "Pick and Place Item",
+      "description": "One-shot pick-and-place of a key item from storage to a destination, transiting via the safe pose. Use the `item` keyword to select which object to move and `destination` to choose where to drop it. The tea bag and spoon may be dropped into the cup; all other items go to the working area. This skill has no fixed trigger step — once its preconditions hold, the decision LLM chooses when and what to deliver (e.g. fetching the remaining items while the kettle boils).",
+      "category": "program",
+      "parameters": {
+        "item": {
+          "type": "string",
+          "description": "Item id to pick from storage; must match an object in initial_scene.json",
+          "valid_values": ["milk_container", "sugar_container", "tea_bag", "cup", "spoon", "biscuits"]
+        },
+        "destination": {
+          "type": "string",
+          "description": "Named drop pose. Normally the item's own `<item>_workplace`; tea_bag and spoon may instead use `cup_workplace` to drop into the cup. Each item has its own workplace pose (items can't share a drop spot).",
+          "valid_values": ["water_bottle_workplace", "milk_container_workplace", "sugar_container_workplace", "tea_bag_workplace", "cup_workplace", "spoon_workplace", "biscuits_workplace"]
+        },
+        "safe": {"type": "string", "description": "Safe retreat pose name", "default": "Home"}
+      },
+      "api_call": {
+        "program_file": "pick_and_place_items.prog",
+        "program_args": "object={item}_storage destination={destination} safe={safe}"
+      },
+      "preconditions": {"{item}.location": "storage_area"},
+      "effects": {"{item}.location": "{destination}"},
+      "estimated_duration_sec": 12.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "bring_water_bottle",
+      "name": "Bring Water Bottle",
+      "description": "Pick the water bottle from storage and bring it to the human in the working area. Only valid while the bottle's cap is CLOSED — if the cap is open the robot pours water directly instead (see pour_water_into_kettle). Uses the same parametric pick-and-place program with the water bottle as the object.",
+      "category": "program",
+      "api_call": {
+        "program_file": "pick_and_place_items.prog",
+        "program_args": "object=water_bottle_storage destination=water_bottle_workplace safe=Home"
+      },
+      "preconditions": {
+        "water_bottle.location": "storage_area",
+        "water_bottle_cap_open": false
+      },
+      "effects": {"water_bottle.location": "working_area"},
+      "trigger_steps": ["bring_water_bottle"],
+      "estimated_duration_sec": 12.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "pour_water_into_kettle",
+      "name": "Pour Water into Kettle",
+      "description": "Pour water from the open water bottle into the open kettle. Requires the bottle cap to be open and the kettle lid to be open.",
+      "category": "program",
+      "api_call": {
+        "program_file": "pour_water_into_kettle.prog",
+        "program_args": "safe=Home"
+      },
+      "preconditions": {
+        "water_bottle_cap_open": true,
+        "lid_open": true,
+        "water_in_kettle": false
+      },
+      "effects": {"water_in_kettle": true},
+      "trigger_steps": ["pour_water_into_kettle"],
+      "estimated_duration_sec": 8.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "close_kettle_lid",
+      "name": "Close Kettle Lid",
+      "description": "Close the kettle lid after water has been poured. The robot can close the lid (but cannot open it).",
+      "category": "program",
+      "api_call": {
+        "program_file": "close_kettle_lid.prog",
+        "program_args": "safe=Home"
+      },
+      "preconditions": {
+        "lid_open": true,
+        "water_in_kettle": true
+      },
+      "effects": {"lid_open": false},
+      "trigger_steps": ["close_lid_and_turn_on"],
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "turn_kettle_on",
+      "name": "Turn Kettle On",
+      "description": "Switch the kettle on to start boiling. The blue LED turns on while it heats and turns off when the water has boiled. Requires the lid to be closed and water in the kettle.",
+      "category": "program",
+      "api_call": {
+        "program_file": "turn_kettle_on.prog",
+        "program_args": "safe=Home"
+      },
+      "preconditions": {
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": false
+      },
+      "effects": {"kettle_on": true},
+      "trigger_steps": ["close_lid_and_turn_on"],
+      "estimated_duration_sec": 4.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "open_gripper",
+      "name": "Open Gripper",
+      "description": "Open the Robotiq gripper.",
+      "category": "gripper",
+      "api_call": {
+        "program_file": "open_gripper.prog",
+        "program_args": ""
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "close_gripper",
+      "name": "Close Gripper",
+      "description": "Close the Robotiq gripper.",
+      "category": "gripper",
+      "api_call": {
+        "program_file": "close_gripper.prog",
+        "program_args": ""
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "stop_program",
+      "name": "Stop Program",
+      "description": "Halt the currently executing program immediately.",
+      "category": "utility",
+      "api_call": {
+        "service": "/program_executor/stop",
+        "type": "std_srvs/srv/Trigger"
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
+      "id": "wait",
+      "name": "Wait",
+      "description": "Wait for a specified duration or until the human signals readiness (e.g. while the kettle boils).",
+      "category": "utility",
+      "parameters": {
+        "duration_sec": {"type": "number", "default": 5.0}
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 5.0,
+      "can_interrupt": true
+    }
+  ]
+}

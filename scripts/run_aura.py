@@ -513,11 +513,31 @@ async def run_workflow(
     print("  Press Ctrl+C to stop")
     print("=" * 60 + "\n")
 
+    # LangGraph counts every node execution as a "superstep" toward the
+    # recursion limit, and one sense→decide→act loop iteration spends several
+    # supersteps (capture → sensing branches → update_ssg → routing →
+    # decide/execute → check_complete). The real stop condition is
+    # ``max_cycles`` (enforced in ``check_complete_node``), so the recursion
+    # limit must comfortably exceed ``max_cycles × supersteps-per-cycle`` or
+    # the stream aborts mid-run with a "recursion limit reached" error.
+    #
+    # Offline / non-realtime runs terminate on video EOF well before the loop
+    # count matters, so they keep the original fixed limit (behaviour
+    # unchanged). Realtime runs are continuous and only stop on ``max_cycles``
+    # (or Ctrl+C / dashboard stop), so the limit is scaled to make that
+    # reachable — at ~12 supersteps/cycle this keeps the loop alive long
+    # enough for a slow VLM call to return and intent to keep re-dispatching.
+    if realtime:
+        effective_max_cycles = int(initial_state["config"].get("max_cycles", 1500))
+        recursion_limit = effective_max_cycles * 12 + 200
+    else:
+        recursion_limit = 6000
+
     thread_config = {
         "configurable": {
             "thread_id": f"aura_{task_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
         },
-        "recursion_limit": 6000,
+        "recursion_limit": recursion_limit,
     }
 
     # ── Run the LangGraph fast perception loop ───────────────────────

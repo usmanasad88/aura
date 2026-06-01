@@ -17779,3 +17779,1021 @@ torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 h
 2026-05-01 05:14:34,275 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
 2026-05-01 05:14:34,693 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=4.00s (gate: pose unavailable — assume activity)
 2026-05-01 05:14:34,777 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 15:39:41,953 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 15:39:41,953 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_153941_hand_layup
+2026-06-01 15:39:41,976 - aura.core.scene_graph.graph - INFO - Initialized task state with 17 variables (4 system-sourced)
+2026-06-01 15:39:41,976 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 15:39:42,006 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['activity', 'gesture', 'intent', 'perception', 'pose'], branches=[['run_perception', 'run_pose', 'run_activity', 'run_intent'], ['run_gesture']])
+2026-06-01 15:39:45,095 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_153941_hand_layup/graph_hand_layup.png
+2026-06-01 15:39:45,135 - aura.sources.video_file - INFO - VideoFileSource opened: /home/rml/Repos/aura/demo_data/layup_demo/layup_dummy_demo_crop_1080.mp4  1920x1080 @ 30.0 fps  3371 frames (112.5s)  skip=30  max=None
+2026-06-01 15:39:46,109 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:39:46,119 - aura.monitors.gesture_monitor - WARNING - MediaPipe solutions not available, using Tasks API only
+2026-06-01 15:39:46,119 - aura.monitors.gesture_monitor - INFO - Loading gesture model from: /home/rml/.mediapipe/gesture_recognizer.task
+2026-06-01 15:39:46,236 - aura.monitors.gesture_monitor - INFO - MediaPipe Gesture Recognizer initialized successfully
+2026-06-01 15:39:46,237 - aura.monitors.gesture_monitor - INFO - GestureMonitor initialized with 2 hands
+2026-06-01 15:39:46,238 - aura.monitors.gesture_monitor - INFO - Stop gestures: {'Open_Palm', 'Pointing_Up'}
+2026-06-01 15:39:46,238 - aura.monitors.gesture_monitor - INFO - Resume gestures: {'Thumb_Up'}
+2026-06-01 15:39:47,717 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-01 15:39:54,802 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-06-01 15:39:55,063 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-06-01 15:39:59,311 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: Quadro RTX 5000
+2026-06-01 15:39:59,312 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-01 15:40:00,583 - tasks.hand_layup.perception.layup_perception_monitor - INFO - Table identity resolved: {'storage_area': (1038.0, 667.0), 'workplace': (1597.0, 883.0)}
+2026-06-01 15:40:00,583 - tasks.hand_layup.perception.layup_perception_monitor - INFO - Bottle identity resolved by initial x-position: left=resin_bottle @ x=1214.0, right=hardener_bottle @ x=1281.0
+2026-06-01 15:40:00,609 - aura.monitors.body_pose_monitor - INFO - BodyPoseMonitor connected to tcp://localhost:5556
+2026-06-01 15:40:02,598 - aura.monitors.base_monitor - WARNING - BODY_POSE monitor timed out
+2026-06-01 15:40:02,616 - aura.monitors.body_pose_monitor - WARNING - BodyPoseMonitor: server did not respond in time
+2026-06-01 15:40:02,919 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:03,948 - aura.monitors.body_pose_monitor - ERROR - BodyPoseMonitor ZMQ error: Operation cannot be accomplished in current state
+2026-06-01 15:40:03,950 - aura.workflow.nodes - WARNING - Pose monitor failed 2 times (last error: Operation cannot be accomplished in current state) — disabling pose gate; intent monitor will run without pose pre-check
+2026-06-01 15:40:04,207 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:05,209 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:05,214 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:05,475 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:05,485 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:05,496 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:06,768 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:06,780 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:06,781 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:08,061 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:09,080 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:09,081 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:09,342 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:09,348 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:09,350 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:10,667 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:11,061 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:11,701 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:11,701 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:12,966 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:12,975 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:12,978 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:14,001 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:14,005 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:14,296 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:14,671 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:15,331 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:15,332 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:16,679 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:16,693 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:16,699 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:17,095 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:17,731 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:17,732 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:18,066 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:19,096 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:19,793 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:19,793 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:20,811 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:20,814 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:20,989 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:21,003 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:21,003 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:21,253 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:22,034 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:22,035 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:22,228 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:23,231 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:24,072 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:24,076 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:24,285 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:25,108 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:25,111 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:25,328 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:26,125 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:26,135 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:26,356 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:27,154 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:27,155 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:27,373 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:28,171 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:28,174 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:28,407 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:29,179 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:29,181 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:29,447 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:30,209 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:30,214 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:30,462 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:31,246 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:31,253 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:31,494 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:32,292 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:32,295 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:32,574 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:33,362 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:33,369 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:33,622 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:34,388 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:34,392 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:34,663 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:35,405 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:35,414 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:35,652 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:36,426 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:36,429 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:36,682 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:37,459 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:37,463 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:37,736 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:38,476 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:38,480 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:38,739 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:39,482 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:39,487 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:39,746 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:40,485 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:40,487 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:40,722 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:41,499 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:41,508 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:41,771 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:42,520 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:42,524 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:42,784 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:43,547 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:43,550 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:43,847 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:44,566 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:44,570 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:44,862 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:45,575 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:45,577 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:45,853 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:46,604 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:46,609 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:46,908 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:47,641 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:47,641 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:47,956 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:48,683 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:48,686 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:48,994 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:49,731 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:49,735 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:49,933 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:50,757 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:50,766 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:50,957 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:51,788 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:51,797 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:51,973 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:52,862 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:52,870 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:53,055 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:53,958 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:53,959 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:54,172 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:54,990 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:54,996 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:55,204 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:56,093 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:56,104 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:56,322 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:57,180 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:57,184 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:57,417 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:58,201 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:58,202 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:58,431 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:59,226 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:40:59,231 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:40:59,474 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:41:00,283 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:41:00,288 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:41:00,549 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:41:01,324 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 15:41:01,325 - aura.workflow.nodes - WARNING - Intent monitor init failed: [Errno 2] No such file or directory: '/home/rml/Repos/aura/demo_data/layup_demo/anchor_image_layup_stationary.png'
+2026-06-01 15:41:01,563 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'resin_bottle_location', 'robot_active_program', 'hardener_bottle_location', 'robot_state'}
+2026-06-01 16:53:25,602 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 16:53:25,602 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_165325_kettle_tea_making
+2026-06-01 16:53:25,615 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-01 16:53:25,616 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 16:53:25,635 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 16:53:27,971 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_165325_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-01 16:53:28,047 - aura.dashboard.server - INFO - Dashboard started at http://localhost:5555
+2026-06-01 16:53:28,250 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-01 16:54:15,908 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 16:54:15,908 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_165415_kettle_tea_making
+2026-06-01 16:54:15,919 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-01 16:54:15,920 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 16:54:15,938 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 16:54:15,984 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_165415_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-01 16:54:16,020 - aura.sources.screen_capture - INFO - ScreenCaptureSource opened: monitor=1  1920x1080 @ 15.0 fps target
+2026-06-01 16:54:16,695 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'spoon_location', 'robot_active_program', 'tea_bag_location', 'water_bottle_location', 'sugar_container_location', 'cup_location', 'biscuits_location', 'milk_container_location', 'robot_state'}
+2026-06-01 16:54:16,695 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 16:54:16,714 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 16:54:16,722 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/rml/Repos/aura/logs/run_20260601_165415_kettle_tea_making/intent_monitor
+2026-06-01 16:54:16,722 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-01 16:54:16,727 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.04s (gate: no gate configured)
+2026-06-01 16:54:16,763 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 16:54:19,535 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 16:54:19,737 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/rml/Repos/aura/logs/run_20260601_165415_kettle_tea_making/decision_engine
+2026-06-01 16:54:19,737 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-01 16:54:19,737 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-01 16:54:19,738 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-01 16:54:19,738 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-01 16:54:19,738 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/rml/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-01 16:54:19,739 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-01 16:54:19,764 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 2 safety rules, 1 timers, 5 scheduled skills)
+2026-06-01 16:54:20,978 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.96s (gate: no gate configured)
+2026-06-01 16:54:21,112 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 16:54:23,777 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 16:54:25,235 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.89s (gate: no gate configured)
+2026-06-01 16:54:25,350 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 16:54:27,890 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 16:54:29,468 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.93s (gate: no gate configured)
+2026-06-01 16:54:29,593 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 16:54:30,419 - __main__ - INFO - Workflow stop requested from dashboard.
+2026-06-01 16:54:31,959 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 16:57:52,032 - aura.utils.config - INFO - Loading config from /home/rml/Repos/aura/config/default.yaml
+2026-06-01 16:57:52,036 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 16:57:52,036 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_165752_cuboid_manipulation
+2026-06-01 16:57:52,036 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (7 system-sourced)
+2026-06-01 16:57:52,037 - aura.workflow.builder - INFO - Built initial SSG with 12 nodes from initial_scene.json
+2026-06-01 16:57:52,136 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-01 16:57:53,744 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_165752_cuboid_manipulation/graph_cuboid_manipulation.png
+2026-06-01 16:57:53,746 - aura.sources.webcam - INFO - WebcamSource opened: device=0  1280x720 @ 30.0 fps
+2026-06-01 16:57:53,779 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'cuboid_orange_xy', 'robot_active_program', 'cuboid_yellow_xy', 'cuboid_blue_xy', 'cuboid_red_xy', 'cuboid_green_xy', 'robot_state'}
+2026-06-01 16:57:53,780 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 16:57:53,796 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 16:57:53,812 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/rml/Repos/aura/logs/run_20260601_165752_cuboid_manipulation/intent_monitor
+2026-06-01 16:57:53,812 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-pro-preview, backend: gemini
+2026-06-01 16:57:53,828 - tasks.cuboid_manipulation.perception.cuboid_perception_monitor - INFO - CuboidPerceptionMonitor REQ connected to tcp://localhost:5557
+2026-06-01 16:57:54,839 - tasks.cuboid_manipulation.perception.cuboid_perception_monitor - INFO - CuboidPerceptionMonitor REQ connected to tcp://localhost:5557
+2026-06-01 16:57:54,841 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.03s (gate: no gate configured)
+2026-06-01 16:57:54,868 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 16:57:55,857 - tasks.cuboid_manipulation.perception.cuboid_perception_monitor - INFO - CuboidPerceptionMonitor REQ connected to tcp://localhost:5557
+2026-06-01 16:57:56,078 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 16:57:56,079 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\nPlease retry in 4.023964316s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '4s'}]}}
+2026-06-01 16:57:56,871 - tasks.cuboid_manipulation.perception.cuboid_perception_monitor - INFO - CuboidPerceptionMonitor REQ connected to tcp://localhost:5557
+2026-06-01 16:57:57,882 - tasks.cuboid_manipulation.perception.cuboid_perception_monitor - INFO - CuboidPerceptionMonitor REQ connected to tcp://localhost:5557
+2026-06-01 16:57:58,895 - tasks.cuboid_manipulation.perception.cuboid_perception_monitor - INFO - CuboidPerceptionMonitor REQ connected to tcp://localhost:5557
+2026-06-01 16:57:59,905 - tasks.cuboid_manipulation.perception.cuboid_perception_monitor - INFO - CuboidPerceptionMonitor REQ connected to tcp://localhost:5557
+2026-06-01 16:57:59,907 - __main__ - INFO - Workflow stop requested from dashboard.
+2026-06-01 16:58:01,081 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 16:58:02,350 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 16:58:02,351 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\nPlease retry in 57.757633139s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '57s'}]}}
+2026-06-01 16:58:12,353 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 16:58:13,017 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 16:58:13,017 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\nPlease retry in 47.061663783s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '47s'}]}}
+2026-06-01 16:58:13,018 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\nPlease retry in 47.061663783s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '47s'}]}}
+2026-06-01 16:58:23,353 - aura.utils.config - INFO - Loading config from /home/rml/Repos/aura/config/default.yaml
+2026-06-01 16:58:23,356 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 16:58:23,356 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_165823_kettle_tea_making
+2026-06-01 16:58:23,357 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-01 16:58:23,357 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 16:58:23,381 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 16:58:23,412 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_165823_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-01 16:59:09,614 - aura.utils.config - INFO - Loading config from /home/rml/Repos/aura/config/default.yaml
+2026-06-01 16:59:09,616 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 16:59:09,617 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_165909_cuboid_manipulation
+2026-06-01 16:59:09,617 - aura.core.scene_graph.graph - INFO - Initialized task state with 20 variables (7 system-sourced)
+2026-06-01 16:59:09,617 - aura.workflow.builder - INFO - Built initial SSG with 12 nodes from initial_scene.json
+2026-06-01 16:59:09,643 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 16:59:09,889 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_165909_cuboid_manipulation/graph_cuboid_manipulation.png
+2026-06-01 17:00:06,423 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 17:00:06,423 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_170006_kettle_tea_making
+2026-06-01 17:00:06,435 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-01 17:00:06,435 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 17:00:06,453 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 17:00:06,506 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_170006_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-01 17:00:06,510 - aura.sources.webcam - INFO - WebcamSource opened: device=0  1280x720 @ 30.0 fps
+2026-06-01 17:00:07,199 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'robot_state', 'robot_active_program', 'sugar_container_location', 'milk_container_location', 'biscuits_location', 'water_bottle_location', 'cup_location', 'tea_bag_location', 'spoon_location'}
+2026-06-01 17:00:07,200 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:00:07,218 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:00:07,226 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/rml/Repos/aura/logs/run_20260601_170006_kettle_tea_making/intent_monitor
+2026-06-01 17:00:07,226 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-01 17:00:07,230 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.03s (gate: no gate configured)
+2026-06-01 17:00:07,253 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:00:09,674 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:00:10,240 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/rml/Repos/aura/logs/run_20260601_170006_kettle_tea_making/decision_engine
+2026-06-01 17:00:10,240 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-01 17:00:10,241 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-01 17:00:10,241 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-01 17:00:10,241 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-01 17:00:10,241 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/rml/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-01 17:00:10,242 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-01 17:00:10,338 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 2 safety rules, 1 timers, 5 scheduled skills)
+2026-06-01 17:00:10,781 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.60s (gate: no gate configured)
+2026-06-01 17:00:10,863 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:00:47,750 - aura.dashboard.server - ERROR - Workflow error: Recursion limit of 6000 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.
+For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT
+2026-06-01 17:01:09,392 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:01:16,740 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-01 17:20:34,169 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 17:20:34,169 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_172034_kettle_tea_making
+2026-06-01 17:20:34,181 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-01 17:20:34,181 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 17:20:34,201 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 17:20:34,255 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_172034_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-01 17:20:34,259 - aura.sources.webcam - INFO - WebcamSource opened: device=0  1280x720 @ 30.0 fps
+2026-06-01 17:20:34,962 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'milk_container_location', 'tea_bag_location', 'spoon_location', 'robot_state', 'water_bottle_location', 'cup_location', 'biscuits_location', 'sugar_container_location', 'robot_active_program'}
+2026-06-01 17:20:34,962 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:20:34,981 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:20:34,989 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/rml/Repos/aura/logs/run_20260601_172034_kettle_tea_making/intent_monitor
+2026-06-01 17:20:34,989 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-01 17:20:34,992 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.02s (gate: no gate configured)
+2026-06-01 17:20:35,022 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:20:37,767 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:20:38,006 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/rml/Repos/aura/logs/run_20260601_172034_kettle_tea_making/decision_engine
+2026-06-01 17:20:38,006 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-01 17:20:38,006 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-01 17:20:38,006 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-01 17:20:38,006 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-01 17:20:38,007 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/rml/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-01 17:20:38,007 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-01 17:20:38,086 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 2 safety rules, 1 timers, 5 scheduled skills)
+2026-06-01 17:20:38,215 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:20:38,299 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:20:41,293 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:20:41,315 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:20:41,391 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:20:43,767 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:20:44,321 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:20:44,814 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:20:44,892 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:20:47,374 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:20:47,821 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:20:48,181 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:20:48,260 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:20:50,704 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:20:51,187 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:20:51,615 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:20:51,693 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:20:54,080 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:20:55,079 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.47s (gate: no gate configured)
+2026-06-01 17:20:55,156 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:20:57,862 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:20:58,246 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:20:58,323 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:00,899 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:01,545 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:21:01,621 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:04,358 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:04,551 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: turn_kettle_on None (api_call={'program_file': 'turn_kettle_on.prog', 'program_args': 'safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:21:04,679 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:21:04,759 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:07,277 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:07,686 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: close_kettle_lid None (api_call={'program_file': 'close_kettle_lid.prog', 'program_args': 'safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:21:08,012 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:21:08,089 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:10,787 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:11,019 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: turn_kettle_on None (api_call={'program_file': 'turn_kettle_on.prog', 'program_args': 'safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:21:11,179 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:21:11,260 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:14,029 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:14,186 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: abort None (api_call=None) — SSG updated, robot API skipped
+2026-06-01 17:21:14,280 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.10s (gate: no gate configured)
+2026-06-01 17:21:14,358 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:16,950 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:17,286 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: abort None (api_call=None) — SSG updated, robot API skipped
+2026-06-01 17:21:17,545 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:21:17,626 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:20,148 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:20,552 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: abort None (api_call=None) — SSG updated, robot API skipped
+2026-06-01 17:21:20,879 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:21:20,960 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:23,440 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:21:23,885 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: abort None (api_call=None) — SSG updated, robot API skipped
+2026-06-01 17:21:24,245 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:21:24,324 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:25,021 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:21:25,023 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 35.084180465s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '35s'}]}}
+2026-06-01 17:21:29,117 - aura.workflow.nodes - WARNING - Reached max cycles (1500), stopping workflow
+2026-06-01 17:21:30,029 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:21:32,920 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:25:10,682 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-01 17:25:58,255 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 17:25:58,255 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_172558_kettle_tea_making
+2026-06-01 17:25:58,267 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-01 17:25:58,267 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 17:25:58,285 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 17:25:58,322 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_172558_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-01 17:25:58,327 - aura.sources.webcam - INFO - WebcamSource opened: device=0  1280x720 @ 30.0 fps
+2026-06-01 17:25:59,040 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'water_bottle_location', 'milk_container_location', 'robot_state', 'tea_bag_location', 'sugar_container_location', 'biscuits_location', 'cup_location', 'spoon_location', 'robot_active_program'}
+2026-06-01 17:25:59,040 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:25:59,059 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:25:59,068 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/rml/Repos/aura/logs/run_20260601_172558_kettle_tea_making/intent_monitor
+2026-06-01 17:25:59,068 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-01 17:25:59,071 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.02s (gate: no gate configured)
+2026-06-01 17:25:59,100 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:01,394 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:02,082 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/rml/Repos/aura/logs/run_20260601_172558_kettle_tea_making/decision_engine
+2026-06-01 17:26:02,082 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-01 17:26:02,082 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-01 17:26:02,082 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-01 17:26:02,082 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-01 17:26:02,083 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/rml/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-01 17:26:02,083 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-01 17:26:02,161 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 5 scheduled skills)
+2026-06-01 17:26:02,748 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.70s (gate: no gate configured)
+2026-06-01 17:26:02,833 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:05,283 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:06,148 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:26:06,228 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:08,777 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:09,448 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:26:09,525 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:12,118 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:12,716 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:26:12,792 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:15,213 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:15,722 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:26:16,148 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.44s (gate: no gate configured)
+2026-06-01 17:26:16,232 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:19,138 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:19,148 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:26:19,155 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:26:19,223 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:21,918 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:22,155 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:26:22,313 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:26:22,389 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:25,075 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:25,481 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:26:25,563 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:27,993 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:28,913 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:26:28,992 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:31,629 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:32,146 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:26:32,223 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:34,887 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:35,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:26:35,423 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:37,937 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:38,679 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:26:38,757 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:41,348 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:41,946 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:26:42,024 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:44,670 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:45,180 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:26:45,257 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:47,973 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:48,312 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:26:48,396 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:50,838 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:51,713 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:26:51,789 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:54,608 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:54,732 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.02s (gate: no gate configured)
+2026-06-01 17:26:54,814 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:26:57,413 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:26:57,948 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:26:58,030 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:00,483 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:01,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:27:01,426 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:03,937 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:04,680 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:27:04,760 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:07,466 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:07,847 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:27:07,924 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:10,821 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:10,847 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:27:10,921 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:13,708 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:13,913 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.06s (gate: no gate configured)
+2026-06-01 17:27:13,991 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:16,515 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:17,246 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:27:17,323 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:19,926 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:20,513 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:27:20,589 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:23,137 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:23,519 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: turn_kettle_on None (api_call={'program_file': 'turn_kettle_on.prog', 'program_args': 'safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:27:23,846 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:27:23,923 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:26,646 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:26,980 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:27:27,056 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:29,505 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:30,412 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:27:30,489 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:31,201 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:27:31,203 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 28.906794922s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-flash-lite', 'location': 'global'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '28s'}]}}
+2026-06-01 17:27:36,208 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:39,161 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:39,179 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:27:39,186 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: close_kettle_lid None (api_call={'program_file': 'close_kettle_lid.prog', 'program_args': 'safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:27:39,263 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:42,322 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:42,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:27:42,354 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: close_kettle_lid None (api_call={'program_file': 'close_kettle_lid.prog', 'program_args': 'safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:27:42,428 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:45,312 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:45,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:27:45,424 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:48,016 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:48,612 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:27:48,687 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:51,550 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:51,623 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.01s (gate: no gate configured)
+2026-06-01 17:27:51,702 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:54,197 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:54,979 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:27:55,055 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:27:57,524 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:27:58,379 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:27:58,460 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:01,280 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:28:01,401 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.02s (gate: no gate configured)
+2026-06-01 17:28:01,477 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:03,888 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:28:04,846 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.47s (gate: no gate configured)
+2026-06-01 17:28:04,927 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:07,411 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:28:08,215 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:28:08,290 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:11,092 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:28:11,280 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.06s (gate: no gate configured)
+2026-06-01 17:28:11,361 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:13,820 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:28:14,679 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:28:14,757 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:17,191 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:28:18,112 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:28:18,188 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:20,550 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:28:21,612 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:28:21,694 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:28:22,384 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:28:22,387 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 37.721512119s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-flash-lite', 'location': 'global'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '37s'}]}}
+2026-06-01 17:28:24,651 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-01 17:28:24,678 - aura.dashboard.server - ERROR - Workflow error: cannot schedule new futures after shutdown
+2026-06-01 17:32:21,816 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-01 17:32:21,816 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260601_173221_kettle_tea_making
+2026-06-01 17:32:21,828 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-01 17:32:21,829 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-01 17:32:21,847 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent'], branches=[['run_intent']])
+2026-06-01 17:32:23,095 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260601_173221_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-01 17:32:23,102 - aura.sources.webcam - INFO - WebcamSource opened: device=0  1280x720 @ 30.0 fps
+2026-06-01 17:32:23,817 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'biscuits_location', 'water_bottle_location', 'spoon_location', 'sugar_container_location', 'robot_active_program', 'tea_bag_location', 'robot_state', 'milk_container_location', 'cup_location'}
+2026-06-01 17:32:23,818 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:32:23,835 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-01 17:32:23,844 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/rml/Repos/aura/logs/run_20260601_173221_kettle_tea_making/intent_monitor
+2026-06-01 17:32:23,844 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-01 17:32:23,848 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.01s (gate: no gate configured)
+2026-06-01 17:32:23,880 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:26,273 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:26,862 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/rml/Repos/aura/logs/run_20260601_173221_kettle_tea_making/decision_engine
+2026-06-01 17:32:26,863 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-01 17:32:26,863 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-01 17:32:26,863 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-01 17:32:26,863 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-01 17:32:26,864 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/rml/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-01 17:32:26,864 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-01 17:32:26,940 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 4 scheduled skills)
+2026-06-01 17:32:27,448 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.63s (gate: no gate configured)
+2026-06-01 17:32:27,529 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:29,901 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:30,947 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:32:31,024 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:33,627 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:33,954 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:32:34,215 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:32:34,292 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:37,449 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:37,481 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:32:37,489 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:32:37,540 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:40,225 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:40,681 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:32:40,758 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:43,468 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:43,688 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: bring_water_bottle water_bottle (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object=water_bottle destination=working_area safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:32:43,846 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:32:43,930 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:47,314 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:47,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:32:47,424 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:49,903 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:50,746 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:32:50,827 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:53,777 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:53,812 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:32:53,888 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:56,439 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:32:57,113 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:32:57,193 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:32:59,850 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:00,312 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:33:00,398 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:02,989 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:03,319 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: close_kettle_lid None (api_call={'program_file': 'close_kettle_lid.prog', 'program_args': 'safe=Home'}) — SSG updated, robot API skipped
+2026-06-01 17:33:03,579 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:33:03,656 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:06,242 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:06,846 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.26s (gate: no gate configured)
+2026-06-01 17:33:06,923 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:09,338 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:10,280 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:33:10,356 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:13,274 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:13,313 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:33:13,396 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:15,904 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:16,680 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:33:16,757 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:17,445 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:33:17,446 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 42.663176767s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-flash-lite', 'location': 'global'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '42s'}]}}
+2026-06-01 17:33:22,452 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:25,235 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:25,246 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:33:25,340 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:27,784 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:28,646 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:33:28,723 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:32,168 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:32,180 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:33:32,259 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:34,735 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:35,580 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:33:35,657 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:38,212 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:38,882 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:33:38,965 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:41,580 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:42,112 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:33:42,189 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:44,800 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:45,379 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:33:45,455 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:48,297 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:48,403 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.02s (gate: no gate configured)
+2026-06-01 17:33:48,485 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:51,117 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:51,615 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.24s (gate: no gate configured)
+2026-06-01 17:33:51,695 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:54,374 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:54,779 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:33:54,854 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:33:57,112 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:33:58,381 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.60s (gate: no gate configured)
+2026-06-01 17:33:58,462 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:01,975 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:02,012 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:34:02,087 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:04,352 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:05,613 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.60s (gate: no gate configured)
+2026-06-01 17:34:05,690 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:08,067 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:09,113 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:34:09,190 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:11,739 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:12,415 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:34:12,491 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:14,962 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:15,812 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:34:15,889 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:16,519 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:34:16,520 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 43.582404346s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '43s'}]}}
+2026-06-01 17:34:21,525 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:25,067 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:25,079 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:34:25,157 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:27,883 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:28,214 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:34:28,294 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:31,149 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:31,226 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.01s (gate: no gate configured)
+2026-06-01 17:34:31,280 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:34,013 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:34,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:34:34,427 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:36,956 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:37,678 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:34:37,756 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:40,389 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:40,913 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:34:41,001 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:43,675 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:44,079 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:34:44,155 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:47,009 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:47,092 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.01s (gate: no gate configured)
+2026-06-01 17:34:47,173 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:49,629 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:50,480 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:34:50,566 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:52,996 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:53,913 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:34:53,992 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:56,717 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:34:57,047 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:34:57,126 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:34:59,552 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:00,479 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:35:00,558 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:03,477 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:03,519 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:35:03,599 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:05,907 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:07,045 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.53s (gate: no gate configured)
+2026-06-01 17:35:07,121 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:09,730 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:10,312 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:35:10,393 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:12,667 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:13,912 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.60s (gate: no gate configured)
+2026-06-01 17:35:13,991 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:16,211 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:17,546 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.63s (gate: no gate configured)
+2026-06-01 17:35:17,635 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:18,311 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:35:18,312 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 41.795336517s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-flash-lite', 'location': 'global'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '41s'}]}}
+2026-06-01 17:35:23,319 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:26,684 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:26,714 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:35:26,794 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:29,427 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:29,946 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:35:30,024 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:32,652 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:33,179 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:35:33,257 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:35,758 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:36,545 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:35:36,627 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:38,998 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:40,046 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:35:40,122 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:42,865 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:43,179 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:35:43,261 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:45,710 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:46,580 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:35:46,661 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:49,132 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:49,979 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:35:50,057 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:52,916 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:52,990 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.01s (gate: no gate configured)
+2026-06-01 17:35:53,074 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:55,969 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:55,990 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:35:56,068 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:35:58,485 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:35:59,413 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:35:59,502 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:02,088 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:02,681 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:36:02,764 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:05,206 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:06,081 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:36:06,160 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:08,605 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:09,481 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:36:09,559 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:12,200 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:12,712 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:36:12,793 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:15,358 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:16,012 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:36:16,091 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:18,600 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:19,380 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:36:19,458 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:20,168 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:36:20,169 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 39.93747641s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '39s'}]}}
+2026-06-01 17:36:25,172 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:28,037 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:28,079 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:36:28,157 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:30,813 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:31,279 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:36:31,356 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:33,996 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:34,512 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:36:34,589 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:37,075 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:37,883 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:36:37,968 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:40,506 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:41,180 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:36:41,257 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:43,938 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:44,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:36:44,422 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:46,799 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:47,845 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:36:47,925 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:50,302 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:51,347 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:36:51,424 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:54,104 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:54,512 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:36:54,594 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:36:57,497 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:36:57,513 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:36:57,588 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:00,012 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:00,945 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:37:01,024 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:03,543 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:04,279 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:37:04,362 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:07,067 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:07,446 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:37:07,525 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:10,582 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:10,613 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:37:10,690 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:13,337 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:13,812 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:37:13,894 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:16,346 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:17,215 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:37:17,296 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:19,785 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:20,582 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:37:20,658 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:21,387 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:37:21,391 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 38.717725839s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '38s'}]}}
+2026-06-01 17:37:26,397 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:29,294 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:29,313 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:37:29,388 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:32,291 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:32,315 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:37:32,391 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:34,849 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:35,713 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:37:35,790 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:38,240 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:39,113 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:37:39,191 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:41,699 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:42,482 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:37:42,565 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:45,225 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:45,680 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:37:45,760 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:48,317 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:48,980 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:37:49,058 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:51,833 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:52,080 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.10s (gate: no gate configured)
+2026-06-01 17:37:52,161 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:54,727 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:55,380 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:37:55,457 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:37:58,185 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:37:58,512 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:37:58,590 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:01,239 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:01,713 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:38:01,791 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:04,249 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:05,113 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:38:05,195 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:07,685 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:08,479 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:38:08,556 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:11,040 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:11,847 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:38:11,930 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:14,507 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:15,113 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:38:15,190 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:17,715 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:18,446 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:38:18,523 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:19,269 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:38:19,270 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 40.850666374s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '40s'}]}}
+2026-06-01 17:38:24,275 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:28,080 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:28,113 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:38:28,198 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:30,844 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:31,316 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:38:31,397 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:34,120 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:34,447 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:38:34,526 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:37,088 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:37,746 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:38:37,836 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:40,649 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:40,769 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.02s (gate: no gate configured)
+2026-06-01 17:38:40,843 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:43,249 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:44,212 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.47s (gate: no gate configured)
+2026-06-01 17:38:44,289 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:49,014 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:49,046 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:38:49,123 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:51,795 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:52,245 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:38:52,332 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:54,984 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:55,445 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:38:55,524 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:38:58,042 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:38:58,779 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.33s (gate: no gate configured)
+2026-06-01 17:38:58,857 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:01,362 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:02,147 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:39:02,224 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:04,854 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:05,379 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:39:05,457 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:08,022 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:08,679 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:39:08,760 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:11,178 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:12,111 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:39:12,172 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:15,331 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:15,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:39:15,430 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:18,011 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:18,613 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:39:18,698 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:19,393 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:39:19,395 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 40.708269182s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '40s'}]}}
+2026-06-01 17:39:24,400 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:27,619 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:27,646 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:39:27,704 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:30,310 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:30,913 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:39:30,990 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:34,136 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:34,179 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:39:34,260 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:36,965 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:37,346 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.17s (gate: no gate configured)
+2026-06-01 17:39:37,424 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:39,837 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:40,779 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.43s (gate: no gate configured)
+2026-06-01 17:39:40,856 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:43,314 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:44,180 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:39:44,261 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:46,729 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:47,581 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:39:47,664 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:50,299 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:50,813 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:39:50,891 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:53,606 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:53,946 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:39:54,030 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:57,012 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:39:57,046 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:39:57,122 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:39:59,770 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:00,245 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.20s (gate: no gate configured)
+2026-06-01 17:40:00,326 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:03,039 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:03,380 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.13s (gate: no gate configured)
+2026-06-01 17:40:03,459 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:05,829 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:06,879 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.50s (gate: no gate configured)
+2026-06-01 17:40:06,956 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:09,414 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:10,279 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:40:10,365 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:12,853 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:13,648 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.37s (gate: no gate configured)
+2026-06-01 17:40:13,726 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:16,120 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:17,112 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.46s (gate: no gate configured)
+2026-06-01 17:40:17,191 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:17,889 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:40:17,890 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 42.214173553s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '42s'}]}}
+2026-06-01 17:40:22,896 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:23,785 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-01 17:40:23,787 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 36.315627303s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '15'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '36s'}]}}
+2026-06-01 17:40:33,793 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:37,444 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:37,479 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:40:37,561 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:40,198 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:40,712 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.23s (gate: no gate configured)
+2026-06-01 17:40:40,790 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:43,394 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:43,980 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.27s (gate: no gate configured)
+2026-06-01 17:40:44,055 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:46,606 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:47,279 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.30s (gate: no gate configured)
+2026-06-01 17:40:47,361 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:50,408 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:50,446 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.00s (gate: no gate configured)
+2026-06-01 17:40:50,524 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:53,002 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:53,848 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:40:53,929 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:56,321 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:40:57,312 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.47s (gate: no gate configured)
+2026-06-01 17:40:57,390 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:40:59,864 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-01 17:41:00,713 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=2.40s (gate: no gate configured)
+2026-06-01 17:41:00,791 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 17:41:03,233 - aura.dashboard.server - ERROR - Workflow error: cannot schedule new futures after shutdown
+2026-06-01 17:41:03,286 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"

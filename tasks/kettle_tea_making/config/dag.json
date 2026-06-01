@@ -1,0 +1,14 @@
+[
+  {"id": "idle", "description": "System initialized, key items in storage, waiting for the human to begin", "dependencies": []},
+  {"id": "open_kettle_lid", "description": "Human opens the kettle lid, signalling intent to make tea (the robot cannot open the lid)", "dependencies": ["idle"]},
+  {"id": "bring_water_bottle", "description": "If the water bottle cap is closed and the bottle is in storage, the robot brings the water bottle to the human", "dependencies": ["open_kettle_lid"]},
+  {"id": "pour_water_into_kettle", "description": "With the cap open and the lid open, water is poured into the kettle (robot or human)", "dependencies": ["bring_water_bottle"]},
+  {"id": "close_lid_and_turn_on", "description": "After water is poured, the kettle lid is closed and the kettle is switched on; the blue LED turns on", "dependencies": ["pour_water_into_kettle"]},
+  {"id": "boil_water", "description": "The kettle heats the water until it boils; the blue LED turns off when boiling completes", "dependencies": ["close_lid_and_turn_on"]},
+  {"id": "setup_workspace", "description": "Robot retrieves the powdered milk container, cup, spoon, tea bag, sugar container and biscuits from storage to the working area", "dependencies": ["open_kettle_lid"]},
+  {"id": "add_tea_bag", "description": "A tea bag is placed into the cup", "dependencies": ["setup_workspace"]},
+  {"id": "pour_boiled_water_into_cup", "description": "The boiled water is poured from the kettle into the cup over the tea bag", "dependencies": ["boil_water", "add_tea_bag"]},
+  {"id": "prepare_tea", "description": "Human prepares their tea in the cup — adds powdered milk and sugar and stirs", "dependencies": ["pour_boiled_water_into_cup"]},
+  {"id": "cleanup", "description": "Returns unused items to storage and discards the spent tea bag", "dependencies": ["prepare_tea"]},
+  {"id": "task_complete", "description": "Task finished, tea is ready", "dependencies": ["cleanup"]}
+]

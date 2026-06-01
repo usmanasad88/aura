@@ -1,0 +1,21 @@
+{
+  "regions": [
+    {"id": "storage_area", "name": "Storage Area", "region_type": "storage"},
+    {"id": "working_area", "name": "Working Area", "region_type": "workspace"},
+    {"id": "kettle_area", "name": "Kettle", "region_type": "workspace"}
+  ],
+  "objects": [
+    {"id": "water_bottle", "name": "Water Bottle", "category": "container", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "milk_container", "name": "Powdered Milk Container", "category": "container", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "sugar_container", "name": "Sugar Container", "category": "container", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "tea_bag", "name": "Tea Bag", "category": "material", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "cup", "name": "Cup", "category": "container", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "spoon", "name": "Stirring Spoon", "category": "tool", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "biscuits", "name": "Biscuits", "category": "material", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "kettle", "name": "Electric Kettle", "category": "fixture", "is_movable": false, "initial_location": "kettle_area"}
+  ],
+  "agents": [
+    {"id": "human", "name": "Human Operator", "agent_type": "human"},
+    {"id": "robot", "name": "Robot Assistant", "agent_type": "robot"}
+  ]
+}
