@@ -10,7 +10,7 @@
     {"id": "sugar_container", "name": "Sugar Container", "category": "container", "is_movable": true, "initial_location": "storage_area"},
     {"id": "tea_bag", "name": "Tea Bag", "category": "material", "is_movable": true, "initial_location": "storage_area"},
     {"id": "cup", "name": "Cup", "category": "container", "is_movable": true, "initial_location": "storage_area"},
-    {"id": "spoon", "name": "Stirring Spoon", "category": "tool", "is_movable": true, "initial_location": "storage_area"},
+    {"id": "spoon", "name": "Stirring Spoon", "category": "tool", "is_movable": true, "initial_location": "working_area"},
     {"id": "biscuits", "name": "Biscuits", "category": "material", "is_movable": true, "initial_location": "storage_area"},
     {"id": "kettle", "name": "Electric Kettle", "category": "fixture", "is_movable": false, "initial_location": "kettle_area"}
   ],

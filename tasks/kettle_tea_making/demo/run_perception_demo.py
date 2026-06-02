@@ -27,9 +27,7 @@ Usage::
         --frame-skip 30
 
     # Also save an output video
-    uv run python tasks/kettle_tea_making/demo/run_perception_demo.py \\
-        --video path/to/tea_demo.mp4 \\
-        --frame-skip 30 --save output_vis.mp4
+    uv run python tasks/kettle_tea_making/demo/run_perception_demo.py --video /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4 --frame-skip 30 --save output_vis.mp4
 """
 
 from __future__ import annotations

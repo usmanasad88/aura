@@ -180,6 +180,9 @@ class DecisionEngineConfig:
     # "bt"      — BT only, no LLM; ambiguity escalates to the human
     # "hybrid"  — BT with LLM fallback on ambiguity (default)
     decision_mode: str = "hybrid"
+    # When True (hybrid mode), defer to the LLM on idle ticks where no BT
+    # branch fired, instead of defaulting to wait. Easy global toggle.
+    llm_fallback_on_idle: bool = False
 
     # LLM backend: "gemini", "openai", "sglang", "vllm", "ollama"
     llm_backend: str = "gemini"
@@ -565,6 +568,7 @@ class DecisionEngine:
             explainer=self.explainer,
             decision_mode=self.config.decision_mode,
             proactive_threshold=self.config.proactive_threshold,
+            defer_to_llm_when_idle=self.config.llm_fallback_on_idle,
             llm_fallback=self._bt_llm_fallback_hook,
         )
         self._bt_ctx = ctx

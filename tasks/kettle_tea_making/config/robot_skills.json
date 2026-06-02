@@ -46,18 +46,18 @@
     {
       "id": "pick_and_place_item",
       "name": "Pick and Place Item",
-      "description": "One-shot pick-and-place of a key item from storage to a destination, transiting via the safe pose. Use the `item` keyword to select which object to move and `destination` to choose where to drop it. The tea bag and spoon may be dropped into the cup; all other items go to the working area. This skill has no fixed trigger step — once its preconditions hold, the decision LLM chooses when and what to deliver (e.g. fetching the remaining items while the kettle boils).",
+      "description": "One-shot pick-and-place of a key item from storage to a destination, transiting via the safe pose. Use the `item` keyword to select which object to move and `destination` to choose where to drop it. The tea bag and spoon may be dropped into the cup; all other items go to the working area. This skill has no fixed trigger step — once its preconditions hold, the decision LLM chooses when and what to deliver (e.g. fetching the remaining items while the kettle boils). The sugar container is intentionally excluded — there is no perception monitor for it, so the robot cannot confirm a move and the human is responsible for fetching it.",
       "category": "program",
       "parameters": {
         "item": {
           "type": "string",
-          "description": "Item id to pick from storage; must match an object in initial_scene.json",
-          "valid_values": ["milk_container", "sugar_container", "tea_bag", "cup", "spoon", "biscuits"]
+          "description": "Item id to pick from storage; must match an object in initial_scene.json. Sugar is excluded (no perception monitor — human-handled).",
+          "valid_values": ["milk_container", "tea_bag", "cup", "spoon", "biscuits"]
         },
         "destination": {
           "type": "string",
           "description": "Named drop pose. Normally the item's own `<item>_workplace`; tea_bag and spoon may instead use `cup_workplace` to drop into the cup. Each item has its own workplace pose (items can't share a drop spot).",
-          "valid_values": ["water_bottle_workplace", "milk_container_workplace", "sugar_container_workplace", "tea_bag_workplace", "cup_workplace", "spoon_workplace", "biscuits_workplace"]
+          "valid_values": ["water_bottle_workplace", "milk_container_workplace", "tea_bag_workplace", "cup_workplace", "spoon_workplace", "biscuits_workplace"]
         },
         "safe": {"type": "string", "description": "Safe retreat pose name", "default": "Home"}
       },
@@ -67,6 +67,37 @@
       },
       "preconditions": {"{item}.location": "storage_area"},
       "effects": {"{item}.location": "{destination}"},
+      "trigger_steps": ["setup_workspace"],
+      "trigger_after_steps": ["setup_workspace"],
+      "trigger_until_steps": ["prepare_tea"],
+      "estimated_duration_sec": 12.0,
+      "can_interrupt": false
+    },
+    {
+      "id": "return_item_to_storage",
+      "name": "Return Item to Storage",
+      "description": "Cleanup counterpart of pick_and_place_item: once the tea is prepared, take items the robot brought out back from the working area to storage, using the same parametric pick-and-place program with the poses reversed. Only items with a perception monitor are listed (milk_container, tea_bag, cup, biscuits) so the robot can confirm each return; the spoon and sugar are excluded (no perception) and are the human's responsibility. Triggers after the prepare_tea step completes; the BT returns one eligible item per tick as the robot frees up.",
+      "category": "program",
+      "parameters": {
+        "item": {
+          "type": "string",
+          "description": "Item id to return to storage from the working area. Limited to perception-tracked items so the move can be verified.",
+          "valid_values": ["milk_container", "tea_bag", "cup", "biscuits"]
+        },
+        "destination": {
+          "type": "string",
+          "description": "Named storage drop pose. Each item returns to its own `<item>_storage` pose.",
+          "valid_values": ["milk_container_storage", "tea_bag_storage", "cup_storage", "biscuits_storage"]
+        },
+        "safe": {"type": "string", "description": "Safe retreat pose name", "default": "Home"}
+      },
+      "api_call": {
+        "program_file": "pick_and_place_items.prog",
+        "program_args": "object={item}_workplace destination={destination} safe={safe}"
+      },
+      "preconditions": {"{item}.location": "working_area"},
+      "effects": {"{item}.location": "{destination}"},
+      "trigger_after_steps": ["prepare_tea"],
       "estimated_duration_sec": 12.0,
       "can_interrupt": false
     },

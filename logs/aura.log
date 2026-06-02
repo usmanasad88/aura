@@ -18797,3 +18797,504 @@ For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/erro
 2026-06-01 17:41:00,791 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
 2026-06-01 17:41:03,233 - aura.dashboard.server - ERROR - Workflow error: cannot schedule new futures after shutdown
 2026-06-01 17:41:03,286 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:30:19,440 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 05:30:19,440 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_053019_kettle_tea_making
+2026-06-02 05:30:19,457 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 05:30:19,457 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 05:30:19,498 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 05:30:19,750 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_053019_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 05:30:19,779 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 05:30:20,464 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'tea_bag_location', 'milk_container_location', 'robot_active_program', 'biscuits_location', 'spoon_location', 'robot_state', 'sugar_container_location', 'cup_location', 'water_bottle_location'}
+2026-06-02 05:30:20,465 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:30:20,513 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:30:20,551 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_053019_kettle_tea_making/intent_monitor
+2026-06-02 05:30:20,551 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-pro-preview, backend: gemini
+2026-06-02 05:30:20,555 - aura.workflow.nodes - INFO - No task-specific perception monitor for 'Collaborative Kettle Tea Making'
+2026-06-02 05:30:20,556 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 05:30:20,605 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:30:21,960 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-02 05:30:21,961 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\nPlease retry in 38.122542057s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '38s'}]}}
+2026-06-02 05:30:26,963 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:30:27,749 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-02 05:30:27,750 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\nPlease retry in 32.332727931s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '32s'}]}}
+2026-06-02 05:30:30,556 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-02 05:30:49,658 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 05:30:49,658 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_053049_kettle_tea_making
+2026-06-02 05:30:49,679 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 05:30:49,679 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 05:30:49,713 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 05:30:49,758 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_053049_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 05:30:49,785 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 05:30:50,501 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'cup_location', 'milk_container_location', 'spoon_location', 'robot_active_program', 'water_bottle_location', 'biscuits_location', 'robot_state', 'tea_bag_location', 'sugar_container_location'}
+2026-06-02 05:30:50,502 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:30:50,551 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:30:50,584 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_053049_kettle_tea_making/intent_monitor
+2026-06-02 05:30:50,584 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 05:30:50,587 - aura.workflow.nodes - INFO - No task-specific perception monitor for 'Collaborative Kettle Tea Making'
+2026-06-02 05:30:50,588 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 05:30:50,634 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:30:53,601 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:30:53,614 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_053049_kettle_tea_making/decision_engine
+2026-06-02 05:30:53,614 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 05:30:53,614 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 05:30:53,614 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 05:30:53,614 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 05:30:53,615 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 05:30:53,615 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 05:30:53,675 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 4 scheduled skills)
+2026-06-02 05:30:54,014 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:30:54,180 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:30:56,909 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:30:57,271 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:30:57,433 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:31:00,209 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:31:00,569 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:31:00,736 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:31:03,704 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:31:04,089 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:31:04,256 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:31:06,905 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:31:07,369 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:31:07,532 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:31:10,218 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:31:10,637 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:31:10,800 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:31:13,378 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:31:15,560 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)
+2026-06-02 05:31:53,536 - aura.utils.config - INFO - Loading config from /home/mani/Repos/aura/config/default.yaml
+2026-06-02 05:31:53,539 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 05:31:53,539 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_053153_kettle_tea_making
+2026-06-02 05:31:53,540 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 05:31:53,540 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 05:31:53,566 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 05:31:53,605 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_053153_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 05:31:55,352 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=2820 (reported total=1023)
+2026-06-02 05:32:18,079 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-02 05:32:42,924 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 05:32:42,924 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_053242_kettle_tea_making
+2026-06-02 05:32:42,942 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 05:32:42,942 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 05:32:42,976 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 05:32:43,019 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_053242_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 05:32:43,040 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 05:32:43,696 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'tea_bag_location', 'robot_active_program', 'sugar_container_location', 'milk_container_location', 'robot_state', 'water_bottle_location', 'cup_location', 'spoon_location', 'biscuits_location'}
+2026-06-02 05:32:43,696 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:32:43,747 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:32:43,782 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_053242_kettle_tea_making/intent_monitor
+2026-06-02 05:32:43,783 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 05:32:43,786 - aura.workflow.nodes - INFO - No task-specific perception monitor for 'Collaborative Kettle Tea Making'
+2026-06-02 05:32:43,787 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 05:32:43,837 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:32:46,695 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:32:46,707 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_053242_kettle_tea_making/decision_engine
+2026-06-02 05:32:46,707 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 05:32:46,707 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 05:32:46,708 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 05:32:46,708 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 05:32:46,708 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 05:32:46,708 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 05:32:46,761 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 4 scheduled skills)
+2026-06-02 05:32:47,095 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:32:47,260 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:32:49,519 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:32:50,361 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:32:50,524 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:32:52,814 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:32:53,632 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:32:53,789 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:32:55,991 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:32:56,920 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:32:57,092 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:32:59,520 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:33:00,199 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:33:00,361 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:33:02,969 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:33:03,473 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 05:33:03,644 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:33:05,992 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 05:33:08,401 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)
+2026-06-02 05:34:08,128 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-02 05:34:11,203 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 05:34:11,203 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_053411_kettle_tea_making
+2026-06-02 05:34:11,218 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 05:34:11,218 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 05:34:11,245 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 05:34:11,285 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_053411_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 05:34:11,333 - aura.dashboard.server - INFO - Dashboard started at http://localhost:5555
+2026-06-02 05:34:11,362 - aura.sources.realtime_video - INFO - RealtimeVideoSource opened: demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  speed=1.00x  max=None
+2026-06-02 05:34:12,032 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'robot_active_program', 'water_bottle_location', 'tea_bag_location', 'robot_state', 'milk_container_location', 'cup_location', 'spoon_location', 'biscuits_location', 'sugar_container_location'}
+2026-06-02 05:34:12,032 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:34:12,082 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:34:12,116 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_053411_kettle_tea_making/intent_monitor
+2026-06-02 05:34:12,116 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-pro-preview, backend: gemini
+2026-06-02 05:34:12,120 - aura.workflow.nodes - INFO - No task-specific perception monitor for 'Collaborative Kettle Tea Making'
+2026-06-02 05:34:12,121 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 05:34:12,169 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:34:13,428 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-02 05:34:13,429 - aura.monitors.intent_monitor - WARNING - LLM call attempt 1/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\nPlease retry in 46.658820838s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '46s'}]}}
+2026-06-02 05:34:18,431 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:34:19,705 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-02 05:34:19,706 - aura.monitors.intent_monitor - WARNING - LLM call attempt 2/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\nPlease retry in 40.380308058s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.1-pro', 'location': 'global'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '40s'}]}}
+2026-06-02 05:34:20,428 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-02 05:34:29,708 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 05:34:30,961 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-06-02 05:34:30,962 - aura.monitors.intent_monitor - WARNING - LLM call attempt 3/3 failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\nPlease retry in 29.125021057s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '29s'}]}}
+2026-06-02 05:34:30,962 - aura.monitors.intent_monitor - ERROR - LLM prediction failed: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\nPlease retry in 29.125021057s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerDay-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_input_token_count', 'quotaId': 'GenerateContentInputTokensPerModelPerMinute-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}, {'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-pro'}}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '29s'}]}}
+2026-06-02 05:59:20,836 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 05:59:20,836 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_055920_kettle_tea_making
+2026-06-02 05:59:20,851 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 05:59:20,851 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 05:59:20,878 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 05:59:21,129 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_055920_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 05:59:21,158 - aura.sources.video_file - INFO - VideoFileSource opened: demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 05:59:21,881 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'milk_container_location', 'robot_active_program', 'cup_location', 'sugar_container_location', 'water_bottle_location', 'tea_bag_location', 'spoon_location', 'robot_state', 'biscuits_location'}
+2026-06-02 05:59:21,882 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:59:21,929 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 05:59:21,961 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_055920_kettle_tea_making/intent_monitor
+2026-06-02 05:59:21,962 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-pro-preview, backend: gemini
+2026-06-02 05:59:21,963 - aura.workflow.nodes - INFO - No task-specific perception monitor for 'Collaborative Kettle Tea Making'
+2026-06-02 06:02:41,119 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 06:02:41,119 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_060241_kettle_tea_making
+2026-06-02 06:02:41,136 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 06:02:41,136 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 06:02:41,167 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 06:02:41,206 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_060241_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 06:02:41,227 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 06:02:41,897 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'cup_location', 'biscuits_location', 'water_bottle_location', 'robot_active_program', 'spoon_location', 'tea_bag_location', 'sugar_container_location', 'robot_state', 'milk_container_location'}
+2026-06-02 06:02:41,898 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 06:02:41,946 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 06:02:41,978 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_060241_kettle_tea_making/intent_monitor
+2026-06-02 06:02:41,978 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 06:02:43,137 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-02 06:02:50,921 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-06-02 06:02:51,296 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 302 Found"
+2026-06-02 06:02:54,010 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-06-02 06:02:54,011 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-02 06:02:54,994 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 06:02:55,038 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 06:02:57,564 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 06:02:57,589 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_060241_kettle_tea_making/decision_engine
+2026-06-02 06:02:57,589 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 06:02:57,590 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 06:02:57,590 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 06:02:57,590 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 06:02:57,590 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 06:02:57,591 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 06:02:57,604 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 4 scheduled skills)
+2026-06-02 06:03:00,195 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 639, 1004, 1080), working_area bbox=(586, 354, 1542, 964)
+2026-06-02 06:03:01,900 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 06:03:02,066 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 06:03:04,499 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 06:03:08,835 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 06:03:08,999 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 06:03:11,299 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 06:03:15,550 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 06:03:15,715 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 06:03:18,039 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 06:03:22,330 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 06:03:22,495 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 06:03:26,707 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 06:03:30,990 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 06:03:31,154 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 06:03:33,424 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 06:03:37,728 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 06:03:37,893 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 06:03:40,247 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 06:03:45,438 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)
+2026-06-02 07:00:47,236 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 07:00:47,236 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_070047_kettle_tea_making
+2026-06-02 07:00:47,252 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 07:00:47,252 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 07:00:47,283 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 07:00:47,536 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_070047_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 07:00:47,565 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 07:00:48,275 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'spoon_location', 'cup_location', 'milk_container_location', 'water_bottle_location', 'sugar_container_location', 'tea_bag_location', 'robot_active_program', 'robot_state', 'biscuits_location'}
+2026-06-02 07:00:48,275 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:00:48,323 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:00:48,355 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_070047_kettle_tea_making/intent_monitor
+2026-06-02 07:00:48,356 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 07:00:49,529 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-02 07:00:57,221 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-06-02 07:00:57,578 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 302 Found"
+2026-06-02 07:01:00,323 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-06-02 07:01:00,324 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-02 07:01:01,281 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 07:01:01,324 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:01:03,996 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:01:04,015 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_070047_kettle_tea_making/decision_engine
+2026-06-02 07:01:04,015 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 07:01:04,015 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 07:01:04,015 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 07:01:04,015 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 07:01:04,016 - aura.brain.skill_registry - INFO - Loaded 10 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 07:01:04,016 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 07:01:04,033 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 5 scheduled skills)
+2026-06-02 07:01:06,651 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 639, 1004, 1080), working_area bbox=(586, 354, 1542, 964)
+2026-06-02 07:01:08,375 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:01:08,550 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:01:10,943 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:01:10,971 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item sugar_container (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:01:11,861 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item sugar_container (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:01:15,299 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:01:15,463 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:01:17,713 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:01:17,739 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item sugar_container (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:01:22,026 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:01:22,190 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:01:24,501 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:01:24,523 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item sugar_container (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:01:27,135 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item sugar_container (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:01:28,001 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item sugar_container (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:01:28,869 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:01:29,034 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:01:31,281 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:01:31,309 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item sugar_container (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:01:35,655 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:01:35,822 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:01:38,143 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:01:42,495 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:01:42,653 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:01:44,994 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:01:50,298 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)
+2026-06-02 07:36:15,803 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 07:36:15,804 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_073615_kettle_tea_making
+2026-06-02 07:36:15,820 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 07:36:15,821 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 07:36:15,863 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 07:36:16,024 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_073615_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 07:36:16,052 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 07:36:16,779 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'biscuits_location', 'robot_active_program', 'sugar_container_location', 'milk_container_location', 'cup_location', 'spoon_location', 'water_bottle_location', 'tea_bag_location', 'robot_state'}
+2026-06-02 07:36:16,780 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:36:16,829 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:36:16,862 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_073615_kettle_tea_making/intent_monitor
+2026-06-02 07:36:16,862 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 07:36:18,059 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-02 07:36:26,047 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-06-02 07:36:26,411 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 302 Found"
+2026-06-02 07:36:29,139 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-06-02 07:36:29,139 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-02 07:36:30,115 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 07:36:30,160 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:36:32,621 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:36:32,642 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_073615_kettle_tea_making/decision_engine
+2026-06-02 07:36:32,642 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 07:36:32,642 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 07:36:32,643 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 07:36:32,643 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 07:36:32,643 - aura.brain.skill_registry - INFO - Loaded 11 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 07:36:32,644 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 07:36:32,657 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 6 scheduled skills)
+2026-06-02 07:36:35,353 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 639, 1004, 1080), working_area bbox=(586, 354, 1542, 964)
+2026-06-02 07:36:37,102 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:36:37,270 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:36:39,723 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:36:44,067 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:36:44,233 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:36:46,399 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:36:46,429 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:36:50,716 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:36:50,872 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:36:53,139 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:36:53,164 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:36:55,778 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:36:56,649 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:36:57,516 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:36:57,682 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:36:59,958 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:36:59,985 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:37:04,339 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:37:04,510 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:37:06,889 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:37:11,225 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:37:11,389 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:37:13,646 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:37:18,891 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)
+2026-06-02 07:50:43,319 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 07:50:43,319 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_075043_kettle_tea_making
+2026-06-02 07:50:43,336 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 07:50:43,336 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 07:50:43,378 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 07:50:43,640 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_075043_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 07:50:43,669 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 07:50:44,381 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'water_bottle_location', 'cup_location', 'milk_container_location', 'spoon_location', 'robot_state', 'tea_bag_location', 'robot_active_program', 'biscuits_location', 'sugar_container_location'}
+2026-06-02 07:50:44,382 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:50:44,437 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:50:44,471 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_075043_kettle_tea_making/intent_monitor
+2026-06-02 07:50:44,471 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 07:50:45,654 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-02 07:50:53,565 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-06-02 07:50:53,921 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 302 Found"
+2026-06-02 07:50:56,721 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-06-02 07:50:56,721 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-02 07:50:57,723 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 07:50:57,768 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:51:00,375 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:51:00,397 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_075043_kettle_tea_making/decision_engine
+2026-06-02 07:51:00,397 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 07:51:00,398 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 07:51:00,398 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 07:51:00,398 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 07:51:00,398 - aura.brain.skill_registry - INFO - Loaded 11 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 07:51:00,399 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 07:51:00,415 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 6 scheduled skills)
+2026-06-02 07:51:03,115 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 639, 1004, 1080), working_area bbox=(586, 354, 1542, 964)
+2026-06-02 07:51:04,887 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:51:05,064 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:51:07,427 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:51:07,457 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:51:08,365 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:51:11,867 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:51:12,026 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:51:14,764 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:51:14,791 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:51:19,169 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:51:19,332 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:51:21,480 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:51:21,508 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:51:24,173 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:51:25,070 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:51:25,933 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:51:26,094 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:51:28,308 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:51:28,336 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item spoon (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:52:08,798 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 07:52:08,798 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_075208_kettle_tea_making
+2026-06-02 07:52:08,814 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 07:52:08,815 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 07:52:08,847 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 07:52:08,886 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_075208_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 07:52:08,915 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 07:52:09,644 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'sugar_container_location', 'spoon_location', 'biscuits_location', 'water_bottle_location', 'tea_bag_location', 'robot_active_program', 'cup_location', 'robot_state', 'milk_container_location'}
+2026-06-02 07:52:09,645 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:52:09,694 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 07:52:09,728 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_075208_kettle_tea_making/intent_monitor
+2026-06-02 07:52:09,728 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 07:52:10,912 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-02 07:52:18,873 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-06-02 07:52:19,235 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 302 Found"
+2026-06-02 07:52:22,033 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-06-02 07:52:22,034 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-02 07:52:23,057 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 07:52:23,102 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:52:25,824 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:52:25,845 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_075208_kettle_tea_making/decision_engine
+2026-06-02 07:52:25,845 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 07:52:25,845 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 07:52:25,846 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 07:52:25,846 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 07:52:25,846 - aura.brain.skill_registry - INFO - Loaded 11 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 07:52:25,846 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 07:52:25,859 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 6 scheduled skills)
+2026-06-02 07:52:28,575 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 639, 1004, 1080), working_area bbox=(586, 354, 1542, 964)
+2026-06-02 07:52:30,368 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:52:30,534 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:52:32,825 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:52:37,372 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:52:37,539 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:52:40,378 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:52:40,406 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item biscuits (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:52:44,890 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:52:45,055 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:52:47,236 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:52:47,261 - aura.workflow.nodes - INFO - [DRY-RUN] Would execute: pick_and_place_item biscuits (api_call={'program_file': 'pick_and_place_items.prog', 'program_args': 'object={item}_storage destination={destination} safe={safe}'}) — SSG updated, robot API skipped
+2026-06-02 07:52:51,812 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 07:52:51,978 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 07:52:54,114 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 07:52:54,458 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-02 08:02:28,404 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 08:02:28,405 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_080228_kettle_tea_making
+2026-06-02 08:02:28,421 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 08:02:28,421 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 08:02:28,453 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 08:02:28,611 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_080228_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 08:02:28,639 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 08:02:29,358 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'robot_active_program', 'milk_container_location', 'robot_state', 'biscuits_location', 'sugar_container_location', 'spoon_location', 'tea_bag_location', 'water_bottle_location', 'cup_location'}
+2026-06-02 08:02:29,359 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 08:02:29,407 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 08:02:29,440 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_080228_kettle_tea_making/intent_monitor
+2026-06-02 08:02:29,440 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 08:02:30,622 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-02 08:02:38,592 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-06-02 08:02:38,967 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 302 Found"
+2026-06-02 08:02:41,704 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-06-02 08:02:41,704 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-02 08:02:42,701 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 08:02:42,746 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:02:45,295 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:02:45,314 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_080228_kettle_tea_making/decision_engine
+2026-06-02 08:02:45,314 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 08:02:45,315 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 08:02:45,315 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 08:02:45,315 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 08:02:45,315 - aura.brain.skill_registry - INFO - Loaded 11 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 08:02:45,316 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 08:02:45,328 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 6 scheduled skills)
+2026-06-02 08:02:48,043 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 639, 1004, 1080), working_area bbox=(586, 354, 1542, 964)
+2026-06-02 08:02:49,807 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:02:49,981 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:02:52,284 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:02:56,745 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:02:56,911 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:02:59,173 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:03:03,643 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:03:03,808 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:03:06,028 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:03:10,490 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:03:10,655 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:03:12,836 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:03:17,362 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:03:17,518 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:03:19,815 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:03:24,251 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:03:24,415 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:03:26,666 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:03:32,063 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)
+2026-06-02 08:04:01,782 - aura.dashboard.server - INFO - Dashboard stopped.
+2026-06-02 08:04:28,097 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-02 08:04:28,097 - __main__ - INFO - Run log directory: /home/mani/Repos/aura/logs/run_20260602_080428_kettle_tea_making
+2026-06-02 08:04:28,113 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-02 08:04:28,114 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-02 08:04:28,146 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-02 08:04:28,185 - __main__ - INFO - Graph image written to /home/mani/Repos/aura/logs/run_20260602_080428_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-02 08:04:28,206 - aura.sources.video_file - INFO - VideoFileSource opened: /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4  1920x1080 @ 23.4 fps  1023 frames (43.7s)  skip=30  max=None
+2026-06-02 08:04:28,882 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'biscuits_location', 'tea_bag_location', 'robot_active_program', 'robot_state', 'sugar_container_location', 'cup_location', 'water_bottle_location', 'spoon_location', 'milk_container_location'}
+2026-06-02 08:04:28,883 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 08:04:28,930 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-02 08:04:28,962 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/mani/Repos/aura/logs/run_20260602_080428_kettle_tea_making/intent_monitor
+2026-06-02 08:04:28,962 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-02 08:04:30,167 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-02 08:04:37,919 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-06-02 08:04:38,306 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 302 Found"
+2026-06-02 08:04:41,044 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: NVIDIA GeForce RTX 4070 Ti SUPER
+2026-06-02 08:04:41,044 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-02 08:04:42,008 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.00s (gate: no gate configured)
+2026-06-02 08:04:42,053 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:04:44,718 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:04:44,738 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/mani/Repos/aura/logs/run_20260602_080428_kettle_tea_making/decision_engine
+2026-06-02 08:04:44,738 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-02 08:04:44,738 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-02 08:04:44,738 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-02 08:04:44,738 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-02 08:04:44,739 - aura.brain.skill_registry - INFO - Loaded 11 skills from /home/mani/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-02 08:04:44,739 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-02 08:04:44,752 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 6 scheduled skills)
+2026-06-02 08:04:47,371 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 639, 1004, 1080), working_area bbox=(586, 354, 1542, 964)
+2026-06-02 08:04:49,114 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:04:49,279 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:04:51,529 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:04:55,834 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:04:55,995 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:04:58,230 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:05:02,518 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:05:02,676 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:05:05,015 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:05:09,388 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:05:09,550 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:05:11,724 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:05:16,034 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:05:16,198 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:05:18,447 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:05:22,739 - aura.workflow.nodes - INFO - run_intent_node dispatched — 5 frames, span=5.13s (gate: no gate configured)
+2026-06-02 08:05:22,904 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-02 08:05:25,122 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-02 08:05:30,341 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)

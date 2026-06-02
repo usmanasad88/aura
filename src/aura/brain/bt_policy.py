@@ -80,6 +80,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -112,6 +113,10 @@ class BTContext:
     explainer: Any  # DecisionExplainer
     decision_mode: str = "hybrid"
     proactive_threshold: float = 0.7
+    # When True and no BT branch fires, defer the tick to the LLM fallback
+    # instead of defaulting to a wait. No effect in pure "bt" mode (which
+    # has no LLM leaf). See LLMFallbackLeaf.
+    defer_to_llm_when_idle: bool = False
 
     # LLM fallback hook; returns an ActionPrediction or None.
     # Signature: async (reason: str, ctx: BTContext) -> ActionPrediction | None
@@ -186,6 +191,95 @@ def _check_preconditions(
         if actual != expected:
             return False, f"{key}={actual!r}≠{expected!r}"
     return True, ""
+
+
+# ── Parametric skill helpers ──────────────────────────────────────────────────
+#
+# A parametric skill (e.g. ``pick_and_place_item``) reuses one robot program
+# with different arguments. Its preconditions/effects carry ``{var}``
+# placeholders (e.g. ``"{item}.location": "storage_area"``). Rather than
+# declaring N near-identical skills, the BT expands the single skill over the
+# ``valid_values`` of its selection parameter and fires one concrete instance
+# per tick. Multiple eligible values are NOT a conflict — the robot runs one
+# program at a time, so the rest are picked up on later ticks as it frees up.
+
+_TEMPLATE_RE = re.compile(r"\{(\w+)\}")
+
+
+def _skill_is_parametric(skill: Any) -> bool:
+    """True if the skill's preconditions reference any ``{var}`` placeholder."""
+    for key, val in skill.preconditions.items():
+        if "{" in key:
+            return True
+        if isinstance(val, str) and "{" in val:
+            return True
+    return False
+
+
+def _parametric_candidates(
+    skill: Any, ssg: SemanticSceneGraph
+) -> tuple[Optional[str], List[str]]:
+    """Expand a single-variable parametric skill over its candidate values.
+
+    Returns ``(var_name, eligible_values)`` where ``eligible_values`` are the
+    values (in the parameter's declared order) for which the substituted
+    preconditions hold. Returns ``(None, [])`` when the skill references zero
+    or more than one distinct template variable (unsupported here).
+    """
+    vars_: List[str] = []
+    for key, val in skill.preconditions.items():
+        for m in _TEMPLATE_RE.findall(key):
+            if m not in vars_:
+                vars_.append(m)
+        if isinstance(val, str):
+            for m in _TEMPLATE_RE.findall(val):
+                if m not in vars_:
+                    vars_.append(m)
+    if len(vars_) != 1:
+        return None, []
+
+    var = vars_[0]
+    param = next((p for p in skill.parameters if p.name == var), None)
+    candidates = list(getattr(param, "valid_values", []) or []) if param else []
+
+    eligible: List[str] = []
+    for cand in candidates:
+        concrete = {
+            key.format(**{var: cand}): (
+                val.format(**{var: cand}) if isinstance(val, str) else val
+            )
+            for key, val in skill.preconditions.items()
+        }
+        ok, _why = _check_preconditions(concrete, ssg)
+        if ok:
+            eligible.append(cand)
+    return var, eligible
+
+
+def _resolve_delivery_parameters(
+    skill: Any, var: str, value: str
+) -> Dict[str, Any]:
+    """Fill the skill's call parameters for a chosen selection *value*.
+
+    The selection parameter is set to *value*. Every other parameter is
+    resolved by, in priority order: a ``valid_values`` entry scoped to the
+    selected value (prefix ``"{value}_"`` — e.g. ``cup`` →
+    ``cup_workplace``), then the parameter's ``default``, then its first
+    ``valid_values`` entry.
+    """
+    params: Dict[str, Any] = {var: value}
+    for p in skill.parameters:
+        if p.name == var:
+            continue
+        vals = list(getattr(p, "valid_values", []) or [])
+        scoped = [v for v in vals if isinstance(v, str) and v.startswith(f"{value}_")]
+        if scoped:
+            params[p.name] = scoped[0]
+        elif getattr(p, "default", None) is not None:
+            params[p.name] = p.default
+        elif vals:
+            params[p.name] = vals[0]
+    return params
 
 
 # ── Leaf base ────────────────────────────────────────────────────────────────
@@ -411,10 +505,31 @@ class SkillDeliveryLeaf(_BTLeaf):
         if robot_state not in ("idle", "unknown"):
             return py_trees.common.Status.FAILURE
 
-        # Gate 3: preconditions.
-        ok, _why = _check_preconditions(skill.preconditions, self.ctx.ssg)
-        if not ok:
+        # Gate 2b: eligibility window closed. Once every step in
+        # ``trigger_until_steps`` is completed this skill stops firing —
+        # this bounds an open-ended ``trigger_after_steps`` so a delivery
+        # skill does not overlap a later phase (e.g. a fetch skill yielding
+        # to the return-to-storage skill once cleanup begins).
+        until = getattr(skill, "trigger_until_steps", None)
+        if until and all(s in set(self.ctx.steps_completed) for s in until):
             return py_trees.common.Status.FAILURE
+
+        # Gate 3: preconditions. Parametric skills (templated preconditions)
+        # are expanded over their selection parameter; static skills are
+        # checked directly.
+        parametric_var: Optional[str] = None
+        eligible_values: List[str] = []
+        if _skill_is_parametric(skill):
+            parametric_var, eligible_values = _parametric_candidates(
+                skill, self.ctx.ssg
+            )
+            if parametric_var is None or not eligible_values:
+                # No satisfiable concrete instance (or unsupported template).
+                return py_trees.common.Status.FAILURE
+        else:
+            ok, _why = _check_preconditions(skill.preconditions, self.ctx.ssg)
+            if not ok:
+                return py_trees.common.Status.FAILURE
 
         # Gate 4: trigger match. Skills without any trigger field but with
         # satisfied preconditions are ambiguous — the BT cannot tell when
@@ -441,8 +556,11 @@ class SkillDeliveryLeaf(_BTLeaf):
         if not trigger_reason:
             return py_trees.common.Status.FAILURE
 
-        # This skill is eligible. Record it; the selector parent may
-        # detect conflicts and override with LLM.
+        # This skill is eligible. Record it ONCE — a parametric skill with
+        # several eligible values still counts as a single eligible delivery
+        # (the robot runs one program at a time). Multiple movable items
+        # during e.g. setup_workspace therefore do NOT register as a
+        # conflict; the rest are fetched on later ticks as the robot frees up.
         self.ctx.eligible_deliveries.append(skill.id)
 
         # If another delivery already claimed the result, mark conflict
@@ -451,12 +569,30 @@ class SkillDeliveryLeaf(_BTLeaf):
             self.ctx.scheduled_conflict = True
             return py_trees.common.Status.FAILURE
 
-        # Derive a primary target object from the skill effects (best-effort).
-        target_id = None
-        for effect_key in skill.effects.keys():
-            if "." in effect_key:
-                target_id = effect_key.split(".", 1)[0]
-                break
+        if parametric_var is not None:
+            # Selection policy: fire the first eligible value in the skill's
+            # declared ``valid_values`` order (which acts as the priority
+            # list). Per-item skip is already enforced upstream — only values
+            # whose substituted preconditions hold reach ``eligible_values``,
+            # so items already placed (or otherwise gated) are excluded.
+            selected = eligible_values[0]
+            params = _resolve_delivery_parameters(skill, parametric_var, selected)
+            target_id = selected
+            reason = f"{trigger_reason}; {parametric_var}={selected}"
+            if len(eligible_values) > 1:
+                self.ctx.reasoning_trail.append(
+                    "delivery:multi_eligible("
+                    f"{','.join(eligible_values)})->{selected}"
+                )
+        else:
+            # Static skill: derive a primary target from effects (best-effort).
+            params = {}
+            target_id = None
+            for effect_key in skill.effects.keys():
+                if "." in effect_key:
+                    target_id = effect_key.split(".", 1)[0]
+                    break
+            reason = trigger_reason
 
         from aura.brain.decision_engine import ActionPrediction
 
@@ -465,7 +601,8 @@ class SkillDeliveryLeaf(_BTLeaf):
             target_id=target_id,
             predicted_time_sec=self.ctx.current_time_sec,
             confidence=0.9,
-            reasoning=f"BT scheduled delivery ({trigger_reason}).",
+            reasoning=f"BT scheduled delivery ({reason}).",
+            parameters=params,
         )
         self.ctx.reasoning_trail.append(f"delivery:{skill.id}")
         self.ctx.branch_fired = "scheduled"
@@ -515,7 +652,10 @@ class LLMFallbackLeaf(_BTLeaf):
     * ``ctx._force_llm_reason`` was set by an earlier branch (gesture,
       utterance, delivery conflict);
     * intent confidence below ``proactive_threshold``;
-    * predicted_next_action missing or not in DAG.
+    * predicted_next_action missing or not in DAG;
+    * ``ctx.defer_to_llm_when_idle`` is set and no other branch fired —
+      i.e. the tree would otherwise default to waiting. This lets the LLM
+      take over idle ticks instead of silently waiting.
     """
 
     def __init__(self, ctx: BTContext):
@@ -542,6 +682,11 @@ class LLMFallbackLeaf(_BTLeaf):
                 reason = f"low_confidence({confidence:.2f})"
             elif not predicted or predicted not in dag_ids:
                 reason = "off_sop"
+
+        # Opt-in: when nothing else fired, defer the idle tick to the LLM
+        # instead of letting the idle leaf default to waiting.
+        if reason is None and self.ctx.defer_to_llm_when_idle:
+            reason = "idle_default"
 
         if reason is None:
             return py_trees.common.Status.FAILURE

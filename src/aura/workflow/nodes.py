@@ -263,8 +263,22 @@ def _get_perception_monitor(state: AuraGraphState):
 
 
 def _create_perception_monitor(task_name: str, config: dict):
-    """Factory: import the right perception monitor for *task_name*."""
+    """Factory: import the right perception monitor for *task_name*.
+
+    Dispatch keys off the task's directory slug (the basename of
+    ``config_dir``'s parent, e.g. ``kettle_tea_making``) when available,
+    falling back to the normalised display name. The display ``task_name``
+    is a human label (e.g. "Collaborative Kettle Tea Making") that does not
+    reliably normalise to the directory slug, so it must not be the only key.
+    """
     normalised = task_name.lower().replace(" ", "_")
+    config_dir = config.get("config_dir")
+    if config_dir:
+        # ``config_dir`` points at ``tasks/<slug>/config`` — its parent name
+        # is the canonical task slug used for the package import paths below.
+        slug = Path(config_dir).parent.name
+        if slug:
+            normalised = slug
     if normalised == "hand_layup":
         try:
             from tasks.hand_layup.perception.layup_perception_monitor import (
@@ -291,6 +305,15 @@ def _create_perception_monitor(task_name: str, config: dict):
             return SortingPerceptionMonitor()
         except ImportError:
             logger.warning("sorting perception monitor not found")
+            return None
+    if normalised == "kettle_tea_making":
+        try:
+            from tasks.kettle_tea_making.perception.kettle_perception_monitor import (
+                KettlePerceptionMonitor,
+            )
+            return KettlePerceptionMonitor()
+        except ImportError:
+            logger.warning("kettle_tea_making perception monitor not found")
             return None
     logger.info("No task-specific perception monitor for '%s'", task_name)
     return None
@@ -338,9 +361,17 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
         task_profile = state.get("task_profile", {})
         # decision_mode may also be set inside task_profile.workflow_config;
         # if that override exists and the caller didn't supply one, use it.
-        wf_mode = (task_profile.get("workflow_config") or {}).get("decision_mode")
+        wf_cfg = task_profile.get("workflow_config") or {}
+        wf_mode = wf_cfg.get("decision_mode")
         if wf_mode in ("llm", "bt", "hybrid"):
             decision_mode = wf_mode
+
+        # Easy toggle: on idle ticks where no BT branch fires, defer to the
+        # LLM instead of waiting. Settable via runtime config or the task
+        # profile's workflow_config (runtime config takes precedence).
+        llm_fallback_on_idle = config.get("llm_fallback_on_idle")
+        if llm_fallback_on_idle is None:
+            llm_fallback_on_idle = wf_cfg.get("llm_fallback_on_idle", False)
 
         sys_instr = task_profile.get("system_instruction", "")
         goal_policy = task_profile.get("goal_policy", {})
@@ -360,6 +391,7 @@ def _get_decision_engine(state: AuraGraphState) -> "DecisionEngine":
             sglang_base_url=config.get("sglang_base_url", "http://localhost:8100/v1"),
             task_system_instruction=sys_instr,
             decision_mode=decision_mode,
+            llm_fallback_on_idle=bool(llm_fallback_on_idle),
             log_dir=decision_log_dir,
         )
         engine = DecisionEngine(config_dir=config_dir, config=engine_config)
@@ -538,6 +570,23 @@ def _format_skill_call(skill: str, args: Dict[str, Any]) -> str:
         return skill
     inner = ", ".join(f"{k}={v}" for k, v in args.items())
     return f"{skill}({inner})"
+
+
+def _command_announcement(
+    skill: Any, action_type: str, obj_name: str, params: Dict[str, Any]
+) -> str:
+    """Build a short spoken sentence describing a dispatched robot command.
+
+    Task-agnostic: uses the skill's configured human-readable ``name`` (or
+    the raw action id, de-underscored) and appends the primary target — the
+    ``item`` parameter if the skill is parametric, else the action's
+    ``object_name``. No task-specific vocabulary is assumed.
+    """
+    params = params or {}
+    name = (getattr(skill, "name", None) or action_type.replace("_", " ")).strip()
+    target = params.get("item") or obj_name or ""
+    target_h = str(target).replace("_", " ").strip()
+    return f"{name}: {target_h}." if target_h else f"{name}."
 
 
 def _robot_status_from_ground_truth(state: AuraGraphState, timestamp_sec: float) -> Dict[str, Any]:
@@ -1631,6 +1680,20 @@ def execute_action_node(state: AuraGraphState) -> dict:
 
         result = {**action, "skill_id": action_type, "executed": True}
 
+        # ── Speech action type — vocalize via Kokoro TTS, no robot call ──
+        # ``announce`` is a first-class action the decision engine may emit
+        # to speak to the human. It carries the text in parameters["text"]
+        # (falling back to the action reason).
+        if action_type == "announce":
+            from aura.interfaces.tts import speak as _tts_speak
+            text = (action.get("parameters") or {}).get("text") or action.get("reason") or ""
+            _tts_speak(text)
+            result["success"] = True
+            result["mode"] = "tts"
+            logger.info("[TTS] announce: %s", text[:120])
+            executed.append(result)
+            continue
+
         if dry_run or robot is None:
             result["success"] = True
             result["mode"] = "dry_run"
@@ -1713,6 +1776,18 @@ def execute_action_node(state: AuraGraphState) -> dict:
             except Exception as e:
                 result["success"] = False
                 result["error"] = str(e)
+
+            # Live mode: vocalize the dispatched command via Kokoro TTS.
+            if result.get("success"):
+                try:
+                    from aura.interfaces.tts import speak as _tts_speak
+                    announcement = _command_announcement(
+                        skill, action_type, obj_name, params,
+                    )
+                    _tts_speak(announcement)
+                    logger.info("[TTS] command: %s", announcement)
+                except Exception as exc:
+                    logger.debug("TTS announcement skipped: %s", exc)
 
         # Live mode: defer skill effects until the robot program
         # actually completes. Record them as pending on the SSG; the

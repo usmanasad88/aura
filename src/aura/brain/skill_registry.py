@@ -55,6 +55,11 @@ class RobotSkill:
     # (e.g. a return-to-storage skill triggers after the last step
     # that used the object is done).
     trigger_after_steps: List[str] = field(default_factory=list)
+    # DAG steps whose completion CLOSES this skill's eligibility window.
+    # Once ALL listed steps are completed the skill no longer fires —
+    # used to bound an open-ended trigger_after_steps so it does not
+    # overlap a later phase (e.g. stop fetching once cleanup begins).
+    trigger_until_steps: List[str] = field(default_factory=list)
     estimated_duration_sec: float = 5.0
     can_interrupt: bool = True
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -97,6 +102,7 @@ class RobotSkill:
             "effects": self.effects,
             "trigger_steps": self.trigger_steps,
             "trigger_after_steps": self.trigger_after_steps,
+            "trigger_until_steps": self.trigger_until_steps,
             "estimated_duration_sec": self.estimated_duration_sec,
             "can_interrupt": self.can_interrupt,
             "metadata": self.metadata,
@@ -144,6 +150,7 @@ class RobotSkill:
             effects=data.get("effects", {}),
             trigger_steps=list(data.get("trigger_steps", []) or []),
             trigger_after_steps=list(data.get("trigger_after_steps", []) or []),
+            trigger_until_steps=list(data.get("trigger_until_steps", []) or []),
             estimated_duration_sec=data.get("estimated_duration_sec", 5.0),
             can_interrupt=data.get("can_interrupt", True),
             metadata=metadata,
