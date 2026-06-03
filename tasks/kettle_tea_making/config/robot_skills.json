@@ -120,6 +120,25 @@
       "can_interrupt": false
     },
     {
+      "id": "return_water_bottle",
+      "name": "Return Water Bottle to Storage",
+      "description": "Cleanup counterpart of bring_water_bottle: once the water has been poured into the kettle and the kettle has been switched on, the bottle is no longer needed, so the robot takes it from the working area back to storage. Uses the same parametric pick-and-place program with the bring_water_bottle poses reversed. The water bottle has a perception monitor (water_bottle_location), so the robot can confirm the return. Becomes eligible after the close_lid_and_turn_on step, letting the robot tidy up the bottle while the kettle boils.",
+      "category": "program",
+      "api_call": {
+        "program_file": "pick_and_place_items.prog",
+        "program_args": "object=water_bottle_workplace destination=water_bottle_storage safe=Home"
+      },
+      "preconditions": {
+        "water_bottle.location": "working_area",
+        "water_in_kettle": true,
+        "kettle_on": true
+      },
+      "effects": {"water_bottle.location": "storage_area"},
+      "trigger_after_steps": ["close_lid_and_turn_on"],
+      "estimated_duration_sec": 12.0,
+      "can_interrupt": false
+    },
+    {
       "id": "pour_water_into_kettle",
       "name": "Pour Water into Kettle",
       "description": "Pour water from the open water bottle into the open kettle. Requires the bottle cap to be open and the kettle lid to be open.",
