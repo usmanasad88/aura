@@ -19298,3 +19298,61 @@ For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/erro
 2026-06-02 08:05:22,904 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
 2026-06-02 08:05:25,122 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
 2026-06-02 08:05:30,341 - aura.sources.video_file - INFO - VideoFileSource EOF at raw_pos=1920 (reported total=1023)
+2026-06-04 12:49:24,138 - aura.utils.config - INFO - Logging configured: level=INFO
+2026-06-04 12:49:24,139 - __main__ - INFO - Run log directory: /home/rml/Repos/aura/logs/run_20260604_124924_kettle_tea_making
+2026-06-04 12:49:24,150 - aura.core.scene_graph.graph - INFO - Initialized task state with 26 variables (9 system-sourced)
+2026-06-04 12:49:24,151 - aura.workflow.builder - INFO - Built initial SSG with 13 nodes from initial_scene.json
+2026-06-04 12:49:24,181 - aura.workflow.builder - INFO - Built 'sense_decide_act' graph (monitors=['intent', 'perception'], branches=[['run_perception', 'run_intent']])
+2026-06-04 12:49:24,231 - __main__ - INFO - Graph image written to /home/rml/Repos/aura/logs/run_20260604_124924_kettle_tea_making/graph_kettle_tea_making.png
+2026-06-04 12:49:24,240 - aura.sources.webcam - INFO - WebcamSource opened: device=0  1280x720 @ 30.0 fps
+2026-06-04 12:49:24,978 - aura.monitors.intent_monitor - INFO - Intent monitor: excluded externally-sourced state vars from prompt: {'water_bottle_location', 'biscuits_location', 'robot_state', 'tea_bag_location', 'spoon_location', 'sugar_container_location', 'cup_location', 'robot_active_program', 'milk_container_location'}
+2026-06-04 12:49:24,979 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-04 12:49:25,030 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-06-04 12:49:25,041 - aura.monitors.intent_monitor - INFO - Prompt logger session: /home/rml/Repos/aura/logs/run_20260604_124924_kettle_tea_making/intent_monitor
+2026-06-04 12:49:25,041 - aura.monitors.intent_monitor - INFO - AURAIntentMonitor — model: gemini-3.1-flash-lite-preview, backend: gemini
+2026-06-04 12:49:26,947 - aura.monitors.perception_module - INFO - Loading SAM3 model...
+2026-06-04 12:49:35,953 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/config.json "HTTP/1.1 401 Unauthorized"
+2026-06-04 12:49:36,211 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/facebook/sam3/resolve/main/sam3.pt "HTTP/1.1 401 Unauthorized"
+2026-06-04 12:49:40,527 - aura.monitors.perception_module - INFO - SAM3 model moved to GPU: Quadro RTX 5000
+2026-06-04 12:49:40,528 - aura.monitors.perception_module - INFO - SAM3 model loaded successfully!
+2026-06-04 12:49:42,562 - tasks.kettle_tea_making.perception.kettle_perception_monitor - INFO - Table regions registered (locked): storage_area bbox=(0, 310, 1060, 719), working_area bbox=(430, 308, 1061, 716)
+2026-06-04 12:49:42,571 - aura.workflow.nodes - INFO - run_intent_node dispatched — 1 frames, span=0.02s (gate: no gate configured)
+2026-06-04 12:49:42,622 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-04 12:49:50,689 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-04 12:49:50,907 - aura.brain.decision_engine - INFO - Decision prompt logger session: /home/rml/Repos/aura/logs/run_20260604_124924_kettle_tea_making/decision_engine
+2026-06-04 12:49:50,907 - aura.brain.decision_engine - INFO - DecisionEngine initialized — model: gemini-3.1-flash-lite-preview, backend: gemini, mode: hybrid
+2026-06-04 12:49:50,907 - aura.brain.decision_engine - INFO - Loaded task DAG: 12 steps
+2026-06-04 12:49:50,908 - aura.core.scene_graph.graph - INFO - Initialized task state with 31 variables (9 system-sourced)
+2026-06-04 12:49:50,908 - aura.brain.decision_engine - INFO - Initialized 31 state variables
+2026-06-04 12:49:50,908 - aura.brain.skill_registry - INFO - Loaded 12 skills from /home/rml/Repos/aura/tasks/kettle_tea_making/config/robot_skills.json
+2026-06-04 12:49:50,909 - aura.brain.decision_engine - INFO - Initialized scene with 13 nodes
+2026-06-04 12:49:50,986 - aura.brain.decision_engine - INFO - BT policy compiled (mode=hybrid, 0 safety rules, 1 timers, 7 scheduled skills)
+2026-06-04 12:50:48,967 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: milk container.
+2026-06-04 12:50:53,854 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-06-04 12:50:53,855 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-06-04 12:50:54,352 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/hexgrad/Kokoro-82M/f3ff3571791e39611d31c381e3a41a3af07b4987/config.json "HTTP/1.1 200 OK"
+2026-06-04 12:50:54,784 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/hexgrad/Kokoro-82M/f3ff3571791e39611d31c381e3a41a3af07b4987/config.json "HTTP/1.1 200 OK"
+2026-06-04 12:50:55,560 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/kokoro-v1_0.pth "HTTP/1.1 302 Found"
+2026-06-04 12:50:55,816 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/hexgrad/Kokoro-82M/xet-read-token/f3ff3571791e39611d31c381e3a41a3af07b4987 "HTTP/1.1 200 OK"
+2026-06-04 12:51:32,639 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: milk container.
+2026-06-04 12:52:05,790 - aura.interfaces.tts - INFO - Kokoro TTS ready (lang=a, voice=af_heart)
+2026-06-04 12:52:06,222 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/af_heart.pt "HTTP/1.1 302 Found"
+2026-06-04 12:52:06,232 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/af_heart.pt "HTTP/1.1 302 Found"
+2026-06-04 12:52:18,286 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: milk container.
+2026-06-04 12:53:01,566 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: milk container.
+2026-06-04 12:53:45,080 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: tea bag.
+2026-06-04 12:54:40,302 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: cup.
+2026-06-04 12:54:42,331 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=237.69s (gate: no gate configured)
+2026-06-04 12:54:42,423 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-04 12:54:46,167 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-04 12:55:39,780 - aura.workflow.nodes - INFO - [TTS] command: Bring Water Bottle: water bottle.
+2026-06-04 12:58:46,685 - aura.workflow.nodes - INFO - run_intent_node dispatched — 3 frames, span=126.76s (gate: no gate configured)
+2026-06-04 12:58:46,765 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-04 12:58:49,691 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent "HTTP/1.1 200 OK"
+2026-06-04 12:58:51,197 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: cup.
+2026-06-04 12:59:24,863 - aura.workflow.nodes - INFO - [TTS] command: Return Water Bottle to Storage: water bottle.
+2026-06-04 13:01:04,805 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: biscuits.
+2026-06-04 13:01:35,896 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: biscuits.
+2026-06-04 13:01:52,232 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: biscuits.
+2026-06-04 13:02:09,392 - aura.workflow.nodes - INFO - [TTS] command: Pick and Place Item: biscuits.
+2026-06-04 13:02:21,767 - aura.dashboard.server - ERROR - Workflow error: cannot schedule new futures after shutdown

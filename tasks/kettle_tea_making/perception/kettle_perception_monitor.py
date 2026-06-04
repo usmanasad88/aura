@@ -9,7 +9,7 @@ Every item is directly identifiable by a distinctive visual prompt, so each
 SAM3 text prompt maps 1:1 to a semantic item — no cross-frame identity
 tracking is needed for the items:
 
-* tea          → ``"container with a black lid"``
+* tea          → ``"container with a red cap"``
 * paper cup    → ``"paper cup"``
 * water bottle → ``"water bottle"``
 * biscuits     → ``"red biscuit packet"``
@@ -73,7 +73,7 @@ WORKING_MARKER_PROMPT = "kettle"        # marks the working table
 # Semantic item id → SAM3 text prompt.  The ids match the ``*_location``
 # state-schema variables so downstream nodes can write them directly.
 ITEM_PROMPTS: Dict[str, str] = {
-    "tea_bag": "container with a black cap",
+    "tea_bag": "container with a red cap",
     "cup": "paper cup",
     "water_bottle": "water bottle",
     "biscuits": "red biscuit packet",
@@ -494,7 +494,7 @@ class KettlePerceptionMonitor:
             WORKING_REGION: (0, 200, 0),      # green
         }
         item_colors = {
-            "tea_bag":        (40, 40, 40),     # near-black (black cap)
+            "tea_bag":        (0, 0, 255),       # red (red cap)
             "cup":            (255, 255, 255),  # white (paper cup)
             "water_bottle":   (255, 200, 0),    # cyan-ish
             "biscuits":       (0, 0, 255),      # red
