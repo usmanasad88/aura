@@ -481,6 +481,64 @@ one option / one phase per subtask).}
 
 \section{Discussion}
 
+\subsection{Comparison against common baseline metrics}
+\label{sec:baselines}
+
+The score described here is the disjunctive generalisation of the
+\emph{Appropriateness Score} (A-Score) used in the main paper, where a
+single contiguous window per intervention is graded by its timing and
+action quality and predictions made during expected \texttt{WAIT}
+periods are penalised. Like that single-window A-Score, the four-axis
+form is bounded in $[0, 1]$ by construction --- the consistent oracle
+attains $1$ and a silent agent is pinned low by $\Adisj = 0$ --- and
+it grades behaviour on a smooth scale rather than through a hard
+timing tolerance. This is what makes it more discriminating than the
+event-detection metrics that are conventionally reported for proactive
+assistance.
+
+Consider the baselines most often used in its place: event-level F1
+with a fixed start-time tolerance, the IoU averaged over matched pairs
+(mIoU), the action accuracy on matched pairs (mAcc), and a temporal
+action-agreement fraction $P_{agree}$. Each fails on at least one
+adversary in a way the A-Score does not.
+
+\paragraph{F1 is blind to action correctness.}
+A tolerance-matched event-F1 pairs a prediction to a ground-truth
+phase purely on timing, so \emph{Wrong-skill} --- right windows, wrong
+labels --- earns near-perfect F1 despite never doing the right thing.
+The A-Score catches it: $\Aact$ falls to $0.60$ and, because the
+mislabelling also corrupts option selection, $\Acons$ collapses to
+$0$, dragging the total to $0.59$ on the toy DTN
+(Table~\ref{tab:toy}).
+
+\paragraph{Matched-pair mIoU and mAcc reward not predicting.}
+Both are conditional on a successful match and therefore score an
+agent only on the events it bothers to cover. \emph{Half-coverage}
+drops half of its interventions yet would read as a perfect
+mIoU/mAcc agent on the half it keeps; the A-Score instead reduces it
+through $\Adisj$ (to $0.67$ on the toy DTN, $0.50$ on the hand-layup
+recording), which counts the dropped subtasks as uncovered.
+
+\paragraph{No tolerance cliff.}
+Because $\Adisj$ grades each phase by IoU rather than a $\pm\tau$
+hit/miss test, mistimed agents are ordered smoothly by \emph{how far}
+they are off: on the toy DTN, \emph{Near-miss timing} ($0.78$),
+\emph{Premature firer} ($0.80$), and \emph{Far-shifted} ($0.37$)
+separate cleanly, with no discontinuity between an ``in-tolerance''
+and an ``out-of-tolerance'' prediction.
+
+\paragraph{Decomposable for diagnostics.}
+Crucially, none of the baselines tells a grader \emph{why} an agent
+scored as it did. The four A-Score axes read directly off
+Tables~\ref{tab:toy} and~\ref{tab:layup}: a low $\Acons$ alongside a
+high $\Adisj$ and $\Aact$ (\emph{Oracle (first option)},
+\emph{Conflict-prone}) localises the failure to schedule
+\emph{coordination}; a low $\Anec$ (\emph{Spammer}, \emph{one-shot
+blanket}) localises it to over-firing; and a low $\Aact$ localises it
+to the action label. This is the same decompose-to-diagnose property
+that motivated the single-window A-Score, here extended with the
+consistency axis that the single-window form could not express.
+
 \subsection{Why $\Acons$ is not just yes/no}
 We could imagine a much harsher version of $\Acons$: 1 if the chosen
 options fit together perfectly, 0 if there is any clash at all. We

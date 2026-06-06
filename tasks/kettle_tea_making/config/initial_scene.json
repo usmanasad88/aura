@@ -7,7 +7,6 @@
   "objects": [
     {"id": "water_bottle", "name": "Water Bottle", "category": "container", "is_movable": true, "initial_location": "storage_area"},
     {"id": "milk_container", "name": "Powdered Milk Container", "category": "container", "is_movable": true, "initial_location": "storage_area"},
-    {"id": "sugar_container", "name": "Sugar Container", "category": "container", "is_movable": true, "initial_location": "storage_area"},
     {"id": "tea_bag", "name": "Tea Bag", "category": "material", "is_movable": true, "initial_location": "storage_area"},
     {"id": "cup", "name": "Cup", "category": "container", "is_movable": true, "initial_location": "storage_area"},
     {"id": "spoon", "name": "Stirring Spoon", "category": "tool", "is_movable": true, "initial_location": "working_area"},

@@ -1,9 +1,18 @@
 {
   "task_name": "Collaborative Kettle Tea Making",
-  "system_instruction": "You are a robot assistant helping a human make tea with an electric kettle, tea bags and powdered milk. The human signals their intent to make tea by opening the kettle lid — you CANNOT open the lid yourself. If the water bottle is in storage and its cap is closed, bring the bottle to the human; if the cap is open, you may pour water into the kettle. Once water is in the kettle, the lid must be closed and the kettle switched on (its blue LED turns on while heating and turns off when the water has boiled). Proactively retrieve the powdered milk container, cup, spoon, tea bag, sugar container and biscuits from storage to the working area; the tea bag and spoon may be dropped into the cup. The human can perform any of these steps themselves. Keep announcements short and clear.",
+  "system_instruction": "You are a robot assistant helping a human make tea with an electric kettle, tea bags and powdered milk. The human signals their intent to make tea by opening the kettle lid — you CANNOT open the lid yourself. If the water bottle is in storage, bring it to the human; the human always pours the water into the kettle themselves. Once water is in the kettle, the lid must be closed and the kettle switched on (its blue LED turns on while heating and turns off when the water has boiled). Proactively retrieve the powdered milk container, cup, spoon, tea bag and biscuits from storage to the working area. The stretch while the kettle is heating (blue LED on) is dead time for the human — a natural, unobtrusive window to bring these ingredients out one by one, so everything is laid out and ready the moment the water finishes boiling. The human prepares the tea in the cup (adding the tea bag, pouring the boiled water, adding milk, stirring) and can perform any of these steps themselves. Keep announcements short and clear.",
+  "anchor_image": {
+    "enabled": true,
+    "path": "demo_data/kettle_tea_making/anchor_image_kettle.png",
+    "description": "Reference image of the kettle tea-making workspace. Use it to ground your understanding of object identities and scene geometry."
+  },
+  "intent_robot_skills": {
+    "enabled": true,
+    "description": "The robot fetches items (water bottle, milk, cup, spoon, tea bag, biscuits) from storage to the working area and can close the kettle lid and switch it on. The human does everything else (opening the lid, pouring water, preparing the tea in the cup)."
+  },
   "environment": {
     "movable_objects": [
-      "water_bottle", "milk_container", "sugar_container",
+      "water_bottle", "milk_container",
       "tea_bag", "cup", "spoon", "biscuits"
     ]
   },
@@ -12,17 +21,12 @@
     "open_gripper|": "open_gripper",
     "close_gripper|": "close_gripper",
     "pick_and_place_item|milk_container->working_area": "pick_and_place_items[object=milk_container, destination=working_area, safe=Home]",
-    "pick_and_place_item|sugar_container->working_area": "pick_and_place_items[object=sugar_container, destination=working_area, safe=Home]",
     "pick_and_place_item|cup->working_area": "pick_and_place_items[object=cup, destination=working_area, safe=Home]",
     "pick_and_place_item|biscuits->working_area": "pick_and_place_items[object=biscuits, destination=working_area, safe=Home]",
     "pick_and_place_item|tea_bag->working_area": "pick_and_place_items[object=tea_bag, destination=working_area, safe=Home]",
-    "pick_and_place_item|tea_bag->cup": "pick_and_place_items[object=tea_bag, destination=cup, safe=Home]",
     "pick_and_place_item|spoon->working_area": "pick_and_place_items[object=spoon, destination=working_area, safe=Home]",
-    "pick_and_place_item|spoon->cup": "pick_and_place_items[object=spoon, destination=cup, safe=Home]",
     "bring_water_bottle|": "pick_and_place_items[object=water_bottle, destination=working_area, safe=Home]",
-    "pour_water_into_kettle|": "pour_water_into_kettle[safe=Home]",
-    "close_kettle_lid|": "close_kettle_lid[safe=Home]",
-    "turn_kettle_on|": "turn_kettle_on[safe=Home]"
+    "close_lid_and_turn_on|": "close_lid_and_turn_on[safe=Home]"
   },
   "safety_rules": [],
   "timers": [
@@ -37,10 +41,12 @@
   "workflow_config": {
     "active_monitors": ["intent", "perception"],
     "decision_mode": "hybrid",
+    "llm_fallback_on_idle": true,
     "graph_topology": "sense_decide_act",
     "predict_interval_sec": 3.0,
     "gesture_hold_frames": 3,
     "resume_gestures": ["Thumb_Up"],
-    "stop_gestures": ["Open_Palm", "Pointing_Up"]
+    "stop_gestures": ["Open_Palm", "Pointing_Up"],
+    "pass_captured_frame_to_vlm": true
   }
 }

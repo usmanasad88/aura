@@ -1,0 +1,601 @@
+{
+  "video": "/home/mani/Repos/aura/demo_data/kettle_tea_making/kettle_tea_making_2_overlay.mp4",
+  "task": "kettle_tea_making",
+  "fps": 23.808630393996246,
+  "total_frames": 6345,
+  "created_at": "2026-06-06T01:08:17",
+  "keyframes": [
+    {
+      "frame_num": 0,
+      "timestamp_sec": 0.0,
+      "state": {
+        "current_phase": "initialization",
+        "current_action": "idle",
+        "human_state": "idle",
+        "lid_open": false,
+        "water_in_kettle": false,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "open_kettle_lid",
+        "prediction_confidence": 1.0,
+        "steps_completed": [],
+        "steps_in_progress": [
+          "idle"
+        ],
+        "steps_pending": [
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 104,
+      "timestamp_sec": 4.368163908589441,
+      "state": {
+        "current_phase": "initialization",
+        "current_action": "open_kettle_lid",
+        "human_state": "opening_lid",
+        "lid_open": false,
+        "water_in_kettle": false,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "bring_water_bottle",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle"
+        ],
+        "steps_in_progress": [
+          "open_kettle_lid"
+        ],
+        "steps_pending": [
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 190,
+      "timestamp_sec": 7.980299448384555,
+      "state": {
+        "current_phase": "initialization",
+        "current_action": "bring_water_bottle",
+        "human_state": "waiting",
+        "lid_open": true,
+        "water_in_kettle": false,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "pour_water_into_kettle",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid"
+        ],
+        "steps_in_progress": [
+          "bring_water_bottle"
+        ],
+        "steps_pending": [
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 790,
+      "timestamp_sec": 33.1812450748621,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "pour_water_into_kettle",
+        "human_state": "pouring_water",
+        "lid_open": true,
+        "water_in_kettle": false,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "close_lid_and_turn_on",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle"
+        ],
+        "steps_in_progress": [
+          "pour_water_into_kettle"
+        ],
+        "steps_pending": [
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1184,
+      "timestamp_sec": 49.72986603624902,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "close_lid_and_turn_on",
+        "human_state": "waiting",
+        "lid_open": true,
+        "water_in_kettle": true,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "boil_water",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle"
+        ],
+        "steps_in_progress": [
+          "close_lid_and_turn_on"
+        ],
+        "steps_pending": [
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1496,
+      "timestamp_sec": 62.83435776201734,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "close_lid_and_turn_on",
+        "human_state": "waiting",
+        "lid_open": true,
+        "water_in_kettle": true,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "boil_water",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle"
+        ],
+        "steps_in_progress": [
+          "close_lid_and_turn_on"
+        ],
+        "steps_pending": [
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1659,
+      "timestamp_sec": 69.68061465721041,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "close_lid_and_turn_on",
+        "human_state": "waiting",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "boil_water",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle"
+        ],
+        "steps_in_progress": [
+          "close_lid_and_turn_on"
+        ],
+        "steps_pending": [
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1663,
+      "timestamp_sec": 69.84862096138693,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "boil_water",
+        "human_state": "waiting",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "setup_workspace",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on"
+        ],
+        "steps_in_progress": [
+          "boil_water"
+        ],
+        "steps_pending": [
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 1683,
+      "timestamp_sec": 70.6886524822695,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "boil_water",
+        "human_state": "operating_kettle",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "setup_workspace",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on"
+        ],
+        "steps_in_progress": [
+          "boil_water"
+        ],
+        "steps_pending": [
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 3399,
+      "timestamp_sec": 142.7633569739953,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "boil_water",
+        "human_state": "adding_ingredient",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "setup_workspace",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on"
+        ],
+        "steps_in_progress": [
+          "boil_water"
+        ],
+        "steps_pending": [
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 4078,
+      "timestamp_sec": 171.28242710795902,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "setup_workspace",
+        "human_state": "adding_ingredient",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": true,
+        "tea_ready": false,
+        "predicted_next_action": "prepare_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water"
+        ],
+        "steps_in_progress": [
+          "setup_workspace"
+        ],
+        "steps_pending": [
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 4600,
+      "timestamp_sec": 193.20724980299448,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "setup_workspace",
+        "human_state": "adding_ingredient",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": true,
+        "tea_ready": false,
+        "predicted_next_action": "prepare_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water"
+        ],
+        "steps_in_progress": [
+          "setup_workspace"
+        ],
+        "steps_pending": [
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 4612,
+      "timestamp_sec": 193.71126871552406,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "setup_workspace",
+        "human_state": "adding_ingredient",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": true,
+        "tea_ready": false,
+        "predicted_next_action": "prepare_tea",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water"
+        ],
+        "steps_in_progress": [
+          "setup_workspace"
+        ],
+        "steps_pending": [
+          "prepare_tea",
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 4945,
+      "timestamp_sec": 207.6977935382191,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "prepare_tea",
+        "human_state": "pouring_water",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": true,
+        "tea_ready": false,
+        "predicted_next_action": "cleanup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace"
+        ],
+        "steps_in_progress": [
+          "prepare_tea"
+        ],
+        "steps_pending": [
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 5283,
+      "timestamp_sec": 221.89432624113476,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "prepare_tea",
+        "human_state": "stirring",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": true,
+        "tea_ready": false,
+        "predicted_next_action": "cleanup",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace"
+        ],
+        "steps_in_progress": [
+          "prepare_tea"
+        ],
+        "steps_pending": [
+          "cleanup",
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 5370,
+      "timestamp_sec": 225.548463356974,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "cleanup",
+        "human_state": "stirring",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": true,
+        "water_boiled": true,
+        "tea_ready": false,
+        "predicted_next_action": "task_complete",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea"
+        ],
+        "steps_in_progress": [
+          "cleanup"
+        ],
+        "steps_pending": [
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 5968,
+      "timestamp_sec": 250.6654058313633,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "cleanup",
+        "human_state": "Other",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": false,
+        "predicted_next_action": "task_complete",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea"
+        ],
+        "steps_in_progress": [
+          "cleanup"
+        ],
+        "steps_pending": [
+          "task_complete"
+        ],
+        "reasoning": ""
+      }
+    },
+    {
+      "frame_num": 6170,
+      "timestamp_sec": 259.1497241922774,
+      "state": {
+        "current_phase": "setup",
+        "current_action": "task_complete",
+        "human_state": "Other",
+        "lid_open": false,
+        "water_in_kettle": true,
+        "kettle_on": false,
+        "water_boiled": false,
+        "tea_ready": true,
+        "predicted_next_action": "task_complete",
+        "prediction_confidence": 1.0,
+        "steps_completed": [
+          "idle",
+          "open_kettle_lid",
+          "bring_water_bottle",
+          "pour_water_into_kettle",
+          "close_lid_and_turn_on",
+          "boil_water",
+          "setup_workspace",
+          "prepare_tea",
+          "cleanup"
+        ],
+        "steps_in_progress": [
+          "task_complete"
+        ],
+        "steps_pending": [],
+        "reasoning": ""
+      }
+    }
+  ]
+}

@@ -74,6 +74,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -129,7 +130,7 @@
       },
       "twss_tuned": {
         "twss": 1.0,
-        "task_score": 0.7558139534883722,
+        "task_score": 0.7558139534883721,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.2441860465116279,
         "wait_quality": 1.0,
@@ -145,11 +146,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 0,
             "dstart": 0.0,
@@ -159,7 +161,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 1,
             "dstart": 0.0,
@@ -169,7 +171,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 2,
             "dstart": 0.0,
@@ -179,7 +181,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 1.0,
             "matched_pred_idx": 3,
             "dstart": 0.0,
@@ -189,7 +191,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 1.0,
             "matched_pred_idx": 4,
             "dstart": 0.0,
@@ -245,6 +247,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -316,11 +319,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -330,7 +334,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -340,7 +344,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -350,7 +354,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -360,7 +364,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -416,6 +420,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -470,8 +475,8 @@
         ]
       },
       "twss_tuned": {
-        "twss": 0.1503043414198358,
-        "task_score": 0.12439736657185213,
+        "twss": 0.15030434141983579,
+        "task_score": 0.1243973665718521,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.025906974847983693,
         "wait_quality": 0.10609523032983799,
@@ -487,11 +492,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.762531765946133,
             "matched_pred_idx": 3,
             "dstart": 5.0,
@@ -501,7 +507,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -511,7 +517,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -521,7 +527,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -531,7 +537,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -587,6 +593,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -642,7 +649,7 @@
       },
       "twss_tuned": {
         "twss": 0.04489854263770287,
-        "task_score": 1.4526849221575092e-12,
+        "task_score": 1.452684922157509e-12,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.044898542636250184,
         "wait_quality": 0.1838702222246436,
@@ -658,11 +665,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 8.90467724183105e-12,
             "matched_pred_idx": 0,
             "dstart": 10.0,
@@ -672,7 +680,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -682,7 +690,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -692,7 +700,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -702,7 +710,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -758,6 +766,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -829,11 +838,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -843,7 +853,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -853,7 +863,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -863,7 +873,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -873,7 +883,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -890,7 +900,7 @@
         "tp": 4,
         "fp": 1,
         "fn": 1,
-        "a_time": 0.3072092159048681,
+        "a_time": 0.30720921590486805,
         "a_act": 0.0,
         "a_nec": 0.9482758620689655,
         "a_score": 0.41849502599127786,
@@ -899,7 +909,7 @@
           0.3333333333333333,
           0.3333333333333333
         ],
-        "matched_iou_mean": 0.3840115198810851,
+        "matched_iou_mean": 0.38401151988108506,
         "matched_act_acc": 0.0,
         "psa": 0.0
       },
@@ -907,7 +917,7 @@
         "event_precision": 0.8,
         "event_recall": 0.8,
         "event_f1": 0.8000000000000002,
-        "matched_iou_mean": 0.3840115198810851,
+        "matched_iou_mean": 0.38401151988108506,
         "matched_act_acc": 0.0,
         "p_agree": 0.23
       },
@@ -929,6 +939,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -984,7 +995,7 @@
       },
       "twss_tuned": {
         "twss": 0.23807494735778972,
-        "task_score": 0.1681301573070961,
+        "task_score": 0.16813015730709607,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.06994479005069364,
         "wait_quality": 0.28644056877903107,
@@ -1000,11 +1011,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.2780373004531941,
             "matched_pred_idx": 0,
             "dstart": 12.0,
@@ -1014,7 +1026,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.2780373004531941,
             "matched_pred_idx": 1,
             "dstart": 12.0,
@@ -1024,7 +1036,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.2780373004531941,
             "matched_pred_idx": 2,
             "dstart": 12.0,
@@ -1034,7 +1046,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.056134762834133725,
             "matched_pred_idx": 3,
             "dstart": 12.0,
@@ -1044,7 +1056,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.18451952399298926,
             "matched_pred_idx": 4,
             "dstart": 12.0,
@@ -1100,6 +1112,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -1171,11 +1184,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.00033546262790251185,
             "matched_pred_idx": 0,
             "dstart": 30.0,
@@ -1185,7 +1199,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.00033546262790251185,
             "matched_pred_idx": 1,
             "dstart": 30.0,
@@ -1195,7 +1209,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.00033546262790251185,
             "matched_pred_idx": 2,
             "dstart": 30.0,
@@ -1205,7 +1219,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -1215,7 +1229,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -1271,6 +1285,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -1325,8 +1340,8 @@
         ]
       },
       "twss_tuned": {
-        "twss": 0.14150334396118927,
-        "task_score": 0.08559627106890863,
+        "twss": 0.14150334396118924,
+        "task_score": 0.0855962710689086,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.05590707289228063,
         "wait_quality": 0.2289527747017207,
@@ -1342,11 +1357,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.2358770829857,
             "matched_pred_idx": 0,
             "dstart": 10.0,
@@ -1356,7 +1372,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.1353352832366127,
             "matched_pred_idx": 1,
             "dstart": 15.0,
@@ -1366,7 +1382,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.1353352832366127,
             "matched_pred_idx": 2,
             "dstart": 15.0,
@@ -1376,7 +1392,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.011108996538242306,
             "matched_pred_idx": 3,
             "dstart": 15.0,
@@ -1386,7 +1402,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.011108996538242306,
             "matched_pred_idx": 4,
             "dstart": 15.0,
@@ -1442,6 +1458,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -1513,11 +1530,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.8948393168143698,
             "matched_pred_idx": 0,
             "dstart": 0.0,
@@ -1527,7 +1545,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.8948393168143698,
             "matched_pred_idx": 1,
             "dstart": 0.0,
@@ -1537,7 +1555,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.8948393168143698,
             "matched_pred_idx": 2,
             "dstart": 0.0,
@@ -1547,7 +1565,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.7788007830714049,
             "matched_pred_idx": 3,
             "dstart": 0.0,
@@ -1557,7 +1575,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.7788007830714049,
             "matched_pred_idx": 4,
             "dstart": 0.0,
@@ -1613,6 +1631,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -1667,8 +1686,8 @@
         ]
       },
       "twss_tuned": {
-        "twss": 0.8147043503405289,
-        "task_score": 0.570518303828901,
+        "twss": 0.8147043503405288,
+        "task_score": 0.5705183038289009,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.2441860465116279,
         "wait_quality": 1.0,
@@ -1684,11 +1703,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.7548396019890073,
             "matched_pred_idx": 0,
             "dstart": 5.625,
@@ -1698,7 +1718,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.7548396019890073,
             "matched_pred_idx": 1,
             "dstart": 5.625,
@@ -1708,7 +1728,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.7548396019890073,
             "matched_pred_idx": 2,
             "dstart": 5.625,
@@ -1718,7 +1738,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.7548396019890073,
             "matched_pred_idx": 3,
             "dstart": 3.75,
@@ -1728,11 +1748,530 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.7548396019890073,
             "matched_pred_idx": 4,
             "dstart": 3.75,
             "dend": 3.75,
+            "sigma": 10.0
+          }
+        ]
+      }
+    },
+    "Early-stop half": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "a_time": 0.5,
+        "a_act": 1.0,
+        "a_nec": 1.0,
+        "a_score": 0.8333333333333333,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.5,
+        "matched_act_acc": 1.0,
+        "psa": 0.675
+      },
+      "baselines": {
+        "event_precision": 1.0,
+        "event_recall": 1.0,
+        "event_f1": 1.0,
+        "matched_iou_mean": 0.5,
+        "matched_act_acc": 1.0,
+        "p_agree": 0.675
+      },
+      "twss_vanilla": {
+        "twss": 0.8562205089964131,
+        "task_score": 0.5062205089964131,
+        "task_mass_available": 0.65,
+        "wait_score": 0.35,
+        "wait_quality": 1.0,
+        "wait_mass": 0.35,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 32.5,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.8328145453446665,
+        "task_score": 0.5886284988330386,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.2441860465116279,
+        "wait_quality": 1.0,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 0.0,
+        "fp_time_eff": 0.0,
+        "total_wait_time": 35.0,
+        "total_pred_time": 32.5,
+        "n_gt": 5,
+        "n_pred": 5,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 1,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1332010402954221,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1332010402954221,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      }
+    },
+    "Early-stop + 1 wrong": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 10,
+        "tp": 5,
+        "fp": 5,
+        "fn": 0,
+        "a_time": 0.1,
+        "a_act": 0.2,
+        "a_nec": 0.5384615384615384,
+        "a_score": 0.2794871794871795,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.1,
+        "matched_act_acc": 0.2,
+        "psa": 0.35
+      },
+      "baselines": {
+        "event_precision": 0.5,
+        "event_recall": 1.0,
+        "event_f1": 0.6666666666666666,
+        "matched_iou_mean": 0.1,
+        "matched_act_acc": 0.2,
+        "p_agree": 0.675
+      },
+      "twss_vanilla": {
+        "twss": 0.560861824857003,
+        "task_score": 0.5062205089964131,
+        "task_mass_available": 0.65,
+        "wait_score": 0.05464131586058987,
+        "wait_quality": 0.15611804531597107,
+        "wait_mass": 0.35,
+        "fp_time": 32.5,
+        "fp_time_eff": 32.5,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 10,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 6,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 8,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.6856261287851233,
+        "task_score": 0.5886284988330386,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.09699762995208469,
+        "wait_quality": 0.3972283893275849,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 32.5,
+        "fp_time_eff": 48.47030347586883,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 10,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 2,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 4,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1332010402954221,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 6,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1332010402954221,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 8,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      }
+    },
+    "Early-stop + 2 wrong": {
+      "ascore": {
+        "n_gt": 5,
+        "n_pred": 15,
+        "tp": 5,
+        "fp": 10,
+        "fn": 0,
+        "a_time": 0.1,
+        "a_act": 0.2,
+        "a_nec": 0.3653846153846154,
+        "a_score": 0.2217948717948718,
+        "weights": [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "matched_iou_mean": 0.1,
+        "matched_act_acc": 0.2,
+        "psa": 0.35
+      },
+      "baselines": {
+        "event_precision": 0.3333333333333333,
+        "event_recall": 1.0,
+        "event_f1": 0.5,
+        "matched_iou_mean": 0.1,
+        "matched_act_acc": 0.2,
+        "p_agree": 0.675
+      },
+      "twss_vanilla": {
+        "twss": 0.560861824857003,
+        "task_score": 0.5062205089964131,
+        "task_mass_available": 0.65,
+        "wait_score": 0.05464131586058987,
+        "wait_quality": 0.15611804531597107,
+        "wait_mass": 0.35,
+        "fp_time": 32.5,
+        "fp_time_eff": 32.5,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 15,
+        "alpha": 1.0,
+        "beta": 0.5,
+        "gamma": 1.0,
+        "wait_weight": 1.0,
+        "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.15,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 6,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 9,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 12,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          }
+        ]
+      },
+      "twss_tuned": {
+        "twss": 0.6660253813985014,
+        "task_score": 0.5886284988330386,
+        "task_mass_available": 0.7558139534883721,
+        "wait_score": 0.07739688256546282,
+        "wait_quality": 0.3169586619347525,
+        "wait_mass": 0.4069767441860465,
+        "fp_time": 32.5,
+        "fp_time_eff": 60.321655673974455,
+        "total_wait_time": 35.0,
+        "total_pred_time": 65.0,
+        "n_gt": 5,
+        "n_pred": 15,
+        "alpha": 1.0,
+        "beta": 1.5,
+        "gamma": 0.5,
+        "wait_weight": 0.6,
+        "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
+        "per_event": [
+          {
+            "gt_action": "task_1",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 0,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_2",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 3,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_3",
+            "L_i": 15.0,
+            "weight": 0.16313729096584262,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 6,
+            "dstart": 0.0,
+            "dend": 7.5,
+            "sigma": 15.0
+          },
+          {
+            "gt_action": "task_4",
+            "L_i": 10.0,
+            "weight": 0.1332010402954221,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 9,
+            "dstart": 0.0,
+            "dend": 5.0,
+            "sigma": 10.0
+          },
+          {
+            "gt_action": "task_5",
+            "L_i": 10.0,
+            "weight": 0.1332010402954221,
+            "q_i": 0.7788007830714049,
+            "matched_pred_idx": 12,
+            "dstart": 0.0,
+            "dend": 5.0,
             "sigma": 10.0
           }
         ]
@@ -1784,6 +2323,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -1838,8 +2378,8 @@
         ]
       },
       "twss_tuned": {
-        "twss": 0.9652385191746446,
-        "task_score": 0.7558139534883722,
+        "twss": 0.9652385191746445,
+        "task_score": 0.7558139534883721,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.2094245656862724,
         "wait_quality": 0.8576434594771156,
@@ -1855,11 +2395,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 0,
             "dstart": 0.0,
@@ -1869,7 +2410,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 1,
             "dstart": 0.0,
@@ -1879,7 +2420,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 2,
             "dstart": 0.0,
@@ -1889,7 +2430,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 1.0,
             "matched_pred_idx": 3,
             "dstart": 0.0,
@@ -1899,7 +2440,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 1.0,
             "matched_pred_idx": 4,
             "dstart": 0.0,
@@ -1955,6 +2496,7 @@
         "gamma": 1.0,
         "wait_weight": 1.0,
         "blip_tax_delta": 0.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
@@ -2009,8 +2551,8 @@
         ]
       },
       "twss_tuned": {
-        "twss": 0.7036616687387354,
-        "task_score": 0.4594756222271074,
+        "twss": 0.7036616687387353,
+        "task_score": 0.45947562222710736,
         "task_mass_available": 0.7558139534883721,
         "wait_score": 0.2441860465116279,
         "wait_quality": 1.0,
@@ -2026,11 +2568,12 @@
         "gamma": 0.5,
         "wait_weight": 0.6,
         "blip_tax_delta": 4.0,
+        "end_weight": 1.0,
         "per_event": [
           {
             "gt_action": "task_1",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 0,
             "dstart": 0.0,
@@ -2040,7 +2583,7 @@
           {
             "gt_action": "task_2",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -2050,7 +2593,7 @@
           {
             "gt_action": "task_3",
             "L_i": 15.0,
-            "weight": 0.16313729096584265,
+            "weight": 0.16313729096584262,
             "q_i": 1.0,
             "matched_pred_idx": 1,
             "dstart": 0.0,
@@ -2060,7 +2603,7 @@
           {
             "gt_action": "task_4",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 0.0,
             "matched_pred_idx": null,
             "dstart": null,
@@ -2070,7 +2613,7 @@
           {
             "gt_action": "task_5",
             "L_i": 10.0,
-            "weight": 0.13320104029542212,
+            "weight": 0.1332010402954221,
             "q_i": 1.0,
             "matched_pred_idx": 2,
             "dstart": 0.0,

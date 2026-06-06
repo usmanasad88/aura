@@ -3,8 +3,9 @@
 Task-specific configuration for a **collaborative milk tea making** proactive-assistance
 demo. The recipe is the *boiled-milk* ("doodh-patti") style observed in the
 [Ego-Exo4D](https://ego-exo4d-data.org/) **"Making Milk Tea"** cooking takes
-(e.g. `iiith_cooking_05_1`): milk is the boiling base, tea and sugar go into the
-pot, the brew is simmered, then **strained through a fine-mesh sieve** into the mug.
+(e.g. `iiith_cooking_03_3`, `iiith_cooking_05_1`): milk is the boiling base, tea and
+sugar go into the pot, the brew is simmered, then **strained through a fine-mesh
+sieve** into the mug.
 
 **This folder can be deleted without affecting the base AURA framework.**
 
@@ -40,9 +41,10 @@ milk-tea takes are different in three ways, all reflected here:
 
 ```
 idle → setup_workspace
-setup_workspace → pour_milk_into_pot, add_water (optional), position_sieve
-pour_milk_into_pot → place_pot_on_stove → turn_on_stove → heat_milk → add_tea
-add_tea → ask_sugar_preference → (add_sugar | skip_sugar) → simmer_tea
+setup_workspace → pour_milk_into_pot, add_water (optional), place_pot_on_stove, position_sieve
+place_pot_on_stove → turn_on_stove
+(turn_on_stove + pour_milk_into_pot) → heat_milk → add_tea
+add_tea → add_sugar → simmer_tea
 simmer_tea → stir_pot, adjust_heat → turn_off_stove
 turn_off_stove + position_sieve → strain_tea_into_cup → cleanup → task_complete
 ```

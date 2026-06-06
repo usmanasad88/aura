@@ -1,0 +1,72 @@
+{
+  "task_id": "kettle_tea_making",
+  "video": "/home/mani/Repos/aura/demo_data/kettle_tea_making/kettle_tea_making_2_overlay.mp4",
+  "duration_sec": 266.5,
+  "operator_id": "manual_annotation",
+  "schema_version": "1.0",
+  "created_at": "2026-06-06T01:44:22",
+  "description": "Robot intervention ground truth for kettle_tea_making_2_overlay.mp4. Each entry is a contiguous interval during which the teleoperator drove the robot through one skill. Skill ids and arg keys mirror tasks/kettle_tea_making/config/robot_skills.json.",
+  "interventions": [
+    {
+      "id": "iv_001",
+      "skill": "bring_water_bottle",
+      "args": {},
+      "t_start": 8.36,
+      "t_end": 35.4,
+      "rationale": ""
+    },
+    {
+      "id": "iv_002",
+      "skill": "close_lid_and_turn_on",
+      "args": {},
+      "t_start": 49.94,
+      "t_end": 65.6,
+      "rationale": ""
+    },
+    {
+      "id": "iv_003",
+      "skill": "return_water_bottle",
+      "args": {},
+      "t_start": 74.38,
+      "t_end": 112.27,
+      "rationale": ""
+    },
+    {
+      "id": "iv_004",
+      "skill": "pick_and_place_item",
+      "args": {
+        "safe": "Home",
+        "item": "cup",
+        "destination": "cup_workplace"
+      },
+      "t_start": 122.27,
+      "t_end": 132.51,
+      "rationale": ""
+    },
+    {
+      "id": "iv_005",
+      "skill": "pick_and_place_item",
+      "args": {
+        "safe": "Home",
+        "item": "tea_bag",
+        "destination": "tea_bag_workplace"
+      },
+      "t_start": 152.51,
+      "t_end": 184.17,
+      "rationale": ""
+    },
+    {
+      "id": "iv_006",
+      "skill": "return_item_to_storage",
+      "args": {
+        "safe": "Home",
+        "item": "tea_bag",
+        "destination": "tea_bag_storage"
+      },
+      "t_start": 223.62,
+      "t_end": 248.9,
+      "rationale": ""
+    }
+  ],
+  "notes": ""
+}

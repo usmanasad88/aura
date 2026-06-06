@@ -1,8 +1,8 @@
 # Fdb version 3
-["pdflatex"] 1778045002 "/home/mani/Repos/aura/scripts/eval/metric_side_quest/twss_metric.tex" "twss_metric.pdf" "twss_metric" 1778045002
+["pdflatex"] 1780704040 "/home/mani/Repos/aura/scripts/eval/metric_side_quest/twss_metric.tex" "twss_metric.pdf" "twss_metric" 1780704040
   "../../../figures/generated//fig_ascore_adversaries.pdf" 1778038637 33530 f9c1b0ae1da174d6b4d38a5c02f23ccb ""
   "/etc/texmf/web2c/texmf.cnf" 1739015989 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/mani/Repos/aura/scripts/eval/metric_side_quest/twss_metric.tex" 1778045001 30261 394819a4ebc3bf4b5b9b07d897b0facc ""
+  "/home/mani/Repos/aura/scripts/eval/metric_side_quest/twss_metric.tex" 1780704039 39207 cb3d36b9048aa81cde92932e87911f83 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1095.tfm" 1136768653 1536 02c06700a42be0f5a28664c7273f82e7 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1246382020 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -191,11 +191,11 @@
   "/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1636152094 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texmf/fonts/type1/public/cm-super/sfrm1095.pfb" 1756769056 145929 f25e56369a345c4ff583b067cd87ce8e ""
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1756769058 4234243 4a42437c56f0785ccfd4e39da48c38dc ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1776316810 1405652 b3b5ebd005add41bd39ff90ac24b3d4d ""
-  "twss_metric.aux" 1778045002 10422 89b09db3e07af0fc22b52074131008d4 "pdflatex"
-  "twss_metric.out" 1778045002 3328 a467c3b48f54980085ddba0bca5fef9f "pdflatex"
-  "twss_metric.tex" 1778045001 30261 394819a4ebc3bf4b5b9b07d897b0facc ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1779468165 4271227 d672d4662bed749f7922e92e70a51875 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1779468174 1435858 ff97f466dd9d480ded258c611578eafa ""
+  "twss_metric.aux" 1780704040 13142 86148ab750027d0858ae695ce18c2529 "pdflatex"
+  "twss_metric.out" 1780704040 4219 e1d2ebddac076da06d012370864e2784 "pdflatex"
+  "twss_metric.tex" 1780704039 39207 cb3d36b9048aa81cde92932e87911f83 ""
   (generated)
   "twss_metric.aux"
   "twss_metric.log"

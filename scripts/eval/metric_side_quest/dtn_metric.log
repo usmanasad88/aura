@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.5.22)  6 JUN 2026 05:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.5.22)  6 JUN 2026 05:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**twss_metric.tex
-(./twss_metric.tex
+**dtn_metric.tex
+(./dtn_metric.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-01-21>
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -619,27 +619,27 @@ File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count316
 \l__pdf_internal_box=\box69
 )
-(./twss_metric.aux)
-\openout1 = `twss_metric.aux'.
+(./dtn_metric.aux)
+\openout1 = `dtn_metric.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 49.
-LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -697,7 +697,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring ON on input line 49.
+Package hyperref Info: Link coloring ON on input line 46.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -710,22 +710,22 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count323
 )
-LaTeX Info: Redefining \ref on input line 49.
-LaTeX Info: Redefining \pageref on input line 49.
-LaTeX Info: Redefining \nameref on input line 49.
+LaTeX Info: Redefining \ref on input line 46.
+LaTeX Info: Redefining \pageref on input line 46.
+LaTeX Info: Redefining \nameref on input line 46.
 \@outlinefile=\write4
-\openout4 = `twss_metric.out'.
+\openout4 = `dtn_metric.out'.
 
 \c@lstlisting=\count324
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 51.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 48.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 51.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 48.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -733,139 +733,100 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
+nput line 136.
+ [2] [3]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 130.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 130.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 130.
+(hyperref)                removing `math shift' on input line 240.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 160.
+(hyperref)                removing `subscript' on input line 240.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 160.
+(hyperref)                removing `math shift' on input line 240.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 160.
+(hyperref)                removing `math shift' on input line 269.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 182.
+(hyperref)                removing `subscript' on input line 269.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 182.
+(hyperref)                removing `math shift' on input line 269.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 182.
-
-[2]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 249.
+(hyperref)                removing `math shift' on input line 286.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\gamma' on input line 249.
+(hyperref)                removing `subscript' on input line 286.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 249.
-
-[3]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 277.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\delta' on input line 277.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 277.
+(hyperref)                removing `math shift' on input line 286.
 
 [4]
-Overfull \hbox (15.55449pt too wide) in paragraph at lines 343--353
-\OT1/cmtt/m/n/10.95 twss \OT1/cmr/m/n/10.95 to-gether with its de-com-po-si-tio
-n (\OT1/cmtt/m/n/10.95 task[]score\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 wait
-[]score\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 wait[]quality\OT1/cmr/m/n/10.95
- , \OT1/cmtt/m/n/10.95 fp[]time\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 fp[]tim
-e[]eff\OT1/cmr/m/n/10.95 )
- []
 
-LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 367.
-
-Overfull \hbox (55.53401pt too wide) in paragraph at lines 397--408
- []\OT1/cmr/bx/n/10.95 Note on the shared plumb-ing.[] \OT1/cmr/m/n/10.95 Both 
-scripts reuse the match-ing and I/O layer from \OT1/cmtt/m/n/10.95 generate[]ti
-meline.py
- []
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 313.
 
 
-Overfull \hbox (31.27097pt too wide) in paragraph at lines 397--408
-\OT1/cmr/m/n/10.95 (\OT1/cmtt/m/n/10.95 load[]robot[]gt\OT1/cmr/m/n/10.95 , \OT
-1/cmtt/m/n/10.95 match[]predictions\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 plo
-t[]multi[]model[]timeline\OT1/cmr/m/n/10.95 ). That mod-ule's \OT1/cmtt/m/n/10.
-95 match[]predictions
- []
-
-[5]
-<../../../figures/generated//fig_ascore_adversaries.pdf, id=97, 1011.93372pt x 
-1127.27214pt>
-File: ../../../figures/generated//fig_ascore_adversaries.pdf Graphic file (type
- pdf)
-<use ../../../figures/generated//fig_ascore_adversaries.pdf>
-Package pdftex.def Info: ../../../figures/generated//fig_ascore_adversaries.pdf
-  used on input line 452.
-(pdftex.def)             Requested size: 469.75502pt x 523.29889pt.
-
-Overfull \hbox (37.79214pt too wide) in paragraph at lines 463--494
- [][] 
- []
-
-[6] [7] [8] [9] [10]
-Overfull \hbox (82.24843pt too wide) in paragraph at lines 796--802
-[]\OT1/cmr/m/n/10.95 The dis-junc-tive ex-ten-sion in Sec-tion [][]7[][] is im-
-ple-mented in \OT1/cmtt/m/n/10.95 aura/scripts/eval/metric[]side[]quest/dtn[]sc
-ore.py
- []
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 313.
 
 
-Overfull \hbox (192.4831pt too wide) in paragraph at lines 796--802
-\OT1/cmr/m/n/10.95 (\OT1/cmtt/m/n/10.95 compute[]disjunctive[]twss\OT1/cmr/m/n/
-10.95 ) and re-ported along-side the DTN A-Score by \OT1/cmtt/m/n/10.95 aura/sc
-ripts/eval/metric[]side[]quest/dtn[]adversaries.py\OT1/cmr/m/n/10.95 . 
- []
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 313.
 
-[11] [12] [13] (./twss_metric.aux)
-Package rerunfilecheck Info: File `twss_metric.out' has not changed.
-(rerunfilecheck)             Checksum: E1D2EBDDAC076DA06D012370864E2784;4219.
+<out//fig_dtn_adversaries.pdf, id=82, 1011.78pt x 823.87799pt>
+File: out//fig_dtn_adversaries.pdf Graphic file (type pdf)
+<use out//fig_dtn_adversaries.pdf>
+Package pdftex.def Info: out//fig_dtn_adversaries.pdf  used on input line 374.
+(pdftex.def)             Requested size: 469.75502pt x 382.52103pt.
+[5] [6]
+<out//fig_dtn_adversaries_layup.pdf, id=101, 1011.78pt x 784.12952pt>
+File: out//fig_dtn_adversaries_layup.pdf Graphic file (type pdf)
+<use out//fig_dtn_adversaries_layup.pdf>
+Package pdftex.def Info: out//fig_dtn_adversaries_layup.pdf  used on input line
+ 447.
+(pdftex.def)             Requested size: 469.75502pt x 364.06607pt.
+ [7] [8]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 542.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 542.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 542.
+
+[9] [10] [11] (./dtn_metric.aux)
+Package rerunfilecheck Info: File `dtn_metric.out' has not changed.
+(rerunfilecheck)             Checksum: C7B2E5D1D375DE50FA0057AAA7C51603;4457.
  ) 
 Here is how much of TeX's memory you used:
- 23137 strings out of 480171
- 419735 string characters out of 5894489
- 723180 words of memory out of 5000000
- 40639 multiletter control sequences out of 15000+600000
- 485871 words of font info for 89 fonts, out of 8000000 for 9000
+ 23121 strings out of 480171
+ 419728 string characters out of 5894489
+ 806736 words of memory out of 5000000
+ 40637 multiletter control sequences out of 15000+600000
+ 486230 words of font info for 90 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 83i,17n,80p,737b,1078s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 83i,17n,80p,476b,1101s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 pdfTeX warning: \pdfdraftmode enabled, not changing output pdf
 
 PDF statistics:
- 190 PDF objects out of 1000 (max. 8388607)
- 96 named destinations out of 1000 (max. 500000)
- 18 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 153 PDF objects out of 1000 (max. 8388607)
+ 80 named destinations out of 1000 (max. 500000)
+ 23 words of extra memory for PDF output out of 10000 (max. 10000000)
 

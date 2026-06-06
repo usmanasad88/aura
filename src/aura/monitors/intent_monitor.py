@@ -277,6 +277,17 @@ class AURAIntentMonitor:
         )
         self.state_format_string = json.dumps(self._build_output_format(), indent=2)
 
+        # Optional robot-skills awareness. By default the intent monitor is
+        # *unaware* of what the robot can do — it only recognises the human's
+        # actions. A task can opt in via the ``intent_robot_skills`` key so the
+        # prompt includes a brief description of the robot's capabilities,
+        # helping the monitor anticipate human/robot hand-offs.
+        skills_cfg = self.task_profile.get("intent_robot_skills") or {}
+        self._robot_skills_enabled = bool(skills_cfg.get("enabled"))
+        self._robot_skills_description = skills_cfg.get("description", "") if self._robot_skills_enabled else ""
+        if self._robot_skills_enabled:
+            logger.info("Intent monitor: robot-skills awareness ENABLED")
+
         # Optional anchor image: a static reference frame of the workspace
         # prepended to every prediction request. Skipped for sglang backend.
         self._anchor_image: Optional[Image.Image] = None
@@ -404,9 +415,19 @@ class AURAIntentMonitor:
                 "Use it to ground object identities and spatial layout; it is NOT a task frame.\n"
             )
 
+        robot_skills_section = ""
+        if self._robot_skills_enabled and self._robot_skills_description:
+            robot_skills_section = (
+                "\n## Robot Skills\n"
+                "A robot assistant is collaborating with the human and can perform "
+                "the following actions. Use this to anticipate human/robot hand-offs "
+                "(the robot may already be handling, or about to handle, a step):\n"
+                f"{self._robot_skills_description}\n"
+            )
+
         prompt = f"""{self.system_instruction}
 Your goal is to update the state variables based on the provided task graph, state schema, and the visual information from the images.
-{anchor_section}
+{anchor_section}{robot_skills_section}
 ## Task Graph Definition
 ```json
 {self.task_graph_string}

@@ -229,6 +229,76 @@ def adv_truncated(gt: list[Event], **_) -> list[Event]:
     return out
 
 
+def adv_early_stop(gt: list[Event], **_) -> list[Event]:
+    """Correct skill, but every event stops at its halfway point.
+
+    Each prediction fires the right skill from the GT start but cuts off at
+    50% of the interval, leaving the second half empty. There is no
+    wrong-skill pollution. This is the reference behaviour for the two
+    adversaries below: they share this exact correct-skill first half, so
+    their per-event task quality q_i is identical to this one.
+    """
+    out: list[Event] = []
+    for e in gt:
+        mid = 0.5 * (e.start + e.end)
+        if mid > e.start:
+            out.append(Event(action=e.action, start=e.start, end=mid,
+                             agent="robot"))
+    return out
+
+
+def adv_early_stop_one_wrong(gt: list[Event],
+                             skill_pool: list[str], **_) -> list[Event]:
+    """Correct skill for the first half of each GT interval, then one wrong
+    skill filling the entire second half.
+
+    The correct-skill first half is byte-for-byte the same as
+    ``adv_early_stop`` (same start, same halfway end, same label), so its
+    timing-decayed q_i is unchanged. The second-half prediction uses a skill
+    absent from the GT, so it is pure pollution even though it is fired
+    *inside* the GT event's own time window.
+    """
+    bad = skill_pool[0] if skill_pool else _most_common_skill(gt)
+    out: list[Event] = []
+    for e in gt:
+        mid = 0.5 * (e.start + e.end)
+        if mid > e.start:
+            out.append(Event(action=e.action, start=e.start, end=mid,
+                             agent="robot"))
+        if e.end > mid:
+            out.append(Event(action=bad, start=mid, end=e.end, agent="robot"))
+    return out
+
+
+def adv_early_stop_two_wrong(gt: list[Event],
+                             skill_pool: list[str], **_) -> list[Event]:
+    """Correct skill for the first half, then two different wrong skills each
+    covering a quarter of the interval (filling the second half).
+
+    Identical correct-skill first half (hence identical q_i) to the two
+    adversaries above, but the second half is split into two fragmented
+    pure-pollution blips of different wrong skills. Relative to
+    ``adv_early_stop_one_wrong`` the raw pollution time T_fp is the same;
+    only the *fragmentation* differs, which the blip tax delta is meant to
+    catch.
+    """
+    bad1 = skill_pool[0] if skill_pool else _most_common_skill(gt)
+    bad2 = skill_pool[1] if len(skill_pool) > 1 else bad1
+    out: list[Event] = []
+    for e in gt:
+        L = e.end - e.start
+        mid = e.start + 0.50 * L
+        q3 = e.start + 0.75 * L
+        if mid > e.start:
+            out.append(Event(action=e.action, start=e.start, end=mid,
+                             agent="robot"))
+        if q3 > mid:
+            out.append(Event(action=bad1, start=mid, end=q3, agent="robot"))
+        if e.end > q3:
+            out.append(Event(action=bad2, start=q3, end=e.end, agent="robot"))
+    return out
+
+
 def adv_wait_blip(gt: list[Event],
                   total_duration: float,
                   skill_pool: list[str], **_) -> list[Event]:
@@ -274,6 +344,9 @@ ADVERSARIES: list[tuple[str, str, Callable[..., list[Event]]]] = [
     ("Premature firer",         f"GT shifted {PREMATURE_OFFSET_SEC:+.0f}s",  adv_premature),
     ("Over-extender",           f"Correct starts, ends padded +{OVER_EXTEND_PAD_SEC:.0f}s", adv_over_extender),
     ("Late-start early-stop",   f"Right action, only middle {TRUNCATED_INNER_FRAC:.0%} fired", adv_truncated),
+    ("Early-stop half",         "Correct skill, every event cut off at 50%", adv_early_stop),
+    ("Early-stop + 1 wrong",    "Correct first half, one wrong skill fills the rest", adv_early_stop_one_wrong),
+    ("Early-stop + 2 wrong",    "Correct first half, two wrong skills fill the rest", adv_early_stop_two_wrong),
     ("Wait-period blip",        f"Oracle plus one {WAIT_BLIP_DURATION_SEC:.0f}s spurious event in wait", adv_wait_blip),
     ("Half-coverage perfect",   "Every other GT event copied perfectly",     adv_half_coverage),
 ]

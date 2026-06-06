@@ -1,6 +1,6 @@
 {
-  "name": "Kettle Tea Making Robot Skills (LLM-fired variant)",
-  "description": "LLM-fired variant of robot_skills.json: identical skills, but with every BT scheduling field (trigger_steps / trigger_after_steps / trigger_until_steps) removed so NO skill fires deterministically — the LLM decides every move (requires workflow_config.llm_fallback_on_idle=true in task_profile.json). Parametric skills still expand over valid_values; the LLM (decision engine) chooses when and what to deliver. The robot controller is the `program_executor` ROS 2 node in ur5_curobo_control, and each skill maps to a program file under ur5_curobo_control/programs/, invoked via the load-then-execute sequence: (1) set ROS 2 parameters `program_file` and `program_args` on the executor node, (2) call service `/program_executor/load_program` (std_srvs/Trigger), (3) call service `/program_executor/execute_program` (std_srvs/Trigger). A single parametric `pick_and_place_items.prog` moves any key item from storage to its workplace pose in the working area using keyword args (`object=...`, `destination=...`). The robot brings the water bottle from storage to the working area but does NOT pour — the human always pours the water into the kettle. A dedicated kettle program closes the lid and turns the kettle on. The robot CANNOT open the kettle lid — the human does that to signal intent to make tea.",
+  "name": "Kettle Tea Making Robot Skills",
+  "description": "Parametric skills for an electric-kettle tea making task with a UR5 + Robotiq gripper. Mirrors the cuboid_manipulation skill style: the robot controller is the `program_executor` ROS 2 node in ur5_curobo_control, and each skill maps to a program file under ur5_curobo_control/programs/, invoked via the load-then-execute sequence: (1) set ROS 2 parameters `program_file` and `program_args` on the executor node, (2) call service `/program_executor/load_program` (std_srvs/Trigger), (3) call service `/program_executor/execute_program` (std_srvs/Trigger). A single parametric `pick_and_place_items.prog` moves any key item from storage to its workplace pose in the working area using keyword args (`object=...`, `destination=...`). The robot brings the water bottle from storage to the working area but does NOT pour — the human always pours the water into the kettle. A dedicated kettle program closes the lid and turns the kettle on. The robot CANNOT open the kettle lid — the human does that to signal intent to make tea.",
   "version": "1.0",
   "api": {
     "executor_node": "/program_executor",
@@ -23,14 +23,35 @@
   },
   "skills": [
     {
+      "id": "move_to_named",
+      "name": "Move to Named Position",
+      "description": "Move the robot to a specific named joint configuration or position (e.g. Home, safe, a storage or workspace pose).",
+      "category": "motion",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "description": "The name of the position to move to",
+          "default": "Home"
+        }
+      },
+      "api_call": {
+        "program_file": "move_to_named.prog",
+        "program_args": "name={name}"
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 3.0,
+      "can_interrupt": false
+    },
+    {
       "id": "pick_and_place_item",
       "name": "Pick and Place Item",
-      "description": "One-shot pick-and-place of a key item from storage to its workplace pose in the working area, transiting via the safe pose. Use the `item` keyword to select which object to move and `destination` to choose where to drop it. The robot only brings items to the working area — the human handles everything in the cup (adding the tea bag, pouring water, adding milk, stirring). This skill has no fixed trigger step — once its preconditions hold, the decision LLM chooses when and what to deliver (e.g. fetching the remaining items while the kettle boils).",
+      "description": "One-shot pick-and-place of a key item from storage to its workplace pose in the working area, transiting via the safe pose. Use the `item` keyword to select which object to move and `destination` to choose where to drop it. The robot only brings items to the working area — the human handles everything in the cup (adding the tea bag, pouring water, adding milk, stirring).",
       "category": "program",
       "parameters": {
         "item": {
           "type": "string",
-          "description": "Item id to pick from storage; must match an object in initial_scene.json.",
+          "description": "Item id to pick from storage; must match an object in initial_scene.json. Sugar is excluded (no perception monitor — human-handled).",
           "valid_values": ["milk_container", "tea_bag", "cup", "spoon", "biscuits"]
         },
         "destination": {
@@ -46,13 +67,16 @@
       },
       "preconditions": {"{item}.location": "storage_area"},
       "effects": {"{item}.location": "{destination}"},
+      "trigger_steps": ["setup_workspace"],
+      "trigger_after_steps": ["setup_workspace"],
+      "trigger_until_steps": ["prepare_tea"],
       "estimated_duration_sec": 12.0,
       "can_interrupt": false
     },
     {
       "id": "return_item_to_storage",
       "name": "Return Item to Storage",
-      "description": "Cleanup counterpart of pick_and_place_item: once the tea is prepared, take items the robot brought out back from the working area to storage, using the same parametric pick-and-place program with the poses reversed. Only items with a perception monitor are listed (milk_container, tea_bag, cup, biscuits) so the robot can confirm each return; the spoon is excluded (no perception) and is the human's responsibility. The decision LLM chooses when to return each eligible item as the robot frees up.",
+      "description": "Cleanup counterpart of pick_and_place_item: once the tea is prepared, take items the robot brought out back from the working area to storage, using the same parametric pick-and-place program with the poses reversed. Only items with a perception monitor are listed (milk_container, tea_bag, cup, biscuits) so the robot can confirm each return; the spoon is excluded (no perception) and is the human's responsibility. Triggers after the prepare_tea step completes; the BT returns one eligible item per tick as the robot frees up.",
       "category": "program",
       "parameters": {
         "item": {
@@ -73,6 +97,7 @@
       },
       "preconditions": {"{item}.location": "working_area"},
       "effects": {"{item}.location": "{destination}"},
+      "trigger_after_steps": ["prepare_tea"],
       "estimated_duration_sec": 12.0,
       "can_interrupt": false
     },
@@ -89,13 +114,14 @@
         "water_bottle.location": "storage_area"
       },
       "effects": {"water_bottle.location": "working_area"},
+      "trigger_steps": ["bring_water_bottle"],
       "estimated_duration_sec": 12.0,
       "can_interrupt": false
     },
     {
       "id": "return_water_bottle",
       "name": "Return Water Bottle to Storage",
-      "description": "Once the water has been poured into the kettle and the kettle has been switched on, the bottle is no longer needed, so the robot takes it from the working area back to storage. Do this before bringing other items to the working area",
+      "description": "Cleanup counterpart of bring_water_bottle: once the water has been poured into the kettle and the kettle has been switched on, the bottle is no longer needed, so the robot takes it from the working area back to storage. Uses the same parametric pick-and-place program with the bring_water_bottle poses reversed. The water bottle has a perception monitor (water_bottle_location), so the robot can confirm the return. Becomes eligible after the close_lid_and_turn_on step, letting the robot tidy up the bottle while the kettle boils.",
       "category": "program",
       "api_call": {
         "program_file": "pick_and_place_items.prog",
@@ -107,6 +133,7 @@
         "kettle_on": true
       },
       "effects": {"water_bottle.location": "storage_area"},
+      "trigger_after_steps": ["close_lid_and_turn_on"],
       "estimated_duration_sec": 12.0,
       "can_interrupt": false
     },
@@ -125,13 +152,56 @@
         "kettle_on": false
       },
       "effects": {"lid_open": false, "kettle_on": true},
+      "trigger_steps": ["close_lid_and_turn_on"],
       "estimated_duration_sec": 9.0,
       "can_interrupt": false
     },
     {
+      "id": "open_gripper",
+      "name": "Open Gripper",
+      "description": "Open the Robotiq gripper.",
+      "category": "gripper",
+      "api_call": {
+        "program_file": "open_gripper.prog",
+        "program_args": ""
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "close_gripper",
+      "name": "Close Gripper",
+      "description": "Close the Robotiq gripper.",
+      "category": "gripper",
+      "api_call": {
+        "program_file": "close_gripper.prog",
+        "program_args": ""
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 1.0,
+      "can_interrupt": true
+    },
+    {
+      "id": "stop_program",
+      "name": "Stop Program",
+      "description": "Halt the currently executing program immediately.",
+      "category": "utility",
+      "api_call": {
+        "service": "/program_executor/stop",
+        "type": "std_srvs/srv/Trigger"
+      },
+      "preconditions": {},
+      "effects": {},
+      "estimated_duration_sec": 0.5,
+      "can_interrupt": true
+    },
+    {
       "id": "wait",
       "name": "Wait",
-      "description": "Wait for the time being.",
+      "description": "Wait for a specified duration or until the human signals readiness (e.g. while the kettle boils).",
       "category": "utility",
       "parameters": {
         "duration_sec": {"type": "number", "default": 5.0}

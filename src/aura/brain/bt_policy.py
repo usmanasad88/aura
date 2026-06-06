@@ -128,6 +128,10 @@ class BTContext:
     task_state: Dict[str, Any] = field(default_factory=dict)
     steps_completed: List[str] = field(default_factory=list)
     human_requesting_help: bool = False
+    # Most recent captured camera frame (np.ndarray or PIL Image), passed
+    # through to the LLM fallback so the VLM can see the live scene when
+    # ``workflow_config.pass_captured_frame_to_vlm`` is enabled.
+    current_frame: Optional[Any] = None
 
     # Per-tick outputs
     result: Optional[Any] = None  # ActionPrediction | None

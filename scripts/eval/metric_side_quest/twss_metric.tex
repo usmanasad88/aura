@@ -232,6 +232,180 @@ $\qi = 0$ but $\Tfp = 0$, hence $\TWSS = 0 + 0.348 = 0.348$ --- precisely the
 maximum score achievable by saying nothing.
 \end{example}
 
+\section{Tuning TWSS}
+\label{sec:tuning}
+
+The base formula of Section~\ref{sec:formula} exposes three knobs:
+the timing scale $\alpha$ (Eq.~\ref{eq:sigma}), the wait-pollution
+scale $\beta$ (Eq.~\ref{eq:qwait}), and the wait weight $w_w$
+(Eq.~\ref{eq:twss}). The reference implementation
+(\texttt{compute\_twss} in
+\texttt{generate\_timeline\_comparison.py}) adds two more knobs that
+generalise the task term and the pollution accounting --- an
+event-weight exponent $\gamma$ and a per-blip interruption tax
+$\delta$. This section defines those two extra knobs, then describes
+how all five are operationalised by the two driver scripts.
+
+\subsection{The event-weight exponent $\gamma$}
+\label{sec:gamma}
+
+The task term of Eq.~\eqref{eq:twss} weights each event strictly by
+its share of the timeline, $L_i / Z$. This is the right default but
+it makes short interventions almost invisible: a $5$-second event
+contributes $\sim 14\times$ less than a $65$-second one. The
+implementation therefore re-weights the events through an exponent
+$\gamma \in (0, 1]$ while preserving the total task mass $L_{\text{tot}}/Z$:
+\begin{equation}
+  w_i \;=\; \frac{L_{\text{tot}}}{Z}\,
+            \frac{L_i^{\gamma}}{\sum_{j=1}^N L_j^{\gamma}},
+  \qquad
+  \text{task term} \;=\; \sum_{i=1}^N w_i\,\qi,
+  \label{eq:gamma}
+\end{equation}
+where $L_{\text{tot}} = \sum_i L_i$. With $\gamma = 1$ the fractions
+collapse to $L_i / L_{\text{tot}}$ and Eq.~\eqref{eq:gamma} is exactly
+the $L_i / Z$ weighting of Eq.~\eqref{eq:twss} --- $\gamma = 1$ is the
+vanilla behaviour. As $\gamma \to 0$ the weights flatten toward a
+uniform $1/N$ split, so short events earn back visibility. The tuned
+default $\gamma = 0.5$ ($\sqrt{\,\cdot\,}$-weighting) is a compromise:
+long events still dominate, but a missed short event is no longer
+free. Because the $\sum_j L_j^{\gamma}$ normaliser keeps the total
+task mass fixed at $L_{\text{tot}}/Z$, changing $\gamma$ never lets the
+task term exceed its budget --- it only redistributes mass between
+events.
+
+\subsection{The blip tax $\delta$}
+\label{sec:delta}
+
+The pollution time $\Tfp$ of Eq.~\eqref{eq:Tfp} is blind to
+\emph{fragmentation}: ten $1$-second false positives and one
+$10$-second false positive both contribute $\Tfp = 10$\,s, even
+though ten separate interruptions are far more disruptive to an
+operator than one. The implementation replaces the raw sum with an
+\emph{effective} pollution time $\Tfp^{\text{eff}}$ that taxes each
+prediction's pollution length $\ell_p^{\text{fp}}$ through a concave
+cost $c(\cdot)$:
+\begin{equation}
+  \Tfp^{\text{eff}} \;=\; \sum_{p} c\!\bigl(\ell_p^{\text{fp}}\bigr),
+  \qquad
+  c(\ell) \;=\; \sqrt{\ell^2 + 2\delta\ell},
+  \qquad \delta \ge 0,
+  \label{eq:blip}
+\end{equation}
+and feeds $\Tfp^{\text{eff}}$ into the wait quality in place of $\Tfp$,
+i.e. $\qwait = \exp(-\Tfp^{\text{eff}} / (\beta\,\Twait))$. The cost
+$c(\ell)$ behaves like $\sqrt{2\delta\ell}$ for small $\ell$ (so a
+brief blip is penalised out of proportion to its length) and
+asymptotes to $\ell + \delta$ for large $\ell$ (so each spurious
+\emph{interval}, regardless of length, carries a fixed $\sim\!\delta$
+seconds of equivalent pollution on top of its duration). At $\delta =
+0$ we recover $c(\ell) = \ell$ and hence $\Tfp^{\text{eff}} = \Tfp$ ---
+the vanilla behaviour. The tuned default $\delta = 4$\,s discourages
+the many-tiny-blip failure mode (the spammer adversary) without
+crushing an agent whose only wait pollution is one longer block.
+
+\subsection{The five knobs at a glance}
+\label{sec:knobs}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{clccp{0.30\linewidth}}
+\toprule
+\textbf{Knob} & \textbf{Role} & \textbf{Vanilla} & \textbf{Tuned} & \textbf{Effect of increasing it} \\
+\midrule
+$\alpha$ & timing scale $\sigma_i = \alpha L_i$        & $1.0$ & $1.0$ & more forgiving of early/late predictions \\
+$\beta$  & wait-pollution scale $\sigma_w = \beta\Twait$ & $0.5$ & $1.5$ & more forgiving of wait pollution \\
+$\gamma$ & event-weight exponent $w_i \propto L_i^\gamma$ & $1.0$ & $0.5$ & long events dominate more ($\gamma\!>\!1$); short events surface ($\gamma\!<\!1$) \\
+$w_w$    & wait-term multiplier                          & $1.0$ & $0.6$ & wait behaviour matters more relative to task \\
+$\delta$ & per-blip interruption tax (s)                 & $0.0$ & $4.0$ & fragmented false positives punished harder \\
+\bottomrule
+\end{tabular}
+\caption{The five TWSS knobs, with the \emph{vanilla} (textbook) and
+\emph{tuned} (AURA-default) settings shipped by
+\texttt{generate\_timeline\_comparison.py}. Only $\alpha$ is shared
+between the two configurations; the tuned set softens the wait
+penalty ($\beta$, $w_w$), surfaces short events ($\gamma$), and adds a
+fragmentation tax ($\delta$).}
+\label{tab:knobs}
+\end{table}
+
+\subsection{How the scripts tune and report TWSS}
+\label{sec:tuning-impl}
+
+Two scripts drive TWSS, and both follow the same discipline: every
+prediction track is scored \emph{twice} --- once vanilla, once tuned
+--- so the two configurations are always comparable side by side and a
+reader can see exactly what the tuning bought.
+
+\paragraph{The dataclasses and the scoring call.}
+\texttt{compute\_twss(gt, preds, total\_duration, alpha, beta, gamma,
+wait\_weight, blip\_tax\_delta)} returns a \texttt{TWSS} dataclass
+carrying the headline \texttt{twss} together with its decomposition
+(\texttt{task\_score}, \texttt{wait\_score}, \texttt{wait\_quality},
+\texttt{fp\_time}, \texttt{fp\_time\_eff}) and a list of
+\texttt{TWSSPerEvent} records --- one per GT event, holding
+$(L_i, w_i, \qi, |\Delta s|, |\Delta e|, \sigma_i)$ and the index of
+the prediction that maximised $\qi$. The per-event breakdown is what
+makes a low score diagnosable: it names which event was missed and
+whether the loss came from timing ($\Delta s, \Delta e$ large) or from
+a missing same-skill prediction ($\qi = 0$).
+
+\paragraph{Module constants.}
+The two configurations live as module-level constants. The
+\texttt{DEFAULT\_TWSS\_*} group ($\alpha{=}1$, $\beta{=}0.5$,
+$\gamma{=}1$, $w_w{=}1$, $\delta{=}0$) is the vanilla formulation; the
+\texttt{TUNED\_TWSS\_*} group ($\beta{=}1.5$, $\gamma{=}0.5$,
+$w_w{=}0.6$, $\delta{=}4$) is the recommended default and is what the
+CLI flags default to. Each tuned constant carries a one-line rationale
+in the source --- e.g. ``gentler wait penalty so high-quality runs
+aren't crushed by their own FP cost'' ($\beta$) and ``$\sqrt{\,\cdot\,}$
+weighting --- short events less crushed'' ($\gamma$).
+
+\paragraph{Ablation comparison
+(\texttt{generate\_timeline\_comparison.py}).}
+For each ablation run it loads the prediction track, calls
+\texttt{compute\_twss} once with the \texttt{DEFAULT\_TWSS\_*}
+constants and once with the tuned $(\beta, \gamma, w_w, \delta)$ from
+the CLI, and prints two fixed-width tables (\emph{Vanilla TWSS} and
+\emph{Tuned TWSS}). The tuned knobs are individually overridable from
+the command line (\texttt{--twss-alpha}, \texttt{--twss-beta-tuned},
+\texttt{--twss-gamma}, \texttt{--twss-wait-weight},
+\texttt{--twss-blip-tax}), so the ``tuning'' is just a sweep over these
+flags: change one, re-run, and read off how the vanilla-vs-tuned gap
+moves across the realistic ablations.
+
+\paragraph{Adversary validation
+(\texttt{ascore\_adversaries.py}).}
+This is where the tuned defaults were actually \emph{chosen}. The
+script imports the same \texttt{compute\_twss} and the same constant
+groups, builds the twelve synthetic adversaries of
+Section~\ref{sec:adversaries}, and scores every one of them under both
+the vanilla and tuned configurations. A good knob setting is one for
+which the resulting column orders the adversaries sensibly: the oracle
+on top, the silent agent pinned at the wait mass, and a smooth,
+monotone gradient in between --- in particular the two diagnostic
+adversaries (\emph{Late-start early-stop} and \emph{Wait-period blip})
+must drop below the oracle without collapsing. The tuned defaults are
+the smallest departure from vanilla that achieves this on the
+hand-layup track; Table~\ref{tab:twss-layup} reports both columns, and
+the script also emits a per-event breakdown (the
+\texttt{format\_per\_event\_breakdown} output) so a borderline knob
+choice can be inspected event by event before it is committed as a
+default.
+
+\paragraph{Note on the shared plumbing.} Both scripts reuse the
+matching and I/O layer from \texttt{generate\_timeline.py}
+(\texttt{load\_robot\_gt}, \texttt{match\_predictions},
+\texttt{plot\_multi\_model\_timeline}). That module's
+\texttt{match\_predictions} still uses the \emph{hard} $\pm\tau$
+tolerance ($\tau = 15$\,s) --- it drives the TP/FP/FN colouring of the
+timeline figures and the A-Score, not TWSS. TWSS deliberately bypasses
+it: its task credit comes from the tolerance-free Gaussian $\qi$ of
+Eq.~\eqref{eq:qi}, so the figure's red/green matching and the TWSS
+number can and do disagree (e.g.\ on \emph{Far-shifted}), which is the
+whole point of the smoother score.
+
 \section{The adversaries}
 \label{sec:adversaries}
 

@@ -12,12 +12,16 @@
 
 let currentSource = "video";
 
+// Default model pre-selected in the shared "Model" dropdown.
+const DEFAULT_MODEL = "gemini-3.1-flash-lite-preview";
+
 // Model options per backend
 const MODELS_BY_BACKEND = {
     gemini: [
+        "gemini-3.1-flash-lite-preview",
+        "gemini-3.5-flash",
         "gemini-3.1-pro-preview",
         "gemini-3-flash-preview",
-        "gemini-3.1-flash-lite-preview",
         "gemini-3.1-flash-live-preview",
         "gemini-2.5-pro-preview-05-06",
         "gemini-2.5-flash-preview-04-17",
@@ -211,8 +215,10 @@ function populateModelSelect(selectId, backend, includeSharedOption) {
     if (includeSharedOption) {
         html += '<option value="">Use shared model</option>';
     }
+    // Only the shared "Model" dropdown pre-selects DEFAULT_MODEL; the
+    // intent/decision dropdowns keep "Use shared model" as their default.
     html += models.map(
-        m => `<option value="${esc(m)}">${esc(m)}</option>`
+        m => `<option value="${esc(m)}"${(!includeSharedOption && m === DEFAULT_MODEL) ? " selected" : ""}>${esc(m)}</option>`
     ).join("");
     sel.innerHTML = html;
 }

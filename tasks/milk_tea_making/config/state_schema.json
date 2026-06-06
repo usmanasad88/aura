@@ -32,9 +32,7 @@
         "turn_on_stove",
         "heat_milk",
         "add_tea",
-        "ask_sugar_preference",
         "add_sugar",
-        "skip_sugar",
         "simmer_tea",
         "adjust_heat",
         "stir_pot",
@@ -84,7 +82,7 @@
     },
     "stove_on": {
       "type": "boolean",
-      "description": "Stove is turned on / lit",
+      "description": "Gas stove is lit (open flame under the saucepan)",
       "default": false
     },
     "milk_boiling": {
@@ -95,12 +93,6 @@
     "tea_added": {
       "type": "boolean",
       "description": "Tea leaves or tea bag have been added to the pot",
-      "default": false
-    },
-    "sugar_preference_known": {
-      "source": "system",
-      "type": "boolean",
-      "description": "Whether the human's sugar preference has been determined",
       "default": false
     },
     "sugar_added": {
@@ -118,19 +110,9 @@
       "description": "Stove has been turned off after brewing",
       "default": false
     },
-    "sieve_ready": {
-      "type": "boolean",
-      "description": "Fine-mesh sieve is positioned over the mug, ready to strain",
-      "default": false
-    },
     "tea_strained": {
       "type": "boolean",
       "description": "Brewed tea has been strained through the sieve into the mug",
-      "default": false
-    },
-    "tea_served": {
-      "type": "boolean",
-      "description": "Milk tea is ready and served",
       "default": false
     },
     "predicted_next_action": {
@@ -145,9 +127,7 @@
         "turn_on_stove",
         "heat_milk",
         "add_tea",
-        "ask_sugar_preference",
         "add_sugar",
-        "skip_sugar",
         "simmer_tea",
         "adjust_heat",
         "stir_pot",
@@ -193,84 +173,6 @@
         "Unknown"
       ],
       "default": "continue"
-    },
-    "pot_location": {
-      "type": "string",
-      "source": "perception",
-      "description": "Current location of the saucepan.",
-      "valid_values": [
-        "storage_area",
-        "working_area",
-        "stove_area",
-        "unknown"
-      ],
-      "default": "unknown"
-    },
-    "mug_location": {
-      "type": "string",
-      "source": "perception",
-      "description": "Current location of the serving mug.",
-      "valid_values": [
-        "storage_area",
-        "working_area",
-        "unknown"
-      ],
-      "default": "unknown"
-    },
-    "milk_container_location": {
-      "type": "string",
-      "source": "perception",
-      "description": "Current location of the milk container / container.",
-      "valid_values": [
-        "storage_area",
-        "working_area",
-        "unknown"
-      ],
-      "default": "unknown"
-    },
-    "tea_container_location": {
-      "type": "string",
-      "source": "perception",
-      "description": "Current location of the tea leaves / tea bag container.",
-      "valid_values": [
-        "storage_area",
-        "working_area",
-        "unknown"
-      ],
-      "default": "unknown"
-    },
-    "sugar_container_location": {
-      "type": "string",
-      "source": "perception",
-      "description": "Current location of the sugar container.",
-      "valid_values": [
-        "storage_area",
-        "working_area",
-        "unknown"
-      ],
-      "default": "unknown"
-    },
-    "sieve_location": {
-      "type": "string",
-      "source": "perception",
-      "description": "Current location of the fine-mesh sieve.",
-      "valid_values": [
-        "storage_area",
-        "working_area",
-        "unknown"
-      ],
-      "default": "unknown"
-    },
-    "spoon_location": {
-      "type": "string",
-      "source": "perception",
-      "description": "Current location of the stirring spoon.",
-      "valid_values": [
-        "storage_area",
-        "working_area",
-        "unknown"
-      ],
-      "default": "unknown"
     }
   }
 }

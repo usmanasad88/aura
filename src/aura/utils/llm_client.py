@@ -122,6 +122,15 @@ class GeminiClient(LLMClient):
     ) -> str:
         from google.genai import types
 
+        from aura.utils.rate_limiter import throttle
+
+        # Free-tier models (e.g. Gemini 3.1 Flash Lite) share a single
+        # process-wide RPM budget across the intent monitor and the
+        # decision engine — both reach the API through this method, so
+        # throttling here keeps their *combined* rate under the cap.
+        # Paid-tier models pass through untouched.
+        throttle(self.model)
+
         # Build content parts
         parts: list = [types.Part.from_text(text=prompt)]
         for img in images or []:

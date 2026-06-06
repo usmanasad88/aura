@@ -342,6 +342,17 @@ def _create_perception_monitor(task_name: str, config: dict):
         except ImportError:
             logger.warning("kettle_tea_making perception monitor not found")
             return None
+    if normalised == "milk_tea_making":
+        try:
+            from tasks.milk_tea_making.perception.milk_tea_perception_monitor import (
+                MilkTeaPerceptionMonitor,
+            )
+            # Delay-only monitor: paces the loop (~1s/frame) so ground-truth
+            # intent runs don't race through cycles. No actual detection.
+            return MilkTeaPerceptionMonitor()
+        except ImportError:
+            logger.warning("milk_tea_making perception monitor not found")
+            return None
     logger.info("No task-specific perception monitor for '%s'", task_name)
     return None
 

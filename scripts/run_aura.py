@@ -691,7 +691,7 @@ def run_launcher(dashboard_port: int = 5555) -> None:
                 gopro_lens=config.get("gopro_lens", "front"),
                 robot_url=config.get("robot_url", "http://localhost:5050"),
                 speed=config.get("speed", 1.0),
-                model=config.get("model", "gemini-3.1-pro-preview"),
+                model=config.get("model", "gemini-3.1-flash-lite-preview"),
                 dry_run=config.get("dry_run", True),
                 no_dashboard=True,  # Don't create a second dashboard
                 # Launcher UI sends "realtime" (paced playback for video);

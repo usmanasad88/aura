@@ -280,6 +280,7 @@ class TWSS:
     gamma: float
     wait_weight: float
     blip_tax_delta: float
+    end_weight: float = 1.0
     per_event: list[TWSSPerEvent] = field(default_factory=list)
 
 
@@ -330,7 +331,15 @@ def compute_twss(gt_events: list[Event],
                  beta: float = DEFAULT_TWSS_BETA,
                  gamma: float = DEFAULT_TWSS_GAMMA,
                  wait_weight: float = DEFAULT_TWSS_WAIT_WEIGHT,
-                 blip_tax_delta: float = DEFAULT_TWSS_BLIP_TAX) -> TWSS:
+                 blip_tax_delta: float = DEFAULT_TWSS_BLIP_TAX,
+                 end_weight: float = 1.0) -> TWSS:
+    # ``end_weight`` scales the end-time term of the per-event timing decay:
+    #   q_i = exp(−((Δs/σ)² + end_weight·(Δe/σ)²)).
+    # end_weight=1.0 is the original symmetric decay; end_weight=0 makes the
+    # score depend only on the *start* time (no early-stop penalty), which
+    # suits a live robot that runs each triggered skill to completion
+    # regardless of how long the LLM kept re-asserting it. Over-extension is
+    # still penalised separately through the wait-pollution term.
     """Time-Weighted Soft Schedule Score (see module-level docstring above)."""
     if gamma <= 0:
         raise ValueError(f"gamma must be positive, got {gamma}")
@@ -351,6 +360,7 @@ def compute_twss(gt_events: list[Event],
             n_gt=n_gt, n_pred=n_pred,
             alpha=alpha, beta=beta, gamma=gamma,
             wait_weight=wait_weight, blip_tax_delta=blip_tax_delta,
+            end_weight=end_weight,
             per_event=[],
         )
 
@@ -391,9 +401,9 @@ def compute_twss(gt_events: list[Event],
             ds = abs(p.start - g.start)
             de = abs(p.end - g.end)
             if sigma > 0:
-                q = math.exp(-((ds / sigma) ** 2 + (de / sigma) ** 2))
+                q = math.exp(-((ds / sigma) ** 2 + end_weight * (de / sigma) ** 2))
             else:
-                q = 1.0 if (ds == 0.0 and de == 0.0) else 0.0
+                q = 1.0 if (ds == 0.0 and (end_weight == 0.0 or de == 0.0)) else 0.0
             if q > best_q:
                 best_q = q
                 best_idx = j
@@ -481,6 +491,7 @@ def compute_twss(gt_events: list[Event],
         gamma=gamma,
         wait_weight=wait_weight,
         blip_tax_delta=blip_tax_delta,
+        end_weight=end_weight,
         per_event=per_event,
     )
 

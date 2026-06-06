@@ -26,7 +26,7 @@
       "trigger_field": "stove_on",
       "trigger_condition": true,
       "active_phases": ["heating", "brewing"],
-      "warning_message": "Warning: the stove is on. Keep hands clear of the hot saucepan."
+      "warning_message": "Warning: the gas stove is lit. Keep hands clear of the open flame and the hot saucepan."
     },
     {
       "trigger_field": "milk_boiling",
@@ -52,7 +52,7 @@
     }
   ],
   "workflow_config": {
-    "active_monitors": ["intent"],
+    "active_monitors": ["intent", "perception"],
     "decision_mode": "hybrid",
     "graph_topology": "sense_decide_act",
     "predict_interval_sec": 3.0,

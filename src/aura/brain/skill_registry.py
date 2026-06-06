@@ -202,9 +202,16 @@ class SkillRegistry:
         return list(self._skills.keys())
     
     def get_skills_for_llm(self) -> str:
-        """Generate skill descriptions for LLM context."""
+        """Generate skill descriptions for LLM context.
+
+        Emits the full skill specification — description, each parameter
+        with its type, description, whether it is required, its default
+        and (crucially) its allowed values, plus preconditions and
+        effects — so the LLM knows exactly how to invoke each skill and
+        which argument values are valid.
+        """
         lines = ["## Available Robot Skills\n"]
-        
+
         for category in sorted(self._categories.keys()):
             lines.append(f"### {category.title()}\n")
             for skill_id in self._categories[category]:
@@ -212,13 +219,28 @@ class SkillRegistry:
                 lines.append(f"**{skill.name}** (`{skill.id}`)")
                 lines.append(f"  {skill.description}")
                 if skill.parameters:
-                    params = ", ".join([
-                        f"{p.name}: {p.type}" + ("*" if p.required else "")
-                        for p in skill.parameters
-                    ])
-                    lines.append(f"  Parameters: {params}")
+                    lines.append("  Parameters:")
+                    for p in skill.parameters:
+                        req = "required" if p.required else "optional"
+                        detail = f"    - `{p.name}` ({p.type}, {req})"
+                        if p.description:
+                            detail += f": {p.description}"
+                        lines.append(detail)
+                        if p.valid_values:
+                            allowed = ", ".join(str(v) for v in p.valid_values)
+                            lines.append(f"        allowed values: {allowed}")
+                        if not p.required and p.default is not None:
+                            lines.append(f"        default: {p.default}")
+                if skill.preconditions:
+                    lines.append(
+                        f"  Preconditions: {json.dumps(skill.preconditions, default=str)}"
+                    )
+                if skill.effects:
+                    lines.append(
+                        f"  Effects: {json.dumps(skill.effects, default=str)}"
+                    )
                 lines.append("")
-        
+
         return "\n".join(lines)
     
     def load_from_file(self, path: str) -> int:

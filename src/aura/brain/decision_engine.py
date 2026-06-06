@@ -466,6 +466,11 @@ class DecisionEngine:
         # Run the async LLM-fallback through the BT's sync bridge.
         self._bt_pending_current_time = current_time_sec or 0.0
 
+        # Expose the captured frame on the BT context so the LLM-fallback
+        # hook (which reads ctx.current_frame) can forward it to the VLM.
+        if self._bt_ctx is not None:
+            self._bt_ctx.current_frame = current_frame
+
         t0 = time.monotonic()
         prediction, reasoning, llm_invoked = self._bt_policy.tick(
             current_time_sec=current_time_sec or 0.0,
@@ -631,9 +636,63 @@ class DecisionEngine:
         skills_desc = self.skills.get_skills_for_llm()
 
         task_instruction = self.config.task_system_instruction
-        
+
         INCLUDE_RECENT_ACTIONS = False
         recent_actions_str = f"\n## Recent Robot Actions\n{self._format_recent_decisions()}\n" if INCLUDE_RECENT_ACTIONS else ""
+
+        # Gather the images to attach (current frame and/or anchor image) and,
+        # in lock-step, collect a short label for each so the prompt can name
+        # them in order — mirroring how AURAIntentMonitor tells the VLM what
+        # each attached image is instead of sending bare pixels.
+        task_profile = getattr(self, "_task_profile", {}) or {}
+        images_to_pass = []
+        image_descriptions = []
+
+        # 1) The most recent captured frame.
+        if task_profile.get("workflow_config", {}).get("pass_captured_frame_to_vlm", True) and current_frame is not None:
+            # We assume current_frame is an np.ndarray (OpenCV format) or PIL Image.
+            # Convert to PIL Image for the llm_client
+            try:
+                import numpy as np
+                from PIL import Image
+                if isinstance(current_frame, np.ndarray):
+                    # usually BGR from cv2, convert to RGB
+                    import cv2
+                    rgb_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2RGB)
+                    images_to_pass.append(Image.fromarray(rgb_frame))
+                    image_descriptions.append("the most recent frame")
+                elif isinstance(current_frame, Image.Image):
+                    images_to_pass.append(current_frame)
+                    image_descriptions.append("the most recent frame")
+            except Exception as e:
+                logger.warning(f"Engine: Failed to parse current_frame for LLM: {e}")
+
+        # 2) The static anchor image of the workspace.
+        anchor_cfg = task_profile.get("anchor_image", {})
+        if anchor_cfg.get("enabled", False) and anchor_cfg.get("path"):
+            try:
+                from PIL import Image
+                import os
+                # Path relative to workspace or absolute
+                anchor_path = anchor_cfg["path"]
+                if os.path.exists(anchor_path):
+                    images_to_pass.append(Image.open(anchor_path).convert("RGB"))
+                    image_descriptions.append(
+                        anchor_cfg.get("description", "").strip() or "a static anchor reference of the workspace"
+                    )
+                else:
+                    logger.warning(f"Engine: Anchor image {anchor_path} not found.")
+            except Exception as e:
+                logger.warning(f"Engine: Failed to load anchor image for LLM: {e}")
+
+        # Build a prompt section naming each attached image in order.
+        if image_descriptions:
+            lines = ["## Attached Images"]
+            for i, desc in enumerate(image_descriptions):
+                lines.append(f"- Image {i + 1}: {desc}")
+            image_section = "\n".join(lines) + "\n\n"
+        else:
+            image_section = ""
 
         prompt = f"""You are a proactive robot assistant helping a human with a task.
 Your goal is to anticipate what the human needs and provide timely assistance.
@@ -645,7 +704,7 @@ Your goal is to anticipate what the human needs and provide timely assistance.
 ```json
 {self.task_graph_string}
 ```
-{scene_state}
+{image_section}{scene_state}
 
 {skills_desc}
 
@@ -686,42 +745,6 @@ Respond with ONLY the JSON object, no other text."""
             "json_mode": True,
             "max_tokens": self.config.max_completion_tokens,
         }
-
-        # Check if we should pass the captured frame and/or the anchor image
-        task_profile = getattr(self, "_task_profile", {}) or {}
-        images_to_pass = []
-        if task_profile.get("workflow_config", {}).get("pass_captured_frame_to_vlm", True) and current_frame is not None:
-            # We assume current_frame is an np.ndarray (OpenCV format) or PIL Image.
-            # Convert to PIL Image for the llm_client
-            try:
-                import numpy as np
-                from PIL import Image
-                if isinstance(current_frame, np.ndarray):
-                    # usually BGR from cv2, convert to RGB
-                    import cv2
-                    rgb_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2RGB)
-                    pil_img = Image.fromarray(rgb_frame)
-                    images_to_pass.append(pil_img)
-                elif isinstance(current_frame, Image.Image):
-                    images_to_pass.append(current_frame)
-            except Exception as e:
-                logger.warning(f"Engine: Failed to parse current_frame for LLM: {e}")
-
-        # Check if anchor image should be passed
-        anchor_cfg = task_profile.get("anchor_image", {})
-        if anchor_cfg.get("enabled", False) and anchor_cfg.get("path"):
-            try:
-                from PIL import Image
-                import os
-                # Path relative to workspace or absolute
-                anchor_path = anchor_cfg["path"]
-                if os.path.exists(anchor_path):
-                    anchor_img = Image.open(anchor_path).convert("RGB")
-                    images_to_pass.append(anchor_img)
-                else:
-                    logger.warning(f"Engine: Anchor image {anchor_path} not found.")
-            except Exception as e:
-                logger.warning(f"Engine: Failed to load anchor image for LLM: {e}")
 
         if images_to_pass:
             generate_kwargs["images"] = images_to_pass
