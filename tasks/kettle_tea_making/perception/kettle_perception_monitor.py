@@ -1,9 +1,9 @@
 """Task-specific perception monitor for the kettle tea-making task.
 
-Locates the key tea-making items in each frame and reports which table each
-one is on: the **storage area** (the table holding the blue basket) or the
-**working area** (the table holding the kettle).  An item on neither table is
-reported as ``other``.
+Locates the key tea-making items in each frame and reports where each one
+is: the **storage area** (the **blue basket** itself, padded on all sides) or
+the **working area** (the table holding the kettle).  An item in neither
+region is reported as ``other``.
 
 Every item is directly identifiable by a distinctive visual prompt, so each
 SAM3 text prompt maps 1:1 to a semantic item — no cross-frame identity
@@ -15,23 +15,22 @@ tracking is needed for the items:
 * biscuits     → ``"red biscuit packet"``
 * powdered milk→ ``"container with a light blue cap"``
 
-The two tables are disambiguated each frame using marker prompts:
+The regions are resolved from these prompts:
 
-* ``"table"``        → the two work surfaces (up to 2 detections kept)
-* ``"blue basket"``  → marks the **storage** table
-* ``"kettle"``       → marks the **working** table
+* ``"blue basket"``  → the **storage area** itself, padded on all sides
+* ``"table"``        → the work surfaces (up to a few detections kept)
+* ``"kettle"``       → marks the **working** table among the detected tables
 
-Table identity is registered **once** — the first frame on which the markers
-disambiguate both tables (the table overlapping the basket is storage; the one
-overlapping the kettle is working) — then frozen and reused for the rest of the
-run.  Because the setup is static, locking the geometry as well as the
-designation makes the regions immune to later occlusion: the kettle covering
-part of the working table, or a marker briefly vanishing, can no longer flip
-which table is which.
+Region identity is registered **once** — the first frame on which the basket
+(storage) and the kettle-bearing table (working) are both resolved — then
+frozen and reused for the rest of the run.  Because the setup is static,
+locking the geometry as well as the designation makes the regions immune to
+later occlusion: the kettle covering part of the working table, or a marker
+briefly vanishing, can no longer change the regions.
 
 Location decision for each item (priority order):
 
-1. Mask overlap / bbox containment with the **storage** table → ``storage_area``.
+1. Mask overlap / bbox containment with the **padded basket** → ``storage_area``.
 2. Mask overlap / bbox containment with the **working** table → ``working_area``.
 3. Otherwise                                                   → ``other``.
 
@@ -69,11 +68,14 @@ OTHER_REGION = "other"
 TABLE_PROMPT = "table"
 STORAGE_MARKER_PROMPT = "blue basket"   # marks the storage table
 WORKING_MARKER_PROMPT = "kettle"        # marks the working table
+KETTLE_LID_PROMPT = "kettle lid"        # open/closed inferred vs kettle bbox
 
 # Semantic item id → SAM3 text prompt.  The ids match the ``*_location``
 # state-schema variables so downstream nodes can write them directly.
 ITEM_PROMPTS: Dict[str, str] = {
-    "tea_bag": "container with a red cap",
+    # Tea-bag container: uncomment the line matching the physical setup.
+    "tea_bag": "container with a red cap",        # closed container, red lid
+    # "tea_bag": "open container with no lid",    # open / lidless container
     "cup": "paper cup",
     "water_bottle": "water bottle",
     "biscuits": "red biscuit packet",
@@ -92,8 +94,17 @@ class KettlePerceptionConfig:
     table_prompt: str = TABLE_PROMPT
     storage_marker_prompt: str = STORAGE_MARKER_PROMPT
     working_marker_prompt: str = WORKING_MARKER_PROMPT
+    kettle_lid_prompt: str = KETTLE_LID_PROMPT
+
+    # The storage area is the blue basket grown by this fraction of its bbox
+    # size on every side (0.2 → +20% left/right/top/bottom).
+    storage_padding_frac: float = 0.2
 
     confidence_threshold: float = 0.25
+    # Kettle-lid open/closed: ``lid_area / kettle_bbox_area``.  The lid is
+    # hinged, so opening it tilts the lid up and enlarges the kettle bbox,
+    # lowering the ratio.  ratio >= threshold → CLOSED, below → OPEN.
+    lid_closed_area_ratio: float = 0.10
     # Minimum fraction of an item's mask overlapping a table to assign it.
     overlap_threshold: float = 0.05
     # Minimum fraction of a marker's mask overlapping a table to bind them.
@@ -108,7 +119,7 @@ class KettlePerceptionConfig:
     def all_prompts(self) -> List[str]:
         """All distinct SAM3 prompts (regions + markers + items)."""
         prompts = [self.table_prompt, self.storage_marker_prompt,
-                   self.working_marker_prompt]
+                   self.working_marker_prompt, self.kettle_lid_prompt]
         prompts.extend(self.item_prompts.values())
         seen: set = set()
         out: List[str] = []
@@ -123,9 +134,10 @@ class KettlePerceptionMonitor:
     """Perception monitor that locates tea-making items for the kettle task.
 
     Wraps ``PerceptionModule`` (composition) with item-specific SAM3 prompts.
-    Two tables are disambiguated once with the blue-basket (storage) and
-    kettle (working) markers, then the regions are frozen and reused; each
-    item is assigned to whichever locked table it overlaps.
+    The storage area is the blue basket (padded on all sides); the working
+    area is the table the kettle overlaps.  Both regions are resolved once,
+    frozen, and reused; each item is assigned to whichever locked region it
+    overlaps.
     """
 
     def __init__(self, config: Optional[KettlePerceptionConfig] = None) -> None:
@@ -133,12 +145,12 @@ class KettlePerceptionMonitor:
         self._perception = self._build_perception_module()
         self._call_count = 0
 
-        # Table regions are registered ONCE — the first frame on which the
-        # blue-basket / kettle markers disambiguate both tables — then frozen
-        # and reused.  The setup is static, so locking the geometry as well as
-        # the designation makes the regions immune to later occlusion (e.g.
-        # the kettle covering part of the working table).  Maps region →
-        # frozen table ``TrackedObject``.
+        # Regions are registered ONCE — the first frame on which the basket
+        # (storage) and the kettle-bearing table (working) both resolve — then
+        # frozen and reused.  The setup is static, so locking the geometry as
+        # well as the designation makes the regions immune to later occlusion
+        # (e.g. the kettle covering part of the working table).  Maps region →
+        # frozen ``TrackedObject``.
         self._locked_regions: Optional[Dict[str, Any]] = None
 
     # ── Construction helpers ─────────────────────────────────────────
@@ -206,7 +218,11 @@ class KettlePerceptionMonitor:
         # ── Reference markers + candidate tables ─────────────────────
         basket = self._top(detections.get(self.config.storage_marker_prompt))
         kettle = self._top(detections.get(self.config.working_marker_prompt))
-        tables = detections.get(self.config.table_prompt, [])[:2]
+        lid = self._top(detections.get(self.config.kettle_lid_prompt))
+        tables = detections.get(self.config.table_prompt, [])[:6]
+
+        # ── Kettle lid open/closed ───────────────────────────────────
+        lid_open, lid_ratio = self._lid_state(lid, kettle)
 
         # ── Resolve / track the two table regions ────────────────────
         region_objs = self._resolve_tables(tables, basket, kettle)
@@ -226,11 +242,26 @@ class KettlePerceptionMonitor:
             else:
                 item_locations[item_id] = self._classify_location(obj, regions)
 
+        # State-schema variables this monitor owns, mirrored into the SSG.
+        # ``run_perception_node`` only propagates the ``task_state`` dict to
+        # ``ssg.set_task_state`` — arbitrary top-level result keys are ignored —
+        # so anything that must reach the decision engine goes in here.
+        task_state: Dict[str, Any] = {
+            f"{item_id}_location": loc
+            for item_id, loc in item_locations.items()
+        }
+        if lid_open is not None:
+            task_state["lid_open"] = lid_open
+
         result: Dict[str, Any] = {
             "item_locations": item_locations,
+            "task_state": task_state,
+            "lid_open": lid_open,
+            "lid_area_ratio": lid_ratio,
             "regions": regions,
             "markers": {self.config.storage_marker_prompt: basket,
-                        self.config.working_marker_prompt: kettle},
+                        self.config.working_marker_prompt: kettle,
+                        self.config.kettle_lid_prompt: lid},
             "items": items,
             "tracked_objects": output.objects,
             "detections": {
@@ -257,39 +288,32 @@ class KettlePerceptionMonitor:
         basket: Optional[Any],
         kettle: Optional[Any],
     ) -> Dict[str, Optional[Any]]:
-        """Return ``{region: table_obj}`` for the two tables.
+        """Return ``{region: obj}`` for the storage and working regions.
 
-        The regions are registered exactly once — the first frame on which the
-        markers disambiguate both tables — then frozen and reused for the rest
-        of the run.  This is the fix for occlusion: once the working table is
-        known, the kettle covering part of it (or a marker briefly vanishing)
-        can no longer flip the designation.
+        The storage region is the **blue basket** grown by
+        ``storage_padding_frac`` on every side; the working region is the
+        table the **kettle** overlaps most.  Both are registered exactly once —
+        the first frame on which they both resolve — then frozen and reused for
+        the rest of the run.  This is the fix for occlusion: once the regions
+        are known, the kettle covering part of the working table (or a marker
+        briefly vanishing) can no longer change them.
         """
         if self._locked_regions is not None:
             return self._locked_regions
 
-        if not tables:
-            return {}
+        # Storage IS the blue basket (padded), not the table under it.
+        storage = self._pad_object(basket)
+        # Working is the table the kettle overlaps most.
+        working = self._working_table(tables, kettle)
 
-        # Not locked yet — try to disambiguate with the markers.
-        marker_map = self._identify_tables_by_markers(tables, basket, kettle)
-        if not marker_map:
-            return {}
+        region_objs = {STORAGE_REGION: storage, WORKING_REGION: working}
 
-        region_objs = {region: tables[idx]
-                       for idx, region in marker_map.items()}
-        # Backfill the other region (2-table case) if a marker was missed.
-        region_objs = self._fill_missing_regions(region_objs, tables)
-
-        # Lock only once BOTH regions resolve to distinct tables.
-        storage = region_objs.get(STORAGE_REGION)
-        working = region_objs.get(WORKING_REGION)
-        if storage is not None and working is not None and storage is not working:
-            self._locked_regions = {STORAGE_REGION: storage,
-                                    WORKING_REGION: working}
+        # Lock only once BOTH regions resolve.
+        if storage is not None and working is not None:
+            self._locked_regions = region_objs
             logger.info(
-                "Table regions registered (locked): storage_area bbox=%s, "
-                "working_area bbox=%s",
+                "Regions registered (locked): storage_area (padded basket) "
+                "bbox=%s, working_area bbox=%s",
                 self._bbox_tuple(storage), self._bbox_tuple(working),
             )
             return self._locked_regions
@@ -297,68 +321,50 @@ class KettlePerceptionMonitor:
         # Partial resolution — show what we have, keep trying next frame.
         return region_objs
 
-    def _identify_tables_by_markers(
-        self,
-        tables: list,
-        basket: Optional[Any],
-        kettle: Optional[Any],
-    ) -> Dict[int, str]:
-        """Map ``table_idx → region`` using the basket / kettle markers.
-
-        Returns ``{}`` when neither marker gives any signal.
-        """
-        storage_scores = [self._containment_score(basket, t) for t in tables]
-        working_scores = [self._containment_score(kettle, t) for t in tables]
-
-        has_storage = basket is not None and max(storage_scores) > 0
-        has_working = kettle is not None and max(working_scores) > 0
-        if not has_storage and not has_working:
-            return {}
-
-        storage_idx = (int(np.argmax(storage_scores))
-                       if has_storage else None)
-        working_idx = (int(np.argmax(working_scores))
-                       if has_working else None)
-
-        # Resolve a conflict where both markers picked the same table.
-        if (storage_idx is not None and storage_idx == working_idx):
-            if storage_scores[storage_idx] >= working_scores[working_idx]:
-                working_idx = self._other_index(storage_idx, len(tables))
-            else:
-                storage_idx = self._other_index(working_idx, len(tables))
-
-        # If only one marker was seen, infer the other table (2-table case).
-        if storage_idx is None and working_idx is not None:
-            storage_idx = self._other_index(working_idx, len(tables))
-        if working_idx is None and storage_idx is not None:
-            working_idx = self._other_index(storage_idx, len(tables))
-
-        mapping: Dict[int, str] = {}
-        if storage_idx is not None:
-            mapping[storage_idx] = STORAGE_REGION
-        if working_idx is not None and working_idx != storage_idx:
-            mapping[working_idx] = WORKING_REGION
-        return mapping
-
-    @staticmethod
-    def _other_index(idx: Optional[int], n: int) -> Optional[int]:
-        """The other table index in a 2-table layout, else None."""
-        if idx is None or n < 2:
+    def _working_table(
+        self, tables: list, kettle: Optional[Any],
+    ) -> Optional[Any]:
+        """The table the kettle overlaps most; the sole table as a fallback."""
+        if not tables:
             return None
-        return 1 - idx if n == 2 else None
+        scores = [self._containment_score(kettle, t) for t in tables]
+        if kettle is not None and max(scores) > 0:
+            return tables[int(np.argmax(scores))]
+        # No kettle signal — only commit if there's a single unambiguous table.
+        if len(tables) == 1:
+            return tables[0]
+        return None
 
-    def _fill_missing_regions(
-        self,
-        region_objs: Dict[str, Optional[Any]],
-        tables: list,
-    ) -> Dict[str, Optional[Any]]:
-        """Assign any leftover table to a region the markers didn't cover."""
-        used = {id(o) for o in region_objs.values() if o is not None}
-        leftovers = [t for t in tables if id(t) not in used]
-        for region in (STORAGE_REGION, WORKING_REGION):
-            if region not in region_objs and leftovers:
-                region_objs[region] = leftovers.pop(0)
-        return region_objs
+    def _pad_object(self, obj: Optional[Any]) -> Optional[Any]:
+        """Return a copy of *obj* grown by ``storage_padding_frac`` per side.
+
+        Both the bbox and (if present) the mask are padded so downstream
+        overlap and centroid-containment checks see the enlarged region.
+        """
+        if obj is None or obj.bbox is None:
+            return obj
+        from aura.core.types import BoundingBox, TrackedObject
+
+        b = obj.bbox
+        pad_x = int(round((b.x_max - b.x_min) * self.config.storage_padding_frac))
+        pad_y = int(round((b.y_max - b.y_min) * self.config.storage_padding_frac))
+        padded_bbox = BoundingBox(
+            x_min=b.x_min - pad_x, y_min=b.y_min - pad_y,
+            x_max=b.x_max + pad_x, y_max=b.y_max + pad_y,
+        )
+
+        padded_mask = obj.mask
+        if obj.mask is not None and max(pad_x, pad_y) > 0:
+            k = max(pad_x, pad_y)
+            kernel = np.ones((2 * k + 1, 2 * k + 1), np.uint8)
+            padded_mask = cv2.dilate(obj.mask.astype(np.uint8), kernel) > 0
+
+        return TrackedObject(
+            id=obj.id, name=STORAGE_REGION, category=obj.category,
+            pose=obj.pose, bbox=padded_bbox, mask=padded_mask,
+            confidence=obj.confidence, last_seen=obj.last_seen,
+            velocity=obj.velocity, metadata=dict(obj.metadata),
+        )
 
     def _containment_score(
         self, marker: Optional[Any], table: Optional[Any],
@@ -396,6 +402,37 @@ class KettlePerceptionMonitor:
             return None
         b = obj.bbox
         return (int(b.x_min), int(b.y_min), int(b.x_max), int(b.y_max))
+
+    # ── Kettle lid open/closed ────────────────────────────────────────
+
+    def _lid_state(
+        self, lid: Optional[Any], kettle: Optional[Any],
+    ) -> Tuple[Optional[bool], float]:
+        """Infer kettle-lid open/closed from ``lid_area / kettle_bbox_area``.
+
+        The lid is hinged: opening it tilts the lid up, which enlarges the
+        ``kettle`` detection's bbox and so LOWERS the ratio.  Hence
+        ``ratio >= lid_closed_area_ratio`` → CLOSED, below → OPEN.
+
+        Returns ``(is_open, ratio)``; ``is_open`` is None when the lid (or
+        kettle body) isn't detected this frame.
+        """
+        if lid is None or kettle is None or kettle.bbox is None:
+            return None, 0.0
+
+        lmask = getattr(lid, "mask", None)
+        if lmask is not None and int(lmask.sum()) > 0:
+            lid_area = int(lmask.sum())
+        elif lid.bbox is not None:
+            lb = lid.bbox
+            lid_area = max(0, (lb.x_max - lb.x_min) * (lb.y_max - lb.y_min))
+        else:
+            return None, 0.0
+
+        kb = kettle.bbox
+        kettle_area = max(1, (kb.x_max - kb.x_min) * (kb.y_max - kb.y_min))
+        ratio = lid_area / kettle_area
+        return ratio < self.config.lid_closed_area_ratio, ratio
 
     # ── Item location classifier ──────────────────────────────────────
 

@@ -165,6 +165,31 @@ def _apply_skill_effect(ssg: "SemanticSceneGraph", key: str, value: Any) -> None
         ssg.set_task_state(key, value)
 
 
+def resolve_source_mode(config: Dict[str, Any]) -> str:
+    """Classify the frame source into one of three run modes.
+
+    - ``"offline_eval"``     — a video file processed as fast as possible
+      (``VideoFileSource``): the buffer is already decimated at source,
+      intent is **blocking**, and the full context is used. Selected by
+      ``offline_realtime=False`` together with a ``video_path``.
+    - ``"offline_realtime"`` — a video file paced at wall-clock speed
+      (``RealtimeVideoSource``): raw buffer, **non-blocking** intent, and a
+      *reduced* context (fewer/smaller frames → faster inference) so the
+      predictions keep up with playback. This is what ``offline_realtime``
+      actually means; it is the default for video files.
+    - ``"live"``             — webcam / screen / GoPro: raw buffer,
+      **non-blocking** intent, but *full* context and a relaxed dispatch
+      gate so intent stays responsive for live commands.
+
+    The ``offline_realtime`` flag only ever distinguishes the two offline
+    video paths; it has no effect on live sources, which are continuous by
+    nature.
+    """
+    if config.get("video_path"):
+        return "offline_realtime" if config.get("offline_realtime", True) else "offline_eval"
+    return "live"
+
+
 def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
     from aura.monitors.intent_monitor import AURAIntentMonitor
 
@@ -182,7 +207,9 @@ def _get_intent_monitor(state: AuraGraphState) -> "AURAIntentMonitor":
             config_dir=config_dir,
             model=intent_model,
             max_frames=int(config.get("intent_num_frames", 5)),
-            realtime=config.get("realtime", True),
+            # Only the offline-realtime mode trims context for speed; live and
+            # offline-eval keep the full frame count / resolution.
+            realtime=resolve_source_mode(config) == "offline_realtime",
             enable_logging=True,
             log_dir=intent_log_dir,
             llm_backend=intent_backend,
@@ -425,7 +452,7 @@ def _get_video_source(state: AuraGraphState):
     config = state.get("config", {})
     video_path = config.get("video_path")
     webcam_device = config.get("webcam_device")
-    realtime = config.get("realtime", True)
+    mode = resolve_source_mode(config)
 
     gopro_stream = config.get("gopro_stream", False)
     gopro_ip = config.get("gopro_ip", "172.29.170.51")
@@ -455,7 +482,7 @@ def _get_video_source(state: AuraGraphState):
             source = WebcamSource(device=webcam_device)
         elif video_path is None:
             raise ValueError("video_path must be set when webcam_device is not provided")
-        elif realtime:
+        elif mode == "offline_realtime":
             from aura.sources.realtime_video import RealtimeVideoSource
             source = RealtimeVideoSource(
                 path=video_path,
@@ -843,10 +870,21 @@ def run_perception_node(state: AuraGraphState) -> dict:
         for k, v in perception_task_state.items():
             ssg.set_task_state(k, v)
 
-    return {
+    # Render the annotated visualization (regions, markers, item bboxes/labels)
+    # so the dashboard can show what the monitor detected. Kept out of
+    # ``monitor_outputs`` to avoid serialising the numpy image into the SSE
+    # stream; the runner pops ``perception_vis`` and feeds it to set_frame.
+    out: Dict[str, Any] = {
         "object_locations": obj_locs,
         "monitor_outputs": {"perception": result},
     }
+    if hasattr(monitor, "visualize"):
+        try:
+            out["perception_vis"] = monitor.visualize(latest_frame, result)
+        except Exception as e:  # visualization must never break the loop
+            logger.debug("Perception visualize failed: %s", e)
+
+    return out
 
 
 _POSE_FAIL_LIMIT = 2  # after this many consecutive failures, stop invoking
@@ -1056,10 +1094,10 @@ def run_intent_node(state: AuraGraphState) -> dict:
        to the shared slot (consumed by ``update_ssg_node``).
     2. If no call is currently in flight and the gate + min-interval
        throttle agree, samples frames and dispatches a new ``predict()``.
-    3. In **realtime** mode (default) returns immediately — the fast loop
-       continues while the VLM thinks; the result lands a few cycles later
-       via the slot and ``update_ssg_node``.
-    4. In **eval** mode (``config["intent_blocking"]=True``) blocks on the
+    3. In **live** / **offline-realtime** mode (default) returns immediately
+       — the fast loop continues while the VLM thinks; the result lands a few
+       cycles later via the slot and ``update_ssg_node``.
+    4. In **offline-eval** mode (``config["intent_blocking"]=True``) blocks on the
        in-flight future before returning, so every cycle has a fresh
        prediction. Same code path; the only difference is the wait.
 
@@ -1071,8 +1109,13 @@ def run_intent_node(state: AuraGraphState) -> dict:
 
     config = state.get("config", {}) or {}
     key = config.get("config_dir", "default")
-    realtime = bool(config.get("realtime", True))
-    blocking = bool(config.get("intent_blocking", not realtime))
+    mode = resolve_source_mode(config)
+    offline_realtime = mode == "offline_realtime"
+    offline_eval = mode == "offline_eval"
+    is_live = mode == "live"
+    # Block only in offline-eval (every cycle needs a fresh prediction);
+    # offline-realtime and live both dispatch in the background.
+    blocking = bool(config.get("intent_blocking", offline_eval))
 
     # ── Ground-truth short-circuit ─────────────────────────────────
     # When ``intent_source == "ground_truth"``, skip the VLM entirely
@@ -1127,7 +1170,10 @@ def run_intent_node(state: AuraGraphState) -> dict:
             last_ts = _intent_last_dispatch.get(key, 0.0)
             num_frames = int(config.get("intent_num_frames", 5))
             intent_backend = config.get("intent_backend") or config.get("llm_backend", "gemini")
-            if realtime:
+            # Offline-realtime trims the window for faster inference so
+            # predictions keep up with playback. Live keeps the full window so
+            # commands aren't starved; offline-eval keeps it for accuracy.
+            if offline_realtime:
                 num_frames = min(num_frames, 3)
             if intent_backend == "sglang":
                 num_frames = min(num_frames, 2)
@@ -1144,7 +1190,16 @@ def run_intent_node(state: AuraGraphState) -> dict:
                 wait_s = min_interval - (now - last_ts)
                 time.sleep(wait_s)
                 now = time.monotonic()
-            if last_fn is not None and (cur_fn - last_fn) < stride:
+            # Live mode skips the frame-stride throttle: we want intent to
+            # re-fire as soon as the previous call returns (overlapping
+            # windows are fine), instead of waiting for ``num_frames *
+            # frame_skip`` new frames. The throttle still applies to the
+            # offline modes so each frame is sent to the VLM at most once.
+            if (
+                not is_live
+                and last_fn is not None
+                and (cur_fn - last_fn) < stride
+            ):
                 skip_reason = (
                     f"frame stride ({cur_fn - last_fn} < {stride}; "
                     f"each frame sent to VLM at most once)"
@@ -1156,7 +1211,7 @@ def run_intent_node(state: AuraGraphState) -> dict:
                     state.get("frames_buffer_timestamps") or [],
                     n=num_frames,
                     frame_skip=frame_skip,
-                    realtime=realtime,
+                    redecimate=not offline_eval,
                 )
                 if not frames:
                     skip_reason = "no frames sampled"

@@ -28,7 +28,10 @@ Usage::
 
     # Also save an output video
     uv run python tasks/kettle_tea_making/demo/run_perception_demo.py --video /home/mani/Repos/aura/demo_data/kettle_tea_making/perception_demo_video.mp4 --frame-skip 30 --save output_vis.mp4
+    uv run python tasks/kettle_tea_making/demo/run_perception_demo.py --video /home/mani/Repos/aura/demo_data/kettle_tea_making/kettle_tea_making_2.mp4 --frame-skip 30 --save output_vis.mp4
+
 """
+
 
 from __future__ import annotations
 
@@ -141,6 +144,45 @@ def _ensure_numpy_masks(result: dict) -> None:
             obj.mask = np.ascontiguousarray(m, dtype=np.uint8)
 
 
+# ── Kettle lid open/closed (prototype) ───────────────────────────────
+
+def _lid_open(result: dict, closed_area_ratio: float = 0.10):
+    """Infer kettle lid open/closed from the lid area vs kettle bbox area.
+
+    The lid is hinged (not removed).  When it tilts OPEN the "kettle"
+    detection grows to include the raised lid, enlarging the kettle bbox and
+    so LOWERING ``lid_area / kettle_bbox_area``.  When CLOSED the kettle is
+    compact (smaller bbox) and the ratio is higher.
+
+      ratio >= closed_area_ratio  → CLOSED
+      ratio <  closed_area_ratio  → OPEN
+
+    Returns ``(is_open, ratio)``; ``is_open`` is None when the lid isn't
+    detected this frame.
+    """
+    lid = result.get("items", {}).get("kettle lid")
+    kettle = result.get("markers", {}).get("kettle")
+    if lid is None:
+        return None, 0.0
+    if kettle is None or kettle.bbox is None:
+        return None, 0.0
+
+    lmask = getattr(lid, "mask", None)
+    if lmask is not None and int(lmask.sum()) > 0:
+        lid_area = int(lmask.sum())
+    elif lid.bbox is not None:
+        lb = lid.bbox
+        lid_area = max(0, (lb.x_max - lb.x_min) * (lb.y_max - lb.y_min))
+    else:
+        return None, 0.0
+
+    kb = kettle.bbox
+    kettle_area = max(1, (kb.x_max - kb.x_min) * (kb.y_max - kb.y_min))
+    ratio = lid_area / kettle_area
+
+    return ratio < closed_area_ratio, ratio
+
+
 # ── Main loop ────────────────────────────────────────────────────────
 
 def run_demo(
@@ -150,6 +192,7 @@ def run_demo(
     save_path: str | None = None,
 ) -> None:
     config = KettlePerceptionConfig()
+    config.item_prompts["kettle lid"] = "kettle lid"
     monitor = KettlePerceptionMonitor(config=config)
 
     cap = cv2.VideoCapture(video_path)
@@ -232,11 +275,24 @@ def run_demo(
 
             _ensure_numpy_masks(result)
 
+            lid_open, lid_ratio = _lid_open(result)
+            logger.info("  kettle lid: open=%s (area_ratio=%.3f)",
+                        lid_open, lid_ratio)
+
             try:
                 vis = monitor.visualize(frame, result)
             except Exception as e:
                 logger.warning("Visualize error: %s", e)
                 vis = frame.copy()
+
+            # Kettle lid state banner (top-centre).
+            lid_txt = ("LID: ?" if lid_open is None
+                       else f"LID: {'OPEN' if lid_open else 'CLOSED'}"
+                            f" ({lid_ratio:.3f})")
+            lid_col = ((128, 128, 128) if lid_open is None
+                       else (0, 0, 255) if lid_open else (0, 200, 0))
+            cv2.putText(vis, lid_txt, (w // 2 - 90, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, lid_col, 2)
 
             # Add timing bar at bottom.
             info = (f"Frame {frame_num} | {timestamp:.1f}s | "
@@ -253,6 +309,8 @@ def run_demo(
                 "timestamp": round(timestamp, 3),
                 "processing_time": round(dt, 4),
                 "item_locations": locs,
+                "lid_open": lid_open,
+                "lid_area_ratio": round(lid_ratio, 4),
                 "detections": det_counts,
             }
             results_file.write(json.dumps(record) + "\n")

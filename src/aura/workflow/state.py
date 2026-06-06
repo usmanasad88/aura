@@ -83,7 +83,7 @@ class WorkflowConfig(TypedDict, total=False):
     max_frames: Optional[int]
     frame_skip: int
     use_ground_truth_robot_status: bool
-    realtime: bool
+    offline_realtime: bool     # video file: paced playback vs as-fast-as-possible
     frame_buffer_size: int
     intent_num_frames: int
     pose_server_endpoint: str
@@ -140,6 +140,10 @@ class AuraGraphState(TypedDict, total=False):
     # avoids LangGraph's concurrent-update error when other branches also
     # produce state deltas in the same fan-in superstep.
     object_locations: Annotated[Dict[str, str], _merge_dicts]
+    # Annotated frame rendered by run_perception (monitor.visualize) for the
+    # dashboard. Numpy BGR image; consumed by the runner's set_frame and popped
+    # before publishing so it never hits the SSE JSON.
+    perception_vis: Annotated[Optional[Any], _take_latest]
 
     # ── workflow control ───────────────────────────────────────────────
     is_complete: Annotated[bool, _take_latest]

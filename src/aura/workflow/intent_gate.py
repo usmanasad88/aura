@@ -85,7 +85,7 @@ def sample_intent_frames(
     *,
     n: int,
     frame_skip: int,
-    realtime: bool,
+    redecimate: bool,
 ) -> Tuple[List[Any], List[int], List[float]]:
     """Pick up to ``n`` frames from the buffer for the intent prompt.
 
@@ -99,11 +99,12 @@ def sample_intent_frames(
     frame_skip:
         Target spacing between selected frames, measured in **source frame
         numbers** (not buffer indices).
-    realtime:
-        When False, the source is a pre-recorded video file — decimation
-        already happened at source open time, so the buffer is uniform and
+    redecimate:
+        When False, the buffer was already frame-skip-decimated at source
+        open time (offline-eval / ``VideoFileSource``), so it is uniform and
         we just take the tail. When True, the source delivers every raw
-        frame and we must re-decimate by ``frame_skip``.
+        frame (offline-realtime and live) and we must re-decimate by
+        ``frame_skip``.
 
     Returns
     -------
@@ -122,11 +123,12 @@ def sample_intent_frames(
     frame_nums = list(frame_nums)[-count:]
     timestamps = list(timestamps)[-count:]
 
-    if not realtime:
-        # Video file: buffer is already frame-skip-decimated at source.
+    if not redecimate:
+        # Offline-eval: buffer is already frame-skip-decimated at source.
         return frames[-n:], frame_nums[-n:], timestamps[-n:]
 
-    # Realtime: walk backwards, pick frames spaced >= frame_skip apart.
+    # Raw buffer (offline-realtime / live): walk backwards, pick frames
+    # spaced >= frame_skip apart.
     picked_idx: List[int] = []
     last_fn = None
     step = max(int(frame_skip), 1)

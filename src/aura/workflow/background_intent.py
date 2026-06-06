@@ -28,7 +28,7 @@ import time
 from typing import Any, Dict, Optional
 
 from .intent_gate import sample_intent_frames, should_run_intent
-from .nodes import _get_intent_monitor, push_intent_result
+from .nodes import _get_intent_monitor, push_intent_result, resolve_source_mode
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +127,7 @@ class BackgroundIntentRunner:
             state.get("frames_buffer_timestamps") or [],
             n=int(config.get("intent_num_frames", 5)),
             frame_skip=int(config.get("frame_skip", 30)),
-            realtime=bool(config.get("realtime", True)),
+            redecimate=resolve_source_mode(config) != "offline_eval",
         )
         if not frames:
             await asyncio.sleep(self._idle_poll)

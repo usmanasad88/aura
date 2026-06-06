@@ -245,7 +245,7 @@ async def run_workflow(
     gopro_lens: str = "front",
     dashboard_port: int = 5555,
     no_dashboard: bool = False,
-    realtime: bool = True,
+    offline_realtime: bool = True,
     frame_skip: int = 30,
     max_cycles: int | None = None,
     use_ground_truth_robot_status: bool = False,
@@ -283,6 +283,12 @@ async def run_workflow(
 
     config_dir = _project_root / "tasks" / task_name / "config"
 
+    # Run-mode classification (mirrors workflow.nodes.resolve_source_mode):
+    #   offline_eval     — video file, as-fast-as-possible (offline_realtime=False)
+    #   offline_realtime — video file, wall-clock paced, fast/small-context intent
+    #   live             — webcam/screen/gopro, continuous, responsive intent
+    offline_eval = bool(video_path) and not offline_realtime
+
     # Resolve backend-specific defaults from config/default.yaml
     if intent_max_tokens is None:
         aura_cfg = load_config()
@@ -312,7 +318,7 @@ async def run_workflow(
         "gopro_lens": gopro_lens,
         "dashboard_port": dashboard_port,
         "no_dashboard": no_dashboard,
-        "realtime": realtime,
+        "offline_realtime": offline_realtime,
         "frame_skip": frame_skip,
         "max_cycles": max_cycles,
         "use_ground_truth_robot_status": use_ground_truth_robot_status,
@@ -348,7 +354,7 @@ async def run_workflow(
 
     extra = {
         "run_log_dir": str(run_log_dir),
-        "realtime": realtime,
+        "offline_realtime": offline_realtime,
         "frame_skip": frame_skip,
         "use_ground_truth_robot_status": use_ground_truth_robot_status,
         "intent_source": intent_source,
@@ -372,10 +378,11 @@ async def run_workflow(
         "frame_buffer_size": frame_buffer_size,
         "intent_include_previous_state": intent_include_previous_state,
         "intent_previous_state_source": intent_previous_state_source,
-        # Default: realtime → non-blocking intent; offline → blocking. Override
-        # explicitly via --intent-blocking / --no-intent-blocking.
+        # Default: block only in offline-eval (every cycle needs a fresh
+        # prediction); offline-realtime and live dispatch in the background.
+        # Override explicitly via --intent-blocking / --no-intent-blocking.
         "intent_blocking": (
-            intent_blocking if intent_blocking is not None else (not realtime)
+            intent_blocking if intent_blocking is not None else offline_eval
         ),
     }
     if max_cycles is not None:
@@ -521,13 +528,14 @@ async def run_workflow(
     # limit must comfortably exceed ``max_cycles × supersteps-per-cycle`` or
     # the stream aborts mid-run with a "recursion limit reached" error.
     #
-    # Offline / non-realtime runs terminate on video EOF well before the loop
-    # count matters, so they keep the original fixed limit (behaviour
-    # unchanged). Realtime runs are continuous and only stop on ``max_cycles``
-    # (or Ctrl+C / dashboard stop), so the limit is scaled to make that
-    # reachable — at ~12 supersteps/cycle this keeps the loop alive long
-    # enough for a slow VLM call to return and intent to keep re-dispatching.
-    if realtime:
+    # Offline-eval runs terminate on video EOF well before the loop count
+    # matters, so they keep the original fixed limit (behaviour unchanged).
+    # Continuous runs (live, and offline-realtime which can play a long video
+    # at 1x) only stop on ``max_cycles`` (or Ctrl+C / dashboard stop), so the
+    # limit is scaled to make that reachable — at ~12 supersteps/cycle this
+    # keeps the loop alive long enough for a slow VLM call to return and intent
+    # to keep re-dispatching.
+    if not offline_eval:
         effective_max_cycles = int(initial_state["config"].get("max_cycles", 1500))
         recursion_limit = effective_max_cycles * 12 + 200
     else:
@@ -557,6 +565,14 @@ async def run_workflow(
                 # or a non-dict payload; treat them as empty updates.
                 if not isinstance(node_state, dict):
                     node_state = {}
+
+                # Annotated perception frame: feed it to the dashboard frame
+                # slot and pop it so the numpy image never hits the SSE JSON.
+                # Perception runs after capture_frame in the cycle, so this
+                # overrides the raw frame with the detection overlay.
+                perception_vis = node_state.pop("perception_vis", None)
+                if dash is not None and perception_vis is not None:
+                    dash.set_frame(perception_vis)
 
                 # ── Publish to dashboard ─────────────────────────────
                 if dash:
@@ -678,7 +694,11 @@ def run_launcher(dashboard_port: int = 5555) -> None:
                 model=config.get("model", "gemini-3.1-pro-preview"),
                 dry_run=config.get("dry_run", True),
                 no_dashboard=True,  # Don't create a second dashboard
-                realtime=config.get("realtime", True),
+                # Launcher UI sends "realtime" (paced playback for video);
+                # accept the new key too. Only affects video-file sources.
+                offline_realtime=config.get(
+                    "offline_realtime", config.get("realtime", True)
+                ),
                 frame_skip=config.get("frame_skip", 30),
                 max_cycles=config.get("max_cycles"),
                 use_ground_truth_robot_status=config.get(
@@ -794,12 +814,17 @@ def main() -> None:
         help="Execute robot actions for real",
     )
     parser.add_argument(
-        "--no-realtime", action="store_true",
-        help="Process video as fast as possible (no wall-clock pacing)",
+        "--offline-eval", "--no-realtime", dest="offline_eval", action="store_true",
+        help="Offline-eval mode: process a video file as fast as possible "
+             "(no wall-clock pacing), with blocking intent and full context. "
+             "Without this, a video file plays at wall-clock pace "
+             "(offline-realtime: non-blocking intent, reduced context for "
+             "faster inference). Ignored for live sources (webcam/screen/gopro), "
+             "which are always continuous. (--no-realtime is a deprecated alias.)",
     )
     parser.add_argument(
         "--frame-skip", type=int, default=30,
-        help="In non-realtime mode, yield every N-th frame (default: 30)",
+        help="In offline-eval mode, yield every N-th frame (default: 30)",
     )
     parser.add_argument(
         "--max-cycles", type=int, default=None,
@@ -910,7 +935,7 @@ def main() -> None:
     parser.add_argument(
         "--intent-blocking", dest="intent_blocking", action="store_true", default=None,
         help="Force run_intent_node to block until the VLM call finishes "
-             "(use for offline / eval; defaults to True when --no-realtime).",
+             "(use for offline / eval; defaults to True in offline-eval mode).",
     )
     parser.add_argument(
         "--no-intent-blocking", dest="intent_blocking", action="store_false",
@@ -966,7 +991,7 @@ def main() -> None:
             dry_run=args.dry_run,
             dashboard_port=args.dashboard_port,
             no_dashboard=args.no_dashboard,
-            realtime=not args.no_realtime,
+            offline_realtime=not args.offline_eval,
             frame_skip=args.frame_skip,
             max_cycles=args.max_cycles,
             use_ground_truth_robot_status=args.use_ground_truth_robot_status,
