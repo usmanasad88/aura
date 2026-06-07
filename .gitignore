@@ -23,3 +23,7 @@ logs/
 *.mov
 tasks/hand_layup/logs/
 results/
+scripts/eval/perception_side_quest
+
+# Local voiceover/script drafts
+aura_video_script.html
