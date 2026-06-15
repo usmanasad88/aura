@@ -148,6 +148,12 @@ def visualize(
     frame_skip: int = 1,
 ) -> None:
     import matplotlib.pyplot as plt
+    from matplotlib.ticker import FuncFormatter
+
+    def _format_frame_tick(value, _pos):
+        v = int(round(value))
+        # Add thousands separators only for numbers with five or more digits.
+        return f"{v:,}" if abs(v) >= 10000 else str(v)
 
     gt_entries = _load(gt_path)
 
@@ -210,15 +216,17 @@ def visualize(
     ax.set_xlabel("Frame number", fontsize=14)
     ax.set_ylabel("Action", fontsize=14)
     ax.set_xlim(0, max_frame + max(max_frame * 0.02, 10))
+    ax.xaxis.set_major_formatter(FuncFormatter(_format_frame_tick))
     ax.invert_yaxis()
     ax.grid(axis="x", linestyle="--", alpha=0.5)
-    if title:
-        ax.set_title(title, fontsize=14)
 
     handles, labels = ax.get_legend_handles_labels()
     if handles:
         by_label = dict(zip(labels, handles))
-        ax.legend(by_label.values(), by_label.keys(), loc="lower right", fontsize=12)
+        ax.legend(
+            by_label.values(), by_label.keys(),
+            loc="lower left", bbox_to_anchor=(0.01, 0.18), fontsize=16,
+        )
 
     fig.tight_layout()
     if output_path:

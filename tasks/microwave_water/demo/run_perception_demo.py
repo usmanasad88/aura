@@ -239,13 +239,18 @@ def run_demo(
                 logger.warning("Visualize error: %s", e)
                 vis = frame.copy()
 
-            # Add timing bar at bottom.
+            # Add timing bar at bottom (dark strip keeps large text legible).
             info = (f"Frame {frame_num} | {timestamp:.1f}s | "
                     f"SAM3: {dt:.2f}s | "
                     f"black: {locs.get('black_cup', '?')} | "
                     f"white: {locs.get('white_cup', '?')}")
-            cv2.putText(vis, info, (10, h - 12),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 2)
+            (tw, th_), _ = cv2.getTextSize(
+                info, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 3,
+            )
+            cv2.rectangle(vis, (6, h - th_ - 28), (6 + tw + 16, h - 6),
+                          (0, 0, 0), -1)
+            cv2.putText(vis, info, (14, h - 16),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.0, (220, 220, 220), 3)
 
             # ── Save to logs ────────────────────────────────────────
             img_path = images_dir / f"frame_{frame_num:05d}.jpg"

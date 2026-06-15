@@ -9,10 +9,10 @@ can see at a glance which ablation matches / misses / over-fires.
 Default: hand_layup ablations (listed best → worst)
     - hand_layup_skip_intent_perception
         Use GT Intention Results (Skip Perception Monitor) - Use Perception Monitor
-    - hand_layup_gt_intent_perception
-        Use GT Intention Previous State - Use perception monitor
     - hand_layup_gt_intent_no_perception
         Use GT Intention Previous State - No perception monitor
+    - hand_layup_gt_intent_perception
+        Use GT Intention Previous State - Use perception monitor
     - hand_layup_self_intent_perception
         Use Self Created Previous State - Use perception monitor
 
@@ -550,10 +550,10 @@ def format_twss_table(twss_exp: dict[str, TWSS]) -> str:
 DEFAULT_ABLATIONS: list[tuple[str, str]] = [
     ("hand_layup_skip_intent_perception",
      "GT intent results (skip intent monitor) + perception"),
-    ("hand_layup_gt_intent_perception",
-     "GT intent prev-state + perception"),
     ("hand_layup_gt_intent_no_perception",
      "GT intent prev-state, no perception"),
+    ("hand_layup_gt_intent_perception",
+     "GT intent prev-state + perception"),
     ("hand_layup_self_intent_perception",
      "Self intent prev-state + perception"),
 ]

@@ -371,15 +371,15 @@ class MicrowaveWaterPerceptionMonitor:
             if microwave.bbox is not None:
                 x1, y1 = int(microwave.bbox.x_min), int(microwave.bbox.y_min)
                 x2, y2 = int(microwave.bbox.x_max), int(microwave.bbox.y_max)
-                cv2.rectangle(vis, (x1, y1), (x2, y2), microwave_color, 3)
+                cv2.rectangle(vis, (x1, y1), (x2, y2), microwave_color, 4)
                 label = f"microwave ({microwave.confidence:.2f})"
                 (tw, th_), _ = cv2.getTextSize(
-                    label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2,
+                    label, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 3,
                 )
-                cv2.rectangle(vis, (x1, y1 - th_ - 8), (x1 + tw, y1),
+                cv2.rectangle(vis, (x1, y1 - th_ - 14), (x1 + tw, y1),
                               microwave_color, -1)
-                cv2.putText(vis, label, (x1, y1 - 5),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+                cv2.putText(vis, label, (x1, y1 - 8),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 3)
 
         # Draw cups.
         for cup_id, cup in cups.items():
@@ -397,15 +397,15 @@ class MicrowaveWaterPerceptionMonitor:
             if cup.bbox is not None:
                 x1, y1 = int(cup.bbox.x_min), int(cup.bbox.y_min)
                 x2, y2 = int(cup.bbox.x_max), int(cup.bbox.y_max)
-                cv2.rectangle(vis, (x1, y1), (x2, y2), color, 2)
+                cv2.rectangle(vis, (x1, y1), (x2, y2), color, 3)
                 label = f"{cup_id} @ {loc} ({cup.confidence:.2f})"
                 (tw, th_), _ = cv2.getTextSize(
-                    label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2,
+                    label, cv2.FONT_HERSHEY_SIMPLEX, 0.9, 3,
                 )
                 txt_color = (0, 0, 0) if cup_id == "white_cup" else (255, 255, 255)
-                cv2.rectangle(vis, (x1, y2), (x1 + tw, y2 + th_ + 8), color, -1)
-                cv2.putText(vis, label, (x1, y2 + th_ + 4),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, txt_color, 2)
+                cv2.rectangle(vis, (x1, y2), (x1 + tw, y2 + th_ + 14), color, -1)
+                cv2.putText(vis, label, (x1, y2 + th_ + 8),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.9, txt_color, 3)
 
         # Summary panel — both cups, bright if seen this frame else dimmed.
         lines: List[Tuple[str, Tuple[int, int, int]]] = []
@@ -419,13 +419,13 @@ class MicrowaveWaterPerceptionMonitor:
             else:
                 lines.append((f"{cup_id}: {loc} (last known)", (120, 120, 120)))
 
-        panel_h = 30 + 26 * len(lines)
-        cv2.rectangle(vis, (5, 5), (430, panel_h), (0, 0, 0), -1)
-        cv2.rectangle(vis, (5, 5), (430, panel_h), (255, 255, 255), 1)
-        y = 28
+        panel_h = 42 + 44 * len(lines)
+        cv2.rectangle(vis, (5, 5), (760, panel_h), (0, 0, 0), -1)
+        cv2.rectangle(vis, (5, 5), (760, panel_h), (255, 255, 255), 2)
+        y = 48
         for text, color in lines:
-            cv2.putText(vis, text, (12, y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
-            y += 26
+            cv2.putText(vis, text, (16, y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.95, color, 3)
+            y += 44
 
         return vis
