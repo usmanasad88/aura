@@ -216,6 +216,18 @@ ol.contrib li { margin-bottom: 0.6rem; }
 }
 .video-card figcaption strong { color: var(--fg); }
 
+/* ---------- Article banner ---------- */
+.article-banner {
+  display: block;
+  margin: 0 0 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+.article-banner:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); }
+.article-banner img { display: block; width: 100%; height: auto; }
+
 /* ---------- Code / BibTeX ---------- */
 pre {
   background: var(--soft);
